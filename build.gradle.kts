@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.graalvm.buildtools.native") version "0.10.4"
 }
 
 group = "com.github.alexeylapin.whale-one"
@@ -40,6 +41,16 @@ springBoot {
     buildInfo {
         properties {
             artifact = rootProject.name
+        }
+    }
+}
+
+graalvmNative {
+    toolchainDetection.set(true)
+    binaries {
+        named("main") {
+            imageName.set(rootProject.name)
+            buildArgs.add("--verbose")
         }
     }
 }
