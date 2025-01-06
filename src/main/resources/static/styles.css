@@ -1,0 +1,22 @@
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+main {
+    flex-grow: 1;
+}
+
+.sortable-handle {
+    cursor: grab;
+}
+
+.sortable-grabbing {
+    cursor: grabbing;
+}
