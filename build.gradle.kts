@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.alexeylapin.whale-one"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -34,4 +34,27 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+springBoot {
+    buildInfo {
+        properties {
+            artifact = rootProject.name
+        }
+    }
+}
+
+tasks.bootBuildImage {
+    val registry = System.getenv("CR_REGISTRY")!!
+    val namespace = System.getenv("CR_NAMESPACE")!!
+    imageName = "${registry}/${namespace}/${rootProject.name}:${project.version}"
+    publish = true
+    tags = setOf("${registry}/${namespace}/${rootProject.name}:latest")
+    docker {
+        publishRegistry {
+            url = System.getenv("CR_REGISTRY")
+            username = System.getenv("CR_USERNAME")
+            password = System.getenv("CR_PASSWORD")
+        }
+    }
 }
