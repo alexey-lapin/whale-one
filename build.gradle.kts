@@ -4,10 +4,11 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "0.10.4"
     id("gg.jte.gradle") version "3.1.15"
+    id("pl.allegro.tech.build.axion-release") version "1.18.7"
 }
 
 group = "com.github.alexeylapin.whale-one"
-version = "0.0.1"
+version = scmVersion.version
 
 repositories {
     mavenCentral()
