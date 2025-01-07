@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - main
     tags:
       - 'v*.*.*'
   pull_request:
@@ -231,6 +232,6 @@ jobs:
       - name: Gradle bootBuildImage
         run: ./gradlew bootBuildImage
 
-#      - name: Deploy on Render
-#        run: |
-#          curl -X POST ${{ secrets.RENDER_WEBHOOK }}
+      - name: Deploy on Render
+        run: |
+          curl -X POST ${{ secrets.RENDER_WEBHOOK }}
