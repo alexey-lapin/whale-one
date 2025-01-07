@@ -1,10 +1,11 @@
 @import java.util.List
+@import org.springframework.boot.info.BuildProperties
 @import org.springframework.validation.BindingResult
 
 @param BindingResult bindingResult = null
+@param BuildProperties buildProperties
 
-
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/deployments/new" method="post">
         <%--        <div class="field">--%>
         <%--            <label class="label">Type</label>--%>

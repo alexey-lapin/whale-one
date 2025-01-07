@@ -1,10 +1,12 @@
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute
 @import gg.jte.support.ForSupport
+@import org.springframework.boot.info.BuildProperties
 
 @param EquipmentType equipmentType
+@param BuildProperties buildProperties
 
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/equipment/types/${equipmentType.id()}" method="post">
         <div class="field">
             <label class="label">Id</label>

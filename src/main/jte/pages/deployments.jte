@@ -1,11 +1,13 @@
 @import com.github.alexeylapin.whaleone.domain.model.Deployment
 @import java.util.List
 @import java.time.format.DateTimeFormatter
+@import org.springframework.boot.info.BuildProperties
 
 @param List<Deployment> deployments
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+@param BuildProperties buildProperties
 
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <a href="/deployments/new" class="button">
             <span class="icon">
                 <i class="pi pi-plus"></i>

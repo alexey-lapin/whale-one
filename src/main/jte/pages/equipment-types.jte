@@ -1,9 +1,11 @@
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
 @import java.util.List
+@import org.springframework.boot.info.BuildProperties
 
 @param List<EquipmentType> equipmentTypes
+@param BuildProperties buildProperties
 
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <a href="/equipment/types/new" class="button">
         <span class="icon">
             <i class="pi pi-plus"></i>

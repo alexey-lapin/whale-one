@@ -2,11 +2,13 @@
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
 @import java.util.List
 @import java.util.Map
+@import org.springframework.boot.info.BuildProperties
 
 @param List<Equipment> equipmentList
 @param Map<Integer, EquipmentType> equipmentTypes
+@param BuildProperties buildProperties
 
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <a href="/equipment/new">
         <button class="button">
             <span class="icon">

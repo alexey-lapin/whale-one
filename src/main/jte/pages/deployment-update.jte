@@ -5,14 +5,16 @@
 @import java.time.format.DateTimeFormatter
 @import java.util.List
 @import java.util.Map
+@import org.springframework.boot.info.BuildProperties
 
 @param Deployment deployment
 @param List<DeploymentEquipment> deploymentEquipmentList
 @param Map<Long, Equipment> equipment
 @param boolean isEquipmentEditable
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+@param BuildProperties buildProperties
 
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/deployments/${deployment.id()}" method="post">
         <ul class="steps is-narrow is-small is-centered has-content-centered">
             @for(DeploymentStatus status : DeploymentStatus.values())
@@ -96,7 +98,7 @@
             </div>
         </div>
 
-        <div class="field is-grouped">
+        <div class="field is-grouped is-grouped-multiline">
             @if(deployment.status() == DeploymentStatus.NEW)
                 <div class="control">
                     <button class="button is-link"

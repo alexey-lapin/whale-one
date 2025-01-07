@@ -1,12 +1,13 @@
-@import java.util.List
 @import com.github.alexeylapin.whaleone.domain.model.DeploymentMetadata
+@import org.springframework.boot.info.BuildProperties
 @import org.springframework.validation.BindingResult
 
 @param BindingResult bindingResult = null
 @param DeploymentMetadata deploymentMetadata
+@param BuildProperties buildProperties
 
 
-@template.layout.bulma(content = @`
+@template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/deployments/${deploymentMetadata.id()}/metadata" method="post">
         <%--        <div class="field">--%>
         <%--            <label class="label">Type</label>--%>

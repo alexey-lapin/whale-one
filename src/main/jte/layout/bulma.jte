@@ -1,3 +1,6 @@
+@import org.springframework.boot.info.BuildProperties
+
+@param BuildProperties buildProperties
 @param gg.jte.Content content
 
 <!doctype html>
@@ -22,8 +25,13 @@
             <a class="navbar-item is-size-3" href="/">
                 <strong>🐳 Whale One</strong>
             </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
         </div>
-
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
                 <a class="navbar-item" href="/deployments">
@@ -33,7 +41,6 @@
                     Equipment
                 </a>
             </div>
-
             <div class="navbar-end">
                 <div class="navbar-item">
                     <div class="buttons">
@@ -46,14 +53,14 @@
         </div>
     </div>
 </nav>
-<main class="section1">
+<main class="section pt-0">
     <div class="container">
         ${content}
     </div>
 </main>
-<footer class="container1 py-1">
+<footer class="py-1 is-hidden-mobile">
     <div class="content has-text-centered">
-        <p class="has-text-grey-light">v0.1.0</p>
+        <p class="has-text-grey-light">v${buildProperties.getVersion()}</p>
     </div>
 </footer>
 </body>

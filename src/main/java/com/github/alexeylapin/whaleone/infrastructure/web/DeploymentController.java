@@ -12,6 +12,7 @@ import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -32,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@RegisterReflectionForBinding(DeploymentController.NewDeployment.class)
 @Controller
 public class DeploymentController {
 
@@ -151,13 +153,27 @@ public class DeploymentController {
     }
 
     @PostMapping("/deployments/{id}/metadata")
-    public String deploymentMetadataSubmit(@PathVariable("id") long id,
-                                           @ModelAttribute("deploymentMetadata") DeploymentMetadata deploymentMetadata,
-                                           Model model) {
-//        DeploymentMetadata deploymentMetadata = deploymentMetadataRepository.findById(id)
-//                .orElse(DeploymentMetadata.builder().id(id).build());
-        DeploymentMetadata savedDeploymentMetadata = deploymentMetadataRepository.save(deploymentMetadata);
-        model.addAttribute("deploymentMetadata", savedDeploymentMetadata);
+    public String deploymentMetadataSubmit(
+            @PathVariable("id") long id,
+            @ModelAttribute("deploymentMetadata") DeploymentMetadata formDeploymentMetadata,
+            Model model) {
+        DeploymentMetadata deploymentMetadata = deploymentMetadataRepository.findById(id)
+                .orElse(DeploymentMetadata.builder().id(id).build());
+        if (!formDeploymentMetadata.equals(deploymentMetadata)) {
+            deploymentMetadata = deploymentMetadata.toBuilder()
+                    .version(formDeploymentMetadata.version())
+                    .latitude(formDeploymentMetadata.latitude())
+                    .longitude(formDeploymentMetadata.longitude())
+                    .sampleRate(formDeploymentMetadata.sampleRate())
+                    .dutyCycleSleep(formDeploymentMetadata.dutyCycleSleep())
+                    .dutyCycleInterval(formDeploymentMetadata.dutyCycleInterval())
+                    .dutyCycleRecord(formDeploymentMetadata.dutyCycleRecord())
+                    .recordingStatus(formDeploymentMetadata.recordingStatus())
+                    .recordingStatusNote(formDeploymentMetadata.recordingStatusNote())
+                    .build();
+            deploymentMetadata = deploymentMetadataRepository.save(formDeploymentMetadata);
+        }
+        model.addAttribute("deploymentMetadata", deploymentMetadata);
         return "pages/deployment-metadata";
     }
 
