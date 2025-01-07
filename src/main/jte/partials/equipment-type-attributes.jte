@@ -1,5 +1,4 @@
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
-@import gg.jte.support.ForSupport
 
 @param EquipmentType equipmentType
 

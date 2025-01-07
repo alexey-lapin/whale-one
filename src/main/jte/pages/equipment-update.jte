@@ -1,6 +1,5 @@
 @import com.github.alexeylapin.whaleone.domain.model.Equipment
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
-@import java.util.List
 @import java.util.Map
 @import org.springframework.boot.info.BuildProperties
 
@@ -23,13 +22,25 @@
         </div>
         <div class="field">
             <label class="label">Type</label>
-            <div class="control">
-                <input class="input"
-                       type="text"
-                       name="type"
-                       value="${equipmentTypes.get(equipment.type()).name()}"
-                       disabled
-                >
+            <div class="field has-addons">
+                <p class="control is-expanded">
+                    <input class="input"
+                           type="text"
+                           name="type"
+                           value="${equipmentTypes.get(equipment.type()).name()}"
+                           disabled
+                    >
+                </p>
+                <p class="control">
+                    <a href="/equipment/types/${equipment.type()}"
+                       class="button"
+                       style="cursor: pointer"
+                    >
+                    <span class="icon">
+                        <i class="pi pi-external-link"></i>
+                    </span>
+                    </a>
+                </p>
             </div>
         </div>
         <div class="field">

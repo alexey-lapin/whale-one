@@ -36,7 +36,7 @@
                 <td>${dateTimeFormatter.format(deployment.createdAt())}</td>
                 <td>${deployment.createdBy()}</td>
                 <td>
-                    <a href="/deployments/${deployment.id()}" class="button is-light is-small">edit</a>
+                    <a href="/deployments/${deployment.id()}" class="button is-small">edit</a>
                 </td>
             </tr>
         @endfor

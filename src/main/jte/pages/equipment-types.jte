@@ -26,7 +26,7 @@
                 <td>${equipmentType.id()}</td>
                 <td>${equipmentType.name()}</td>
                 <td>
-                    <a href="/equipment/types/${equipmentType.id()}" class="button is-light is-small">edit</a>
+                    <a href="/equipment/types/${equipmentType.id()}" class="button is-small">edit</a>
                 </td>
             </tr>
         @endfor

@@ -14,38 +14,6 @@
         <div class="content">
             <p class="is-size-5">🛠️ Equipment</p>
                 @for(var deploymentEquipment : deploymentEquipmentList)
-                <%--                    <div class="field is-grouped">--%>
-                <%--                        <div class="control">--%>
-                <%--                            <input class="input"--%>
-                <%--                                   type="text"--%>
-                <%--                                   name="id"--%>
-                <%--                                   value="${deploymentEquipment.equipmentId()}"--%>
-                <%--                                   readonly--%>
-                <%--                            >--%>
-                <%--                        </div>--%>
-                <%--                        <div class="control">--%>
-                <%--                            <input class="input"--%>
-                <%--                                   type="text"--%>
-                <%--                                   name="name"--%>
-                <%--                                   value="${equipmentMap.get(deploymentEquipment.equipmentId()).name()}"--%>
-                <%--                                   readonly--%>
-                <%--                            >--%>
-                <%--                        </div>--%>
-                <%--                        <a href="/equipment/${deploymentEquipment.equipmentId()}"--%>
-                <%--                           class="button is-white"--%>
-                <%--                           style="cursor: pointer"--%>
-                <%--                        >--%>
-                <%--                            <i class="pi pi-external-link"></i>--%>
-                <%--                        </a>--%>
-                <%--                        --%><%--                        <div class="control">--%>
-                <%--                        <button class="button is-danger is-outlined"--%>
-                <%--                                hx-delete="/deployments/${deployment.id()}/equipment/${deploymentEquipment.equipmentId()}"--%>
-                <%--                                hx-target="#equipment"--%>
-                <%--                                hx-swap="outerHTML">--%>
-                <%--                            <i class="pi pi-trash"></i>--%>
-                <%--                        </button>--%>
-                <%--                        --%><%--                        </div>--%>
-                <%--                    </div>--%>
                     <div class="field has-addons mb-0">
                         <p class="control">
                             <a class="button is-static">
@@ -70,7 +38,7 @@
                         </p>
                         @if(isEquipmentEditable)
                             <p class="control">
-                                <button class="button is-danger is-outlined"
+                                <button class="button has-text-danger"
                                         hx-delete="/deployments/${deployment.id()}/equipment/${deploymentEquipment.equipmentId()}"
                                         hx-target="#equipment"
                                         hx-swap="outerHTML">

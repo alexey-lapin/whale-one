@@ -48,3 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const el1 = document.querySelector('#theme-changer');
+    const el2 = document.querySelector('html');
+
+    el1.addEventListener('click', () => {
+        el2.classList.toggle('theme-dark');
+    });
+
+});

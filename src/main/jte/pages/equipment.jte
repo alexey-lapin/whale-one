@@ -43,13 +43,13 @@
                 <td>${equipmentTypes.get(equipment.type()).name()}</td>
                 <td>${equipment.deploymentId()}
                     @if(equipment.deploymentId() != null)
-                        <a href="/deployments/${equipment.deploymentId()}" class="button is-white is-small">
+                        <a href="/deployments/${equipment.deploymentId()}" class="button is-small">
                             <i class="pi pi-external-link"></i>
                         </a>
                     @endif
                 </td>
                 <td>
-                    <a href="/equipment/${equipment.id()}" class="button is-light is-small">edit</a>
+                    <a href="/equipment/${equipment.id()}" class="button is-small">edit</a>
                 </td>
             </tr>
         @endfor
