@@ -1,4 +1,4 @@
-htmx.onLoad(function(content) {
+htmx.onLoad(function (content) {
     var sortables = content.querySelectorAll(".sortable");
     console.log(sortables);
     for (var i = 0; i < sortables.length; i++) {
@@ -21,7 +21,7 @@ htmx.onLoad(function(content) {
         });
 
         // Re-enable sorting on the `htmx:afterSwap` event
-        sortable.addEventListener("htmx:afterSwap", function() {
+        sortable.addEventListener("htmx:afterSwap", function () {
             sortableInstance.option("disabled", false);
         });
     }
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
 
     // Add a click event on each of them
-    $navbarBurgers.forEach( el => {
+    $navbarBurgers.forEach(el => {
         el.addEventListener('click', () => {
 
             // Get the target from the "data-target" attribute

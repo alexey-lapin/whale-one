@@ -9,10 +9,12 @@ import com.github.alexeylapin.whaleone.domain.repo.DeploymentEquipmentRepository
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentMetadataRepository;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
+import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,8 @@ public class DeploymentController {
     @PostMapping("/deployments/new")
     public String deploymentNewSubmit(@Valid NewDeployment newDeployment,
                                       BindingResult bindingResult,
-                                      Model model) {
+                                      Model model,
+                                      @AuthenticationPrincipal IdUser user) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("bindingResult", bindingResult);
             return "pages/deployment-new";
@@ -68,7 +70,8 @@ public class DeploymentController {
                 .description(newDeployment.description())
                 .status(DeploymentStatus.NEW)
                 .createdAt(ZonedDateTime.now())
-                .createdBy("admin")
+                .createdBy(user.getUsername())
+                .createdById(user.getId())
                 .build();
         deploymentRepository.save(deployment);
         return "redirect:/deployments";
@@ -103,10 +106,13 @@ public class DeploymentController {
                 .build();
         deploymentRepository.save(alteredDeployment);
         if (alteredDeployment.status().isTerminal()) {
-            equipmentRepository.findAllByDeploymentId(id).forEach(equipment ->
+            equipmentRepository.findAllByDeploymentId(id).forEach(equipment -> {
+                if (equipment.deploymentId() == id) {
                     equipmentRepository.save(equipment.toBuilder()
                             .deploymentId(null)
-                            .build()));
+                            .build());
+                }
+            });
         }
         return "redirect:/deployments/" + id;
     }
@@ -171,7 +177,7 @@ public class DeploymentController {
                     .recordingStatus(formDeploymentMetadata.recordingStatus())
                     .recordingStatusNote(formDeploymentMetadata.recordingStatusNote())
                     .build();
-            deploymentMetadata = deploymentMetadataRepository.save(formDeploymentMetadata);
+            deploymentMetadata = deploymentMetadataRepository.save(deploymentMetadata);
         }
         model.addAttribute("deploymentMetadata", deploymentMetadata);
         return "pages/deployment-metadata";

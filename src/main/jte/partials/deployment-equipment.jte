@@ -13,43 +13,43 @@
     <div class="card-content">
         <div class="content">
             <p class="is-size-5">🛠️ Equipment</p>
-                @for(var deploymentEquipment : deploymentEquipmentList)
-                    <div class="field has-addons mb-0">
-                        <p class="control">
-                            <a class="button is-static">
-                                # ${deploymentEquipment.equipmentId()}
-                            </a>
-                        </p>
-                        <p class="control">
-                            <input class="input"
-                                   type="text"
-                                   value="${equipmentMap.get(deploymentEquipment.equipmentId()).name()}"
-                                   readonly>
-                        </p>
-                        <p class="control">
-                            <a href="/equipment/${deploymentEquipment.equipmentId()}"
-                               class="button"
-                               style="cursor: pointer"
-                            >
+            @for(var deploymentEquipment : deploymentEquipmentList)
+                <div class="field has-addons mb-0">
+                    <p class="control">
+                        <a class="button is-static">
+                            # ${deploymentEquipment.equipmentId()}
+                        </a>
+                    </p>
+                    <p class="control">
+                        <input class="input"
+                               type="text"
+                               value="${equipmentMap.get(deploymentEquipment.equipmentId()).name()}"
+                               readonly>
+                    </p>
+                    <p class="control">
+                        <a href="/equipment/${deploymentEquipment.equipmentId()}"
+                           class="button"
+                           style="cursor: pointer"
+                        >
                                 <span class="icon">
                                     <i class="pi pi-external-link"></i>
                                 </span>
-                            </a>
-                        </p>
-                        @if(isEquipmentEditable)
-                            <p class="control">
-                                <button class="button has-text-danger"
-                                        hx-delete="/deployments/${deployment.id()}/equipment/${deploymentEquipment.equipmentId()}"
-                                        hx-target="#equipment"
-                                        hx-swap="outerHTML">
+                        </a>
+                    </p>
+                    @if(isEquipmentEditable)
+                        <p class="control">
+                            <button class="button has-text-danger"
+                                    hx-delete="/deployments/${deployment.id()}/equipment/${deploymentEquipment.equipmentId()}"
+                                    hx-target="#equipment"
+                                    hx-swap="outerHTML">
                                 <span class="icon">
                                     <i class="pi pi-trash"></i>
                                 </span>
-                                </button>
-                            </p>
-                        @endif
-                    </div>
-                @endfor
+                            </button>
+                        </p>
+                    @endif
+                </div>
+            @endfor
             @if(isEquipmentEditable)
                 <form action="/deployments/${deployment.id()}/equipment" method="post" class="mt-2">
                     <div class="field is-grouped">

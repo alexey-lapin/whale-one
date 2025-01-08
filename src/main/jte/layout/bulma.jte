@@ -1,4 +1,5 @@
 @import org.springframework.boot.info.BuildProperties
+@import org.springframework.security.core.context.SecurityContextHolder
 
 @param BuildProperties buildProperties
 @param gg.jte.Content content
@@ -43,11 +44,16 @@
                 <a class="navbar-item" href="/equipment">
                     Equipment
                 </a>
+                @if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN")))
+                    <a class="navbar-item" href="/users">
+                        Users
+                    </a>
+                @endif
             </div>
             <div class="navbar-end">
                 <div class="navbar-item">
                     <div class="buttons">
-                        <button id="theme-changer" class="button has-text-warning">
+                        <button id="theme-changer" class="button is-ghost has-text-warning">
                             <span class="icon">
                                 <i class="pi pi-sun"></i>
                             </span>

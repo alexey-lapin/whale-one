@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
-<%--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">--%>
+    <%--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">--%>
     <link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css">
     <title>Hello world!</title>
     <style>
@@ -76,7 +76,7 @@
             /* Original: var(--pico-border-radius) */
         }
 
-        article>footer {
+        article > footer {
             border-radius: calc(var(--pico-border-radius) * 2);
             /* Original: var(--pico-border-radius) */
         }
@@ -84,10 +84,10 @@
 </head>
 <body>
 <header class="container">
-<%--    <hgroup>--%>
-<%--        <h1>Pico</h1>--%>
-<%--        <p>A pure HTML example, without dependencies.</p>--%>
-<%--    </hgroup>--%>
+    <%--    <hgroup>--%>
+    <%--        <h1>Pico</h1>--%>
+    <%--        <p>A pure HTML example, without dependencies.</p>--%>
+    <%--    </hgroup>--%>
     <nav>
         <div class="flex items-center justify-between py-4">
             <a href="/" class="text-xl font-bold">Whale One</a>

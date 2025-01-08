@@ -10,6 +10,8 @@ public class LoginController {
 
     @GetMapping("/login")
     public String login(HttpServletRequest request, Model model) {
+        boolean error = request.getParameter("error") != null;
+        model.addAttribute("error", error);
         return "pages/login";
     }
 

@@ -37,7 +37,7 @@
         </thead>
         <tbody>
         @for (Equipment equipment : equipmentList)
-            <tr>
+            <tr class="${equipment.deploymentId() == null ? null : "has-background-warning-light"}">
                 <td>${equipment.id()}</td>
                 <td>${equipment.name()}</td>
                 <td>${equipmentTypes.get(equipment.type()).name()}</td>

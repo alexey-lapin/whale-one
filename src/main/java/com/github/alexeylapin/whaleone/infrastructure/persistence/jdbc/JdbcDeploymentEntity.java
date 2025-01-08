@@ -4,6 +4,7 @@ import com.github.alexeylapin.whaleone.domain.model.DeploymentStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
@@ -22,6 +23,6 @@ public class JdbcDeploymentEntity {
     private Long jobId;
     private Long siteId;
     private Instant createdAt;
-    private String createdBy;
+    private long createdById;
 
 }

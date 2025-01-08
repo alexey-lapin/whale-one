@@ -14,7 +14,8 @@ public record Deployment(
         Long jobId,
         Long siteId,
         ZonedDateTime createdAt,
-        String createdBy
+        String createdBy,
+        long createdById
 ) {
 
     public Optional<Long> getJobId() {

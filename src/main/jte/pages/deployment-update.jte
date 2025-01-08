@@ -71,9 +71,17 @@
                         >
                     </div>
                 </div>
+                <div class="field is-hidden">
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="createdById"
+                               value="${deployment.createdById()}"
+                        >
+                    </div>
+                </div>
             </div>
         </div>
-
         <div class="field">
             <label class="label">Name</label>
             <div class="control">
