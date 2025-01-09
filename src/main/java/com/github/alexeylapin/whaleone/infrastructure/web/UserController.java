@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Objects;
 import java.util.Set;
 
 @RequiredArgsConstructor
-@RegisterReflectionForBinding(UserController.FormUser.class)
+@RegisterReflectionForBinding({UserController.NewUser.class, UserController.UpdateUser.class})
 @Controller
 public class UserController {
 
@@ -38,13 +39,15 @@ public class UserController {
     }
 
     @PostMapping("/users/new")
-    public String userNewSubmit(@ModelAttribute FormUser user) {
-        if (!user.password().equals(user.confirmPassword())) {
+    public String userNewSubmit(@ModelAttribute NewUser formUser) {
+        if (!formUser.password().equals(formUser.confirmPassword())) {
             throw new IllegalArgumentException("passwords do not match");
         }
         userRepository.save(User.builder()
                 .version(0)
-                .password(passwordEncoder.encode(user.password()))
+                .username(formUser.username())
+                .password(passwordEncoder.encode(formUser.password()))
+                .enabled(formUser.enabled())
                 .authorities(Set.of("USER"))
                 .build());
         return "redirect:/users";
@@ -58,25 +61,40 @@ public class UserController {
     }
 
     @PostMapping("/users/{id}")
-    public String userUpdateSubmit(@PathVariable("id") long id, @ModelAttribute FormUser formUser) {
-        if (!formUser.password().equals(formUser.confirmPassword())) {
+    public String userUpdateSubmit(@PathVariable("id") long id, @ModelAttribute UpdateUser formUser) {
+        if (!Objects.equals(formUser.password(), formUser.confirmPassword())) {
             throw new IllegalArgumentException("passwords do not match");
         }
         User user = userRepository.findById(id).orElseThrow();
+        String password;
+        if (formUser.password() == null) {
+            password = user.password();
+        } else {
+            password = passwordEncoder.encode(formUser.password());
+        }
         userRepository.save(user.toBuilder()
                 .version(user.version())
                 .username(formUser.username())
-                .password(passwordEncoder.encode(formUser.password()))
+                .password(password)
                 .enabled(formUser.enabled())
                 .build());
         return "redirect:/users";
     }
 
-    public record FormUser(
+    public record NewUser(
             int version,
             @NotBlank String username,
             @NotBlank String password,
             @NotBlank String confirmPassword,
+            boolean enabled
+    ) {
+    }
+
+    public record UpdateUser(
+            int version,
+            @NotBlank String username,
+            String password,
+            String confirmPassword,
             boolean enabled
     ) {
     }

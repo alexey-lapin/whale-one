@@ -42,13 +42,12 @@
             @endif
         </div>
         <div class="field">
-            <label class="label">Password</label>
+            <label class="label">New Password</label>
             <div class="control">
                 <input class="input"
                        type="password"
                        name="password"
                        placeholder="Password"
-                       required
                 >
             </div>
         </div>
@@ -59,14 +58,14 @@
                        type="password"
                        name="confirmPassword"
                        placeholder="Password"
-                       required
                 >
             </div>
         </div>
-        <div class="field is-hidden">
+        <div class="field">
             <div class="control">
                 <label class="checkbox">
                     <input type="checkbox" name="enabled" checked="${user.enabled()}">
+                    <input type="hidden" name="enabled" value="false">
                     Is Enabled
                 </label>
             </div>

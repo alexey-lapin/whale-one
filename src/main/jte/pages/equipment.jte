@@ -37,15 +37,24 @@
         </thead>
         <tbody>
         @for (Equipment equipment : equipmentList)
-            <tr class="${equipment.deploymentId() == null ? null : "has-background-warning-light"}">
+            <tr>
                 <td>${equipment.id()}</td>
                 <td>${equipment.name()}</td>
                 <td>${equipmentTypes.get(equipment.type()).name()}</td>
-                <td>${equipment.deploymentId()}
+                <td>
                     @if(equipment.deploymentId() != null)
-                        <a href="/deployments/${equipment.deploymentId()}" class="button is-small">
-                            <i class="pi pi-external-link"></i>
-                        </a>
+                        <div class="field has-addons">
+                            <p class="control">
+                                <a class="button is-small is-static">
+                                    # ${equipment.deploymentId()}
+                                </a>
+                            </p>
+                            <a href="/deployments/${equipment.deploymentId()}" class="button is-small">
+                            <span class="icon">
+                                <i class="pi pi-external-link"></i>
+                            </span>
+                            </a>
+                        </div>
                     @endif
                 </td>
                 <td>
