@@ -47,11 +47,13 @@
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title"># ${deployment.id()} ${deployment.name()}</p>
-                    <button class="card-header-icon" aria-label="more options">
-                    <span class="icon">
-                        <i class="pi pi-pencil" aria-hidden="true"></i>
-                    </span>
-                    </button>
+                    <a class="card-header-icon"
+                       href="/deployments/${deployment.id()}"
+                       aria-label="more options">
+                        <span class="icon">
+                            <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+                        </span>
+                    </a>
                 </header>
                 <div class="card-content">
                     <div class="content">

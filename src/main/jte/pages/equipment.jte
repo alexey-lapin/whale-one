@@ -25,7 +25,7 @@
             <span>Setup</span>
         </button>
     </a>
-    <table class="table is-hoverable is-fullwidth">
+    <table class="table is-hoverable is-fullwidth is-hidden-mobile">
         <thead>
         <tr>
             <th>Id</th>
@@ -64,4 +64,28 @@
         @endfor
         </tbody>
     </table>
+    <div class="is-hidden-tablet mt-3">
+        @for (Equipment equipment : equipmentList)
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title"># ${equipment.id()} ${equipment.name()}</p>
+                    <a class="card-header-icon"
+                       href="/equipment/${equipment.id()}"
+                       aria-label="more options">
+                        <span class="icon">
+                            <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <p>Type: <b>${equipmentTypes.get(equipment.type()).name()}</b></p>
+                        @if(equipment.deploymentId() != null)
+                            <p>Assigned For: <b># ${equipment.deploymentId()}</b></p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endfor
+    </div>
 `)

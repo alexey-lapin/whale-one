@@ -34,13 +34,36 @@
                 <p class="control">
                     <a href="/equipment/types/${equipment.type()}"
                        class="button"
-                       style="cursor: pointer"
                     >
                     <span class="icon">
                         <i class="pi pi-external-link"></i>
                     </span>
                     </a>
                 </p>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">Allocated For</label>
+            <div class="field has-addons">
+                <p class="control is-expanded">
+                    <input class="input"
+                           type="text"
+                           name="type"
+                           value="${equipment.deploymentId()}"
+                           disabled
+                    >
+                </p>
+                @if(equipment.deploymentId() != null)
+                    <p class="control">
+                        <a href="/deployments/${equipment.deploymentId()}"
+                           class="button"
+                        >
+                    <span class="icon">
+                        <i class="pi pi-external-link"></i>
+                    </span>
+                        </a>
+                    </p>
+                @endif
             </div>
         </div>
         <div class="field">
