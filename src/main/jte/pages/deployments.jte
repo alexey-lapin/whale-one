@@ -14,7 +14,7 @@
             </span>
         <span>New</span>
     </a>
-    <table class="table is-hoverable is-fullwidth">
+    <table class="table is-hoverable is-fullwidth is-hidden-mobile">
         <thead>
         <tr>
             <th>Id</th>
@@ -42,4 +42,26 @@
         @endfor
         </tbody>
     </table>
+    <div class="is-hidden-tablet mt-3">
+        @for (Deployment deployment : deployments)
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title"># ${deployment.id()} ${deployment.name()}</p>
+                    <button class="card-header-icon" aria-label="more options">
+                    <span class="icon">
+                        <i class="pi pi-pencil" aria-hidden="true"></i>
+                    </span>
+                    </button>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <p>Desc: <b>${deployment.description()}</b></p>
+                        <p>Status: <b>${deployment.status()}</b></p>
+                        <p>Created At: <b>${dateTimeFormatter.format(deployment.createdAt())}</b></p>
+                        <p>Created By: <b>${deployment.createdBy()}</b></p>
+                    </div>
+                </div>
+            </div>
+        @endfor
+    </div>
 `)
