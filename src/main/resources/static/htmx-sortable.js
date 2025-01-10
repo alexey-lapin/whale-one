@@ -50,12 +50,111 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleButton = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
 
-    const el1 = document.querySelector('#theme-changer');
-    const el2 = document.querySelector('html');
+    // Apply theme based on user preference or system default
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            applyHtmlTheme('light');
+            lightButton(false);
+        } else if (theme === 'dark') {
+            applyHtmlTheme('dark');
+            darkButton(false);
+        } else {
+            // System theme (default)
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                applyHtmlTheme('dark');
+                darkButton(true)
+            } else {
+                applyHtmlTheme('light');
+                lightButton(true)
+            }
+        }
+    }
 
-    el1.addEventListener('click', () => {
-        el2.classList.toggle('theme-dark');
-    });
+    function lightButton(isGhost) {
+        themeIcon.className = 'pi pi-sun';
+        themeToggleButton.classList.remove('is-dark');
+        themeToggleButton.classList.remove('has-text-link');
+        themeToggleButton.classList.add('is-light');
+        themeToggleButton.classList.add('has-text-warning');
+        if (isGhost) {
+            themeToggleButton.classList.add('is-ghost');
+        }
+    }
 
+    function darkButton(isGhost) {
+        themeIcon.className = 'pi pi-moon';
+        themeToggleButton.classList.remove('is-light');
+        themeToggleButton.classList.remove('has-text-warning');
+        themeToggleButton.classList.add('is-dark');
+        themeToggleButton.classList.add('has-text-link');
+        if (isGhost) {
+            themeToggleButton.classList.add('is-ghost');
+        }
+    }
+
+    // Toggle between light and dark themes
+    function toggleTheme() {
+        const currentTheme = loadTheme();
+        let newTheme;
+
+        if (currentTheme === 'dark') {
+            newTheme = 'light';
+        } else {
+            newTheme = 'dark';
+        }
+
+        saveTheme(newTheme);
+        applyTheme(newTheme);
+    }
+
+    // Initialize theme
+    const theme = loadTheme();
+    applyTheme(theme);
+
+    // Listen for system theme changes if "system" is selected
+    if (theme === 'system') {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            applyTheme('system');
+        });
+    }
+
+    // Add click event listener to toggle button
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', toggleTheme);
+    }
+
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('dblclick', function () {
+            saveTheme('system');
+            applyTheme('system');
+        });
+    }
 });
+
+// Load saved theme or return system by default
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme || 'system';
+}
+
+// Save theme to localStorage (if not system)
+function saveTheme(theme) {
+    if (theme === 'system') {
+        localStorage.removeItem('theme'); // Clear saved theme
+    } else {
+        localStorage.setItem('theme', theme);
+    }
+}
+
+function applyHtmlTheme(theme) {
+    const htmlElement = document.documentElement;
+    htmlElement.classList.remove('theme-light', 'theme-dark');
+    if (theme !== 'system') {
+        htmlElement.classList.add(`theme-${theme}`);
+    }
+}
+
+applyHtmlTheme(loadTheme());

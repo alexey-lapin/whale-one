@@ -53,9 +53,9 @@
             <div class="navbar-end">
                 <div class="navbar-item">
                     <div class="buttons">
-                        <button id="theme-changer" class="button is-ghost has-text-warning">
+                        <button id="theme-toggle-btn" class="button">
                             <span class="icon">
-                                <i class="pi pi-sun"></i>
+                                <i id="theme-icon" class="pi pi-sun"></i>
                             </span>
                         </button>
                         <a href="/logout" class="button">
