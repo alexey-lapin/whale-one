@@ -1,11 +1,13 @@
 @import com.github.alexeylapin.whaleone.domain.model.Equipment
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
-@import java.util.List
+@import com.github.alexeylapin.whaleone.domain.repo.Page
+@import java.time.format.DateTimeFormatter
 @import java.util.Map
 @import org.springframework.boot.info.BuildProperties
 
-@param List<Equipment> equipmentList
-@param Map<Integer, EquipmentType> equipmentTypes
+@param Page<Equipment> equipmentList
+@param Map<Long, EquipmentType> equipmentTypes
+@param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
 @template.layout.bulma(buildProperties = buildProperties, content = @`
@@ -28,15 +30,17 @@
     <table class="table is-hoverable is-fullwidth is-hidden-mobile">
         <thead>
         <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Assigned For</th>
-            <th>Actions</th>
+            <th style="width: 5%">Id</th>
+            <th style="width: 25%">Name</th>
+            <th style="width: 25%">Type</th>
+            <th style="width: 10%">Assigned For</th>
+            <th style="width: 15%">Created At</th>
+            <th style="width: 15%">Created By</th>
+            <th style="width: 5%">Actions</th>
         </tr>
         </thead>
         <tbody>
-        @for (Equipment equipment : equipmentList)
+        @for (Equipment equipment : equipmentList.getContent())
             <tr>
                 <td>${equipment.id()}</td>
                 <td>${equipment.name()}</td>
@@ -57,6 +61,8 @@
                         </div>
                     @endif
                 </td>
+                <td>${dateTimeFormatter.format(equipment.createdAt())}</td>
+                <td>${equipment.createdBy()}</td>
                 <td>
                     <a href="/equipment/${equipment.id()}" class="button is-small">edit</a>
                 </td>
@@ -64,8 +70,8 @@
         @endfor
         </tbody>
     </table>
-    <div class="is-hidden-tablet mt-3">
-        @for (Equipment equipment : equipmentList)
+    <div class="is-hidden-tablet my-3">
+        @for (Equipment equipment : equipmentList.getContent())
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title"># ${equipment.id()} ${equipment.name()}</p>
@@ -83,9 +89,12 @@
                         @if(equipment.deploymentId() != null)
                             <p>Assigned For: <b># ${equipment.deploymentId()}</b></p>
                         @endif
+                        <p>Created At: <b>${dateTimeFormatter.format(equipment.createdAt())}</b></p>
+                        <p>Created By: <b>${equipment.createdBy()}</b></p>
                     </div>
                 </div>
             </div>
         @endfor
     </div>
+    @template.partials.pagination(page = equipmentList, pageUrl = "/equipment?page=")
 `)

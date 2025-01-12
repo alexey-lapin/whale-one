@@ -1,20 +1,12 @@
-@import com.github.alexeylapin.whaleone.domain.model.Equipment
 @import org.springframework.boot.info.BuildProperties
 
 @param BuildProperties buildProperties
 
 @template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/equipment/types/new" method="post">
-        <div class="field" style="display: none">
-            <label class="label">Id</label>
-            <div class="control">
-                <input class="input"
-                       type="text"
-                       name="id"
-                       value="0"
-                >
-            </div>
-        </div>
+        <input type="hidden" name="id" value="0">
+        <input type="hidden" name="version" value="0">
+        <input type="hidden" name="createdById" value="1">
         <div class="field">
             <label class="label">Name</label>
             <div class="control">

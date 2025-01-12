@@ -1,22 +1,61 @@
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute
-@import gg.jte.support.ForSupport
+@import java.time.format.DateTimeFormatter
 @import org.springframework.boot.info.BuildProperties
 
 @param EquipmentType equipmentType
+@param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
 @template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/equipment/types/${equipmentType.id()}" method="post">
-        <div class="field">
-            <label class="label">Id</label>
-            <div class="control">
-                <input class="input"
-                       type="text"
-                       name="id"
-                       value="${equipmentType.id()}"
-                       disabled
-                >
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label">Id</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="id"
+                               value="${equipmentType.id()}"
+                               disabled
+                        >
+                        <input type="hidden"
+                               name="version"
+                               value="${equipmentType.version()}"
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">Created At</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="createdAt"
+                               value="${dateTimeFormatter.format(equipmentType.createdAt())}"
+                               disabled
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">Created By</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="createdBy"
+                               value="${equipmentType.createdBy()}"
+                               disabled
+                        >
+                        <input type="hidden"
+                               name="createdById"
+                               value="${equipmentType.createdById()}"
+                        >
+                    </div>
+                </div>
             </div>
         </div>
         <div class="field">

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JdbcDeploymentWithUserNameEntity extends JdbcDeploymentEntity {
+public class EquipmentWithUserNameEntity extends EquipmentEntity {
 
     private String createdByName;
 

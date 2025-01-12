@@ -1,23 +1,63 @@
 @import com.github.alexeylapin.whaleone.domain.model.Equipment
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
+@import java.time.format.DateTimeFormatter
 @import java.util.Map
 @import org.springframework.boot.info.BuildProperties
 
 @param Equipment equipment
 @param Map<Integer, EquipmentType> equipmentTypes
+@param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
 @template.layout.bulma(buildProperties = buildProperties, content = @`
     <form action="/equipment/${equipment.id()}" method="post">
-        <div class="field">
-            <label class="label">Id</label>
-            <div class="control">
-                <input class="input"
-                       type="text"
-                       name="id"
-                       value="${equipment.id()}"
-                       disabled
-                >
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label">Id</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="id"
+                               value="${equipment.id()}"
+                               disabled
+                        >
+                        <input type="hidden"
+                               name="version"
+                               value="${equipment.version()}"
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">Created At</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="createdAt"
+                               value="${dateTimeFormatter.format(equipment.createdAt())}"
+                               disabled
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">Created By</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="createdBy"
+                               value="${equipment.createdBy()}"
+                               disabled
+                        >
+                        <input type="hidden"
+                               name="createdById"
+                               value="${equipment.createdById()}"
+                        >
+                    </div>
+                </div>
             </div>
         </div>
         <div class="field">

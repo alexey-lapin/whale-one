@@ -1,9 +1,9 @@
 @import com.github.alexeylapin.whaleone.domain.model.Deployment
-@import java.util.List
+@import com.github.alexeylapin.whaleone.domain.repo.Page
 @import java.time.format.DateTimeFormatter
 @import org.springframework.boot.info.BuildProperties
 
-@param List<Deployment> deployments
+@param Page<Deployment> deployments
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
@@ -17,17 +17,17 @@
     <table class="table is-hoverable is-fullwidth is-hidden-mobile">
         <thead>
         <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Created By</th>
-            <th>Actions</th>
+            <th style="width: 5%">Id</th>
+            <th style="width: 25%">Name</th>
+            <th style="width: 25%">Description</th>
+            <th style="width: 10%">Status</th>
+            <th style="width: 15%">Created At</th>
+            <th style="width: 15%">Created By</th>
+            <th style="width: 5%">Actions</th>
         </tr>
         </thead>
         <tbody>
-        @for (Deployment deployment : deployments)
+        @for (Deployment deployment : deployments.getContent())
             <tr>
                 <td>${deployment.id()}</td>
                 <td>${deployment.name()}</td>
@@ -42,8 +42,8 @@
         @endfor
         </tbody>
     </table>
-    <div class="is-hidden-tablet mt-3">
-        @for (Deployment deployment : deployments)
+    <div class="is-hidden-tablet my-3">
+        @for (Deployment deployment : deployments.getContent())
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title"># ${deployment.id()} ${deployment.name()}</p>
@@ -66,4 +66,5 @@
             </div>
         @endfor
     </div>
+    @template.partials.pagination(page = deployments, pageUrl = "/deployments?page=")
 `)

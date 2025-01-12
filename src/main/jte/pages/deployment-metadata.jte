@@ -15,8 +15,8 @@
         <%--                <div class="select">--%>
         <%--                    <select name="type">--%>
         <%--                        <option></option>--%>
-        <%--                        @for(var equipment : equipmentTypes)--%>
-        <%--                            <option value="${equipment.deploymentId()}">${equipment.name()}</option>--%>
+        <%--                        @for(var user : equipmentTypes)--%>
+        <%--                            <option value="${user.deploymentId()}">${user.name()}</option>--%>
         <%--                        @endfor--%>
         <%--                    </select>--%>
         <%--                </div>--%>

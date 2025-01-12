@@ -8,7 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.Set;
 
 @Table("tbl_user")
-public record JdbcUserEntity(
+public record UserEntity(
         @Id
         long id,
         @Version
@@ -17,6 +17,6 @@ public record JdbcUserEntity(
         String password,
         boolean enabled,
         @MappedCollection(idColumn = "user_id")
-        Set<JdbcUserAuthorityEntity> authorities
+        Set<UserAuthorityEntity> authorities
 ) {
 }

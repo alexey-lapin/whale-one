@@ -43,6 +43,10 @@
                                value="${deployment.id()}"
                                disabled
                         >
+                        <input type="hidden"
+                               name="version"
+                               value="${deployment.version()}"
+                        >
                     </div>
                 </div>
             </div>
@@ -69,12 +73,7 @@
                                value="${deployment.createdBy()}"
                                disabled
                         >
-                    </div>
-                </div>
-                <div class="field is-hidden">
-                    <div class="control">
-                        <input class="input"
-                               type="text"
+                        <input type="hidden"
                                name="createdById"
                                value="${deployment.createdById()}"
                         >

@@ -7,10 +7,10 @@ import java.util.Optional;
 
 public interface EquipmentTypeRepository {
 
-    List<EquipmentType> findAll();
-
-    Optional<EquipmentType> findById(int id);
-
     EquipmentType save(EquipmentType equipmentType);
+
+    Optional<EquipmentType> findById(long id);
+
+    Page<EquipmentType> findAll(int page, int size);
 
 }

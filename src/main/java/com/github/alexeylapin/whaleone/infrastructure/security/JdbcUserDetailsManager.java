@@ -1,6 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.security;
 
-import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.JdbcUserEntity;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.UserEntity;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.UserJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,7 +45,7 @@ public class JdbcUserDetailsManager implements UserDetailsManager {
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    private static IdUser getIdUser(JdbcUserEntity it) {
+    private static IdUser getIdUser(UserEntity it) {
         return new IdUser(it.id(),
                 it.username(),
                 it.password(),

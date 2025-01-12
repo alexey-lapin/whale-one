@@ -7,10 +7,10 @@ import org.springframework.data.repository.ListCrudRepository;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface UserJdbcRepository extends ListCrudRepository<JdbcUserEntity, Long> {
+public interface UserJdbcRepository extends ListCrudRepository<UserEntity, Long> {
 
-    Optional<JdbcUserEntity> findByUsername(String username);
+    Optional<UserEntity> findByUsername(String username);
 
-    Page<JdbcUserEntity> findAllByUsernameNotIn(Collection<String> usernames, Pageable pageable);
+    Page<UserEntity> findAllByUsernameNotIn(Collection<String> usernames, Pageable pageable);
 
 }

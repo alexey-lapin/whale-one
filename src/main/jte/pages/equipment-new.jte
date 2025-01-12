@@ -21,6 +21,11 @@
                 </div>
             </div>
         </div>
+        <div class="field is-hidden">
+            <div class="control">
+                <input class="input" type="hidden" name="version" value="0">
+            </div>
+        </div>
         <div class="field">
             <label class="label">Name</label>
             <div class="control">

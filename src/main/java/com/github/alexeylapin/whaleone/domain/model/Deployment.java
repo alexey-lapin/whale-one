@@ -8,14 +8,15 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 public record Deployment(
         long id,
+        int version,
+        ZonedDateTime createdAt,
+        long createdById,
+        String createdBy,
         String name,
         String description,
         DeploymentStatus status,
         Long jobId,
-        Long siteId,
-        ZonedDateTime createdAt,
-        String createdBy,
-        long createdById
+        Long siteId
 ) {
 
     public Optional<Long> getJobId() {

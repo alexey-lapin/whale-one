@@ -27,7 +27,7 @@ public class DeploymentMetadataJdbcRepositoryAdapter implements DeploymentMetada
         return map(delegate.save(map(deploymentMetadata)));
     }
 
-    private DeploymentMetadata map(JdbcDeploymentMetadataEntity entity) {
+    private DeploymentMetadata map(DeploymentMetadataEntity entity) {
         return new DeploymentMetadata(
                 entity.deploymentId(),
                 entity.version(),
@@ -44,8 +44,8 @@ public class DeploymentMetadataJdbcRepositoryAdapter implements DeploymentMetada
         );
     }
 
-    private JdbcDeploymentMetadataEntity map(DeploymentMetadata deploymentMetadata) {
-        return new JdbcDeploymentMetadataEntity(
+    private DeploymentMetadataEntity map(DeploymentMetadata deploymentMetadata) {
+        return new DeploymentMetadataEntity(
                 deploymentMetadata.id(),
                 deploymentMetadata.version(),
                 deploymentMetadata.latitude(),

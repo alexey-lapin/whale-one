@@ -13,17 +13,16 @@
         <%--                <div class="select">--%>
         <%--                    <select name="type">--%>
         <%--                        <option></option>--%>
-        <%--                        @for(var equipment : equipmentTypes)--%>
-        <%--                            <option value="${equipment.deploymentId()}">${equipment.name()}</option>--%>
+        <%--                        @for(var user : equipmentTypes)--%>
+        <%--                            <option value="${user.deploymentId()}">${user.name()}</option>--%>
         <%--                        @endfor--%>
         <%--                    </select>--%>
         <%--                </div>--%>
         <%--            </div>--%>
         <%--        </div>--%>
-        <div class="field" hidden>
-            <label class="label">Id</label>
+        <div class="field is-hidden">
             <div class="control">
-                <input class="input" type="text" name="id" value="0">
+                <input class="input" type="hidden" name="id" value="0">
             </div>
         </div>
         <div class="field">

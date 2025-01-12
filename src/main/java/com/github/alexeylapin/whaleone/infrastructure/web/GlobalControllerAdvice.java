@@ -2,7 +2,6 @@ package com.github.alexeylapin.whaleone.infrastructure.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;

@@ -7,16 +7,11 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
-@Table(value = "equipment")
-public class JdbcEquipmentEntity {
+@Table(value = "equipment_type_attribute")
+public class EquipmentTypeAttributeEntity {
 
     @Id
     private long id;
-
     private String name;
-
-    private int type;
-
-    private Long deploymentId;
 
 }

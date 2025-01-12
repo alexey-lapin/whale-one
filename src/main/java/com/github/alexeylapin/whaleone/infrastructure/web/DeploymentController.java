@@ -25,10 +25,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,9 +45,10 @@ public class DeploymentController {
     private final EquipmentRepository equipmentRepository;
 
     @GetMapping("/deployments")
-    public String deployments(Model model) {
-        List<Deployment> deployments = new ArrayList<>(deploymentRepository.findAll());
-        deployments.sort((a, b) -> Long.compare(b.id(), a.id()));
+    public String deployments(@RequestParam(value = "page", defaultValue = "0") int page,
+                              @RequestParam(value = "size", defaultValue = "10") int size,
+                              Model model) {
+        var deployments = deploymentRepository.findAll(page, size);
         model.addAttribute("deployments", deployments);
         return "pages/deployments";
     }
@@ -66,6 +68,8 @@ public class DeploymentController {
             return "pages/deployment-new";
         }
         Deployment deployment = Deployment.builder()
+                .id(0)
+                .version(0)
                 .name(newDeployment.name())
                 .description(newDeployment.description())
                 .status(DeploymentStatus.NEW)
@@ -85,7 +89,7 @@ public class DeploymentController {
         List<DeploymentEquipment> deploymentEquipmentList = deploymentEquipmentRepository.findAllByDeploymentId(id);
         model.addAttribute("deploymentEquipmentList", deploymentEquipmentList);
 
-        model.addAttribute("equipment", equipmentRepository.findAll().stream()
+        model.addAttribute("equipment", equipmentRepository.findAll(0, 100).getContent().stream()
                 .collect(Collectors.toMap(Equipment::id, Function.identity())));
 
         model.addAttribute("isEquipmentEditable", deployment.status() == DeploymentStatus.ASSIGN);
@@ -99,11 +103,14 @@ public class DeploymentController {
                                           @RequestParam(value = "status") Optional<DeploymentStatus> status,
                                           @ModelAttribute("deployment") Deployment formDeployment) {
         Deployment deployment = deploymentRepository.findById(id).orElseThrow();
+
         Deployment alteredDeployment = deployment.toBuilder()
+                .version(formDeployment.version())
                 .name(formDeployment.name())
                 .description(formDeployment.description())
                 .status(status.orElse(deployment.status()))
                 .build();
+
         deploymentRepository.save(alteredDeployment);
         if (alteredDeployment.status().isTerminal()) {
             equipmentRepository.findAllByDeploymentId(id).forEach(equipment -> {
@@ -114,6 +121,7 @@ public class DeploymentController {
                 }
             });
         }
+
         return "redirect:/deployments/" + id;
     }
 
@@ -144,10 +152,18 @@ public class DeploymentController {
 
         model.addAttribute("deployment", deployment);
         model.addAttribute("deploymentEquipmentList", deploymentEquipmentRepository.findAllByDeploymentId(id));
-        model.addAttribute("equipmentMap", equipmentRepository.findAll().stream()
+        model.addAttribute("equipmentMap", equipmentRepository.findAll(0, 100).getContent().stream()
                 .collect(Collectors.toMap(Equipment::id, Function.identity())));
         model.addAttribute("isEquipmentEditable", deployment.status() == DeploymentStatus.ASSIGN);
         return "partials/deployment-equipment";
+    }
+
+    @PostMapping("/deployments/{id}/equipment/attrs")
+    public String attrs(@PathVariable long id,
+                        @RequestParam Map<String, Object> attrs,
+                        @RequestParam("file") MultipartFile file) {
+        System.out.println(attrs);
+        return "redirect:/deployments/" + id;
     }
 
     @GetMapping("/deployments/{id}/metadata")
