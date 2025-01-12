@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentAttribute;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
@@ -30,6 +33,15 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         entity.setName(equipment.name());
         entity.setType(equipment.type());
         entity.setDeploymentId(equipment.deploymentId());
+        entity.setAttributes(equipment.attributes().stream()
+                .map(attribute -> {
+                    EquipmentAttributeEntity attributeEntity = new EquipmentAttributeEntity();
+                    attributeEntity.setId(attribute.id());
+                    attributeEntity.setEquipmentTypeAttributeId(attribute.equipmentTypeAttributeId());
+                    attributeEntity.setValue(attribute.value());
+                    return attributeEntity;
+                })
+                .collect(Collectors.toSet()));
         entity = repository.save(entity);
         return map(entity).toBuilder()
                 .createdBy(equipment.createdBy())
@@ -72,6 +84,13 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
                 .name(entity.getName())
                 .type(entity.getType())
                 .deploymentId(entity.getDeploymentId())
+                .attributes(entity.getAttributes().stream()
+                        .map(attributeEntity -> EquipmentAttribute.builder()
+                                .id(attributeEntity.getId())
+                                .equipmentTypeAttributeId(attributeEntity.getEquipmentTypeAttributeId())
+                                .value(attributeEntity.getValue())
+                                .build())
+                        .collect(Collectors.toSet()))
                 .build();
     }
 

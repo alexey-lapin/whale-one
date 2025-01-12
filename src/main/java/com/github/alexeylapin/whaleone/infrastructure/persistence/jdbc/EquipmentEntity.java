@@ -4,9 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -23,5 +25,8 @@ public class EquipmentEntity {
     private String name;
     private long type;
     private Long deploymentId;
+
+    @MappedCollection(idColumn = "equipment_id")
+    private Set<EquipmentAttributeEntity> attributes;
 
 }

@@ -1,11 +1,15 @@
 @import com.github.alexeylapin.whaleone.domain.model.Equipment
+@import com.github.alexeylapin.whaleone.domain.model.EquipmentAttribute
 @import com.github.alexeylapin.whaleone.domain.model.EquipmentType
 @import java.time.format.DateTimeFormatter
 @import java.util.Map
+@import java.util.Optional
+@import gg.jte.support.ForSupport
 @import org.springframework.boot.info.BuildProperties
 
 @param Equipment equipment
-@param Map<Integer, EquipmentType> equipmentTypes
+@param EquipmentType equipmentType
+@param Map<Long, EquipmentAttribute> equipmentAttributeMap
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
@@ -67,7 +71,7 @@
                     <input class="input"
                            type="text"
                            name="type"
-                           value="${equipmentTypes.get(equipment.type()).name()}"
+                           value="${equipmentType.name()}"
                            disabled
                     >
                 </p>
@@ -122,15 +126,17 @@
             <div class="card-content mt-0">
                 <div class="content">
                     <p class="is-size-5">📋 Attributes</p>
-                    @for(var attribute : equipmentTypes.get(equipment.type()).attributes())
+                    @for(var typeAttribute : ForSupport.of(equipmentType.attributes()))
+                        <input type="hidden" name="attributes[${typeAttribute.getIndex()}].id" value="0">
+                        <input type="hidden" name="attributes[${typeAttribute.getIndex()}].equipmentTypeAttributeId" value="${typeAttribute.get().id()}">
                         <div class="field">
-                            <label class="label">${attribute.name()}</label>
+                            <label class="label">${typeAttribute.get().name()}</label>
                             <div class="control">
                                 <input class="input"
                                        type="text"
-                                       name="attributes[${attribute.name()}]"
+                                       name="attributes[${typeAttribute.getIndex()}].value"
                                        placeholder="Value"
-                                       value=""
+                                       value="${Optional.ofNullable(equipmentAttributeMap.get(typeAttribute.get().id())).map(i -> i.value()).orElse(null)}"
                                 >
                             </div>
                         </div>
@@ -138,7 +144,6 @@
                 </div>
             </div>
         </div>
-
         <div class="field is-grouped">
             <div class="control">
                 <button class="button is-link">Save</button>

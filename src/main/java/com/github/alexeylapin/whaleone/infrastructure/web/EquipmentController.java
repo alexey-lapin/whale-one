@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.web;
 
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentAttribute;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentType;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -59,15 +61,24 @@ public class EquipmentController {
                 user.getUsername(),
                 equipmentForm.name(),
                 equipmentForm.type(),
-                null);
+                null,
+                Set.of());
         equipmentRepository.save(equipment);
         return "redirect:/equipment";
     }
 
     @GetMapping("/equipment/{id}")
     public String equipmentUpdate(@PathVariable("id") long id, Model model) {
-        model.addAttribute("equipment", equipmentRepository.findById(id).orElseThrow());
-        model.addAttribute("equipmentTypes", getTypeMap());
+        Equipment equipment = equipmentRepository.findById(id).orElseThrow();
+        model.addAttribute("equipment", equipment);
+
+        Map<Long, EquipmentAttribute> attributeMap = equipment.attributes().stream()
+                .collect(Collectors.toMap(EquipmentAttribute::equipmentTypeAttributeId, Function.identity()));
+        model.addAttribute("equipmentAttributeMap", attributeMap);
+
+        EquipmentType equipmentType = equipmentTypeRepository.findById(equipment.type()).orElseThrow();
+        model.addAttribute("equipmentType", equipmentType);
+
         return "pages/equipment-update";
     }
 
@@ -78,6 +89,9 @@ public class EquipmentController {
         Equipment alteredEquipment = equipment.toBuilder()
                 .version(equipmentForm.version())
                 .name(equipmentForm.name())
+                .attributes(Set.copyOf(equipmentForm.attributes().stream()
+                        .filter(it -> it.value() != null)
+                        .toList()))
                 .build();
         equipmentRepository.save(alteredEquipment);
         return "redirect:/equipment";
@@ -178,7 +192,8 @@ public class EquipmentController {
     public record EquipmentForm(
             int version,
             String name,
-            Integer type
+            Integer type,
+            List<EquipmentAttribute> attributes
     ) {
     }
 
