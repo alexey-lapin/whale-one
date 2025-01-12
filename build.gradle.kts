@@ -25,6 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.session:spring-session-jdbc")
 
     implementation("gg.jte:jte:3.1.15")
     implementation("gg.jte:jte-native-resources:3.1.15")
