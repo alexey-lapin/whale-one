@@ -2,7 +2,7 @@
 
 @param BuildProperties buildProperties
 
-@template.layout.bulma(buildProperties = buildProperties, content = @`
+@template.layout.bulma-container(buildProperties = buildProperties, content = @`
     <form action="/equipment/types/new" method="post">
         <input type="hidden" name="id" value="0">
         <input type="hidden" name="version" value="0">

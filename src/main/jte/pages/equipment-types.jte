@@ -7,7 +7,7 @@
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
-@template.layout.bulma(buildProperties = buildProperties, content = @`
+@template.layout.bulma-container(buildProperties = buildProperties, content = @`
     <a href="/equipment/types/new" class="button">
         <span class="icon">
             <i class="pi pi-plus"></i>

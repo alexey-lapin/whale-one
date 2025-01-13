@@ -6,8 +6,10 @@ import java.util.Optional;
 
 public interface DeploymentMetadataRepository {
 
-    Optional<DeploymentMetadata> findById(long id);
-
     DeploymentMetadata save(DeploymentMetadata deploymentMetadata);
+
+    Page<DeploymentMetadata> findAll(int page, int size);
+
+    Optional<DeploymentMetadata> findById(long id);
 
 }

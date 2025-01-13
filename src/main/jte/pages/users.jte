@@ -5,7 +5,7 @@
 @param Page<User> users
 @param BuildProperties buildProperties
 
-@template.layout.bulma(buildProperties = buildProperties, content = @`
+@template.layout.bulma-container(buildProperties = buildProperties, content = @`
     <a href="/users/new" class="button">
             <span class="icon">
                 <i class="pi pi-plus"></i>

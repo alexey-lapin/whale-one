@@ -7,12 +7,18 @@
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
-@template.layout.bulma(buildProperties = buildProperties, content = @`
+@template.layout.bulma-container(buildProperties = buildProperties, content = @`
     <a href="/deployments/new" class="button">
             <span class="icon">
                 <i class="pi pi-plus"></i>
             </span>
         <span>New</span>
+    </a>
+    <a href="/deployments/map" class="button">
+            <span class="icon">
+                <i class="pi pi-map-marker"></i>
+            </span>
+        <span>Map</span>
     </a>
     <table class="table is-hoverable is-fullwidth is-hidden-mobile">
         <thead>

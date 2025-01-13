@@ -9,25 +9,25 @@ import java.util.List;
 @Repository
 public class DeploymentEquipmentJdbcRepositoryAdapter implements DeploymentEquipmentRepository {
 
-    private final DeploymentEquipmentJdbcRepository delegate;
+    private final DeploymentEquipmentJdbcRepository repository;
 
-    public DeploymentEquipmentJdbcRepositoryAdapter(DeploymentEquipmentJdbcRepository delegate) {
-        this.delegate = delegate;
+    public DeploymentEquipmentJdbcRepositoryAdapter(DeploymentEquipmentJdbcRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public List<DeploymentEquipment> findAllByDeploymentId(long deploymentId) {
-        return delegate.findAllByDeploymentId(deploymentId);
+        return repository.findAllByDeploymentId(deploymentId);
     }
 
     @Override
     public void save(DeploymentEquipment deploymentEquipment) {
-        delegate.save(deploymentEquipment.deploymentId(), deploymentEquipment.equipmentId());
+        repository.save(deploymentEquipment.deploymentId(), deploymentEquipment.equipmentId());
     }
 
     @Override
     public void delete(DeploymentEquipment deploymentEquipment) {
-        delegate.delete(deploymentEquipment.deploymentId(), deploymentEquipment.equipmentId());
+        repository.delete(deploymentEquipment.deploymentId(), deploymentEquipment.equipmentId());
     }
 
 }

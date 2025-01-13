@@ -7,7 +7,7 @@
 @param DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @param BuildProperties buildProperties
 
-@template.layout.bulma(buildProperties = buildProperties, content = @`
+@template.layout.bulma-container(buildProperties = buildProperties, content = @`
     <form action="/equipment/types/${equipmentType.id()}" method="post">
         <div class="columns">
             <div class="column">

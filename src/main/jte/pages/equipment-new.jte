@@ -6,7 +6,7 @@
 @param List<EquipmentType> equipmentTypes
 @param BuildProperties buildProperties
 
-@template.layout.bulma(buildProperties = buildProperties, content = @`
+@template.layout.bulma-container(buildProperties = buildProperties, content = @`
     <form action="/equipment/new" method="post">
         <div class="field">
             <label class="label">Type</label>

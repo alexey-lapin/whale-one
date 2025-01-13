@@ -2,6 +2,7 @@
 @import org.springframework.security.core.context.SecurityContextHolder
 
 @param BuildProperties buildProperties
+@param gg.jte.Content additionalHeadContent = null
 @param gg.jte.Content content
 
 <!doctype html>
@@ -20,6 +21,7 @@
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="https://unpkg.com/sortablejs@1.15.6/Sortable.min.js"></script>
     <script src="/htmx-sortable.js"></script>
+    ${additionalHeadContent}
 </head>
 <body>
 <nav class="navbar my-4" role="navigation" aria-label="main navigation">
@@ -44,7 +46,8 @@
                 <a class="navbar-item" href="/equipment">
                     Equipment
                 </a>
-                @if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN")))
+                @if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ADMIN")))
                     <a class="navbar-item" href="/users">
                         Users
                     </a>
@@ -67,11 +70,7 @@
         </div>
     </div>
 </nav>
-<main class="section pt-0">
-    <div class="container">
-        ${content}
-    </div>
-</main>
+${content}
 <footer class="py-1 is-hidden-mobile">
     <div class="content has-text-centered">
         <p class="has-text-grey-light">v${buildProperties.getVersion()}</p>
