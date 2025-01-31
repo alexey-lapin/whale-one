@@ -172,6 +172,41 @@ public class EquipmentController {
         return "partials/equipment-type-attributes";
     }
 
+    @GetMapping("/equipment/types/{equipmentTypeId}/attributes/{attributeId}")
+    public String att(
+            @PathVariable("equipmentTypeId") long equipmentTypeId,
+            @PathVariable("attributeId") long attributeId,
+            @RequestParam("editable") boolean editable,
+            Model model) {
+        EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
+        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
+                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
+
+        model.addAttribute("attribute", map.get(attributeId));
+        model.addAttribute("isEditable", editable);
+        return "partials/equipment-type-attribute";
+    }
+
+    @PostMapping("/equipment/types/{equipmentTypeId}/attributes/{attributeId}")
+    public String attSave(
+            @PathVariable("equipmentTypeId") long equipmentTypeId,
+            @PathVariable("attributeId") long attributeId,
+            @RequestParam("name") String name,
+            Model model) {
+        EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
+        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
+                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
+
+        equipmentType.attributes().clear();
+        EquipmentTypeAttribute attribute = map.get(attributeId).toBuilder().name(name).build();
+        map.put(attributeId, attribute);
+        equipmentType.attributes().addAll(map.values());
+
+        equipmentTypeRepository.save(equipmentType);
+        model.addAttribute("equipmentType", equipmentType);
+        return "redirect:/equipment/types/" + equipmentTypeId;
+    }
+
     @DeleteMapping("/equipment/types/{equipmentTypeId}/attributes/{attributeId}")
     public String equipmentTypeUpdateAttributeDelete(
             @PathVariable("equipmentTypeId") int equipmentTypeId,

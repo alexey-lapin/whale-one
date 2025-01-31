@@ -50,6 +50,17 @@
                     @endif
                 </div>
             @endfor
+            <div class="file">
+                <label class="file-label">
+                    <input class="file-input" type="file" name="resume"/>
+                    <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="pi pi-upload"></i>
+                        </span>
+                        <span class="file-label"> Choose a file… </span>
+                    </span>
+                </label>
+            </div>
             @if(isEquipmentEditable)
                 <form action="/deployments/${deployment.id()}/equipment" method="post" class="mt-2">
                     <div class="field is-grouped">
