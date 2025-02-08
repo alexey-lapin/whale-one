@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
 
-import type {MenuItem} from 'primevue/menuitem'
+import type { MenuItem } from 'primevue/menuitem'
 
 const items: MenuItem[] = [
   {
@@ -22,7 +23,7 @@ const items: MenuItem[] = [
 <template>
   <Menubar :model="items">
     <template #start>
-      <h1 class="text-xl">🐳 Whale One</h1>
+      <h1 class="text-3xl font-semibold">🐳 Whale One</h1>
     </template>
     <!--    <template #item="{ item, props, hasSubmenu, root }">-->
     <!--      <a v-ripple class="flex items-center" v-bind="props.action">-->
@@ -33,17 +34,22 @@ const items: MenuItem[] = [
     <!--      </a>-->
     <!--    </template>-->
     <template #item="{ item, props, hasSubmenu }">
-      <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" active-class="bg-red-400" exact-active-class="bg-red-400">
-        <a v-ripple :href="href" v-bind="props.action" @click="navigate">
-          <span :class="item.icon"/>
-          <span>{{ item.label }}</span>
-        </a>
+      <router-link v-if="item.route" v-slot="{ href, navigate, isActive }" :to="item.route" custom>
+        <!--        <a :href="href" v-bind="props.action" @click="navigate">-->
+        <!--          <span :class="item.icon"/>-->
+        <!--          <span>{{ item.label }}</span>-->
+        <Button :label="item.label as string"
+                size="small"
+                variant="text"
+                :class="`${isActive ? 'active': ''}`"
+                @click="navigate"></Button>
+        <!--        </a>-->
       </router-link>
-      <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-        <span :class="item.icon"/>
-        <span>{{ item.label }}</span>
-        <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down"/>
-      </a>
+      <!--      <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">-->
+      <!--        <span :class="item.icon"/>-->
+      <!--        <span>{{ item.label }}</span>-->
+      <!--        <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down"/>-->
+      <!--      </a>-->
     </template>
     <template #end>
       <!--      <div class="flex items-center gap-2">-->
@@ -53,3 +59,9 @@ const items: MenuItem[] = [
     </template>
   </Menubar>
 </template>
+
+<style scoped>
+.active {
+  background-color: var(--p-highlight-background);
+}
+</style>

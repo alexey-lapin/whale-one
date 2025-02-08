@@ -3,7 +3,7 @@ import TheNav from '@/components/TheNav.vue'
 </script>
 
 <template>
-  <TheNav />
+<!--  <TheNav />-->
   <div>
     <h1>EqView</h1>
   </div>
