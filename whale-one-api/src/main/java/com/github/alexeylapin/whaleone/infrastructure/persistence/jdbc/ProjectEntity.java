@@ -1,6 +1,5 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
-import com.github.alexeylapin.whaleone.domain.model.DeploymentStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -11,8 +10,8 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@Table(value = "deployment")
-public class DeploymentEntity {
+@Table(value = "project")
+public class ProjectEntity {
 
     @Id
     private long id;
@@ -21,10 +20,7 @@ public class DeploymentEntity {
     private Instant createdAt;
     private long createdById;
 
-    private long projectId;
-    private long siteId;
     private String name;
     private String description;
-    private DeploymentStatus status;
 
 }

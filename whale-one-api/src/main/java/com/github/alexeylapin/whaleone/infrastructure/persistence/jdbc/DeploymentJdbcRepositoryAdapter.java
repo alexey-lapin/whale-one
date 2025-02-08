@@ -26,6 +26,8 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         entity.setVersion(deployment.version());
         entity.setCreatedAt(deployment.createdAt().toInstant());
         entity.setCreatedById(deployment.createdById());
+        entity.setProjectId(deployment.projectId());
+        entity.setSiteId(deployment.siteId());
         entity.setName(deployment.name());
         entity.setDescription(deployment.description());
         entity.setStatus(deployment.status());
@@ -61,6 +63,8 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
                 .version(entity.getVersion())
                 .createdAt(entity.getCreatedAt().atZone(ZoneId.systemDefault()))
                 .createdById(entity.getCreatedById())
+                .projectId(entity.getProjectId())
+                .siteId(entity.getSiteId())
                 .name(entity.getName())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
