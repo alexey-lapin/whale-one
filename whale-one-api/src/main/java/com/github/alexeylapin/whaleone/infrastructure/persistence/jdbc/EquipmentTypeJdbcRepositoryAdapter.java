@@ -2,6 +2,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.EquipmentType;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +10,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,14 +31,14 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
         entity.setCreatedAt(equipmentType.createdAt().toInstant());
         entity.setCreatedById(equipmentType.createdById());
         entity.setName(equipmentType.name());
-        entity.setAttributes(equipmentType.attributes().stream()
-                .map(attribute -> {
-                    EquipmentTypeAttributeEntity attributeEntity = new EquipmentTypeAttributeEntity();
-                    attributeEntity.setId(attribute.id());
-                    attributeEntity.setName(attribute.name());
-                    return attributeEntity;
-                })
-                .toList());
+//        entity.setAttributes(equipmentType.attributes().stream()
+//                .map(attribute -> {
+//                    EquipmentTypeAttributeEntity attributeEntity = new EquipmentTypeAttributeEntity();
+//                    attributeEntity.setId(attribute.id());
+//                    attributeEntity.setName(attribute.name());
+//                    return attributeEntity;
+//                })
+//                .toList());
         entity = repository.save(entity);
         return map(entity).toBuilder()
                 .createdBy(equipmentType.createdBy())
@@ -57,6 +59,12 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
         return new DefaultPage<>(aPage.map(EquipmentTypeJdbcRepositoryAdapter::map));
     }
 
+    @Override
+    public List<EquipmentTypeItem> findAllItems(String nameQuery) {
+        var pageable = PageRequest.of(0, 50);
+        return repository.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
+    }
+
     private static EquipmentType map(EquipmentTypeWithUserNameEntity entity) {
         return map(((EquipmentTypeEntity) entity)).toBuilder()
                 .createdBy(entity.getCreatedByName())
@@ -70,12 +78,12 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
                 .createdAt(entity.getCreatedAt().atZone(ZoneId.systemDefault()))
                 .createdById(entity.getCreatedById())
                 .name(entity.getName())
-                .attributes(entity.getAttributes().stream()
-                        .map(attributeEntity -> EquipmentTypeAttribute.builder()
-                                .id(attributeEntity.getId())
-                                .name(attributeEntity.getName())
-                                .build())
-                        .collect(Collectors.toList()))
+//                .attributes(entity.getAttributes().stream()
+//                        .map(attributeEntity -> EquipmentTypeAttribute.builder()
+//                                .id(attributeEntity.getId())
+//                                .name(attributeEntity.getName())
+//                                .build())
+//                        .collect(Collectors.toList()))
                 .build();
     }
 

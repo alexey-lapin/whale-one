@@ -1,20 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
-import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 
-import type ProjectSite from '@/model/ProjectSiteI.ts'
-import { ref } from 'vue'
+import type ProjectSiteModel from '@/model/ProjectSiteModel.ts'
+import { invokeSiteCreateOrUpdate, invokeSiteDelete } from '@/client/projectsiteapi.ts'
+import { deleteConfirm } from '@/utils/confirms'
 
 const toast = useToast()
 const confirm = useConfirm()
 
-const model = defineModel<ProjectSite>({ required: true })
+const model = defineModel<ProjectSiteModel>({ required: true })
 const { editable = false } = defineProps<{
   editable?: boolean
 }>()
@@ -22,117 +25,27 @@ const emits = defineEmits(['site-updated', 'site-deleted'])
 
 const editableState = ref(editable)
 
-const createSite = () => {
-  fetch(`/api/projects/${model.value.projectId}/sites`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(model.value)
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error('Failed to create site')
-      }
-    })
-    .then(data => {
-      editableState.value = false
-      toast.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Site #${model.value.id} ${model.value.name} created`,
-        life: 3000
-      })
-      emits('site-updated', data)
-    })
-    .catch(error => {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message,
-        life: 3000
-      })
-      console.error(error)
-    })
-    .finally(() => {
-
-    })
-}
-
-const updateSite = () => {
-  fetch(`/api/projects/${model.value.projectId}/sites/${model.value.id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(model.value)
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error('Failed to update site')
-      }
-    })
-    .then(data => {
-      editableState.value = false
-      toast.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Site #${model.value.id} ${model.value.name} updated`,
-        life: 3000
-      })
-      emits('site-updated', data)
-    })
-    .catch(error => {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message,
-        life: 3000
-      })
-      console.error(error)
-    })
-    .finally(() => {
-
-    })
-}
-
 const createOrUpdateSite = () => {
-  model.value.id > 0 ? updateSite() : createSite()
+  invokeSiteCreateOrUpdate(model.value, toast)
+    .then(data => {
+      editableState.value = false
+      emits('site-updated', data)
+    })
+  // .catch(error => {
+  //   toast.add(errorToast(error.message))
+  //   console.error(error)
+  // })
 }
 
 const deleteSite = () => {
-  fetch(`/api/projects/${model.value.projectId}/sites/${model.value.id}`, {
-    method: 'DELETE'
-  })
-    .then(response => {
-      if (response.ok) {
-        return
-      } else {
-        throw new Error('Failed to delete site')
-      }
-    })
-    .then(data => {
-      toast.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Site #${model.value.id} ${model.value.name} deleted`,
-        life: 3000
-      })
+  invokeSiteDelete(model.value, toast)
+    .then(() => {
       emits('site-deleted', model.value.id)
     })
-    .catch(error => {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message,
-        life: 3000
-      })
-      console.error(error)
-    })
+  // .catch(error => {
+  //   toast.add(errorToast(error.message))
+  //   console.error(error)
+  // })
 }
 
 const confirmDelete = () => {
@@ -140,24 +53,10 @@ const confirmDelete = () => {
     emits('site-deleted', model.value.id)
     return
   }
-  confirm.require({
-    message: `Delete site #${model.value.id} ${model.value.name}?`,
-    header: 'Confirmation',
-    icon: 'pi pi-info-circle',
-    rejectLabel: 'Cancel',
-    rejectProps: {
-      label: 'Cancel',
-      severity: 'secondary',
-      outlined: true
-    },
-    acceptProps: {
-      label: 'Delete',
-      severity: 'danger'
-    },
-    accept: () => {
-      deleteSite()
-    }
-  })
+  confirm.require(deleteConfirm(
+    `Delete site #${model.value.id} ${model.value.name}?`,
+    () => deleteSite()
+  ))
 }
 </script>
 

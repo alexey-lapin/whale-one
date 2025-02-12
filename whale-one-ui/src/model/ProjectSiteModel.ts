@@ -1,4 +1,4 @@
-export default interface ProjectSiteI {
+export default interface ProjectSiteModel {
   id: number;
   projectId: number;
   name: string;

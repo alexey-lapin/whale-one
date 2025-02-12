@@ -2,6 +2,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.MappedCollection;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@ToString
 @Table(value = "equipment")
 public class EquipmentEntity {
 

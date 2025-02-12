@@ -5,7 +5,11 @@ import lombok.Builder;
 @Builder(toBuilder = true)
 public record EquipmentTypeAttribute(
         long id,
-        String name
+        int version,
+        long equipmentTypeId,
+        String name,
+        String description,
+        String type,
+        String metadata
 ) {
-
 }

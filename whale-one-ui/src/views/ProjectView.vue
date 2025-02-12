@@ -9,11 +9,12 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import Textarea from 'primevue/textarea'
 
-import TheNav from '@/components/TheNav.vue'
 import { useToast } from 'primevue/usetoast'
-import type ProjectSiteI from '@/model/ProjectSiteI'
+import type ProjectSiteModel from '@/model/ProjectSiteModel.ts'
 import ProjectSite from '@/components/ProjectSite.vue'
 import dayjs from 'dayjs'
+
+import { errorToast, successToast } from '@/utils/toasts'
 
 const toast = useToast()
 
@@ -30,8 +31,8 @@ const project = ref({
   description: null
 })
 
-const sites: Ref<ProjectSiteI[]> = ref([])
-const newSite: Ref<ProjectSiteI> = ref({
+const sites: Ref<ProjectSiteModel[]> = ref([])
+const newSite: Ref<ProjectSiteModel> = ref({
   id: 0,
   projectId: props.id,
   name: '',
@@ -75,20 +76,10 @@ const updateProject = () => {
     })
     .then(data => {
       project.value = data
-      toast.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Project #${data.id} ${data.name} updated`,
-        life: 3000
-      })
+      toast.add(successToast(`Project #${data.id} ${data.name} updated`))
     })
     .catch(error => {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message,
-        life: 3000
-      })
+      toast.add(errorToast(error.message))
       console.error(error)
     })
     .finally(() => {
@@ -105,44 +96,6 @@ const onSiteDeleted = () => {
   addingNewSite.value = false
 }
 
-// const addSite = () => {
-//   fetch(`/api/projects/${props.id}/sites`, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify(newSite.value)
-//   })
-//     .then(response => {
-//       if (response.ok) {
-//         return response.json()
-//       } else {
-//         throw new Error('Failed to add site')
-//       }
-//     })
-//     .then(data => {
-//       sites.value.push(data)
-//       toast.add({
-//         severity: 'success',
-//         summary: 'Success',
-//         detail: `Site #${data.id} ${data.name} added`,
-//         life: 3000
-//       })
-//     })
-//     .catch(error => {
-//       toast.add({
-//         severity: 'error',
-//         summary: 'Error',
-//         detail: error.message,
-//         life: 3000
-//       })
-//       console.error(error)
-//     })
-//     .finally(() => {
-//       addingNewSite.value = false
-//     })
-// }
-
 onMounted(() => {
   getProject()
   getSites()
@@ -150,7 +103,6 @@ onMounted(() => {
 </script>
 
 <template>
-<!--  <TheNav />-->
   <div class="mt-5">
     <h1 class="text-xl">Project</h1>
     <div class="flex flex-col gap-5 my-4">
@@ -191,7 +143,8 @@ onMounted(() => {
             <label for="1name">Description</label>
           </FloatLabel>
         </div>
-        <Button label="Save" icon="pi pi-save" class="mt-4" :loading="loading" @click="updateProject()" />
+        <Button label="Save" icon="pi pi-save" class="mt-4" :loading="loading"
+                @click="updateProject()" />
       </Panel>
 
       <Panel header="Sites" toggleable>
@@ -202,14 +155,11 @@ onMounted(() => {
                        @site-deleted="getSites()" />
 
 
-
           <ProjectSite v-if="addingNewSite"
                        v-model="newSite"
                        :editable="true"
                        @site-updated="onSiteUpdated()"
                        @site-deleted="onSiteDeleted()" />
-<!--          <Button v-if="addingNewSite" label="Add"-->
-<!--                  @click="addSite()" />-->
         </div>
         <Button v-if="!addingNewSite"
                 class="mt-3"

@@ -2,6 +2,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentAttribute;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +64,14 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     }
 
     @Override
+    public Page<EquipmentListElement> findAllElements(int page, int size, String name, Long typeId) {
+        var pageable = PageRequest.of(page, size);
+        var items = repository.findAllElements(pageable.getPageSize(), pageable.getOffset(), name, typeId);
+        var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
+        return new DefaultPage<>(aPage.map(EquipmentJdbcRepositoryAdapter::map));
+    }
+
+    @Override
     public List<Equipment> findAllByDeploymentId(long id) {
         return repository.findAllByDeploymentId(id).stream()
                 .map(EquipmentJdbcRepositoryAdapter::map)
@@ -91,6 +100,18 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
                                 .value(attributeEntity.getValue())
                                 .build())
                         .collect(Collectors.toSet()))
+                .build();
+    }
+
+    private static EquipmentListElement map(EquipmentListElement source) {
+        return EquipmentListElement.builder()
+                .id(source.id())
+                .version(source.version())
+                .createdAt(source.createdAt())
+                .createdBy(source.createdBy())
+                .createdById(source.createdById())
+                .name(source.name())
+                .type(source.type())
                 .build();
     }
 

@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
     compileOnly("org.projectlombok:lombok")
 
     jteGenerate("gg.jte:jte-native-resources:3.1.15")
@@ -22,7 +24,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.session:spring-session-jdbc")
+//    implementation("org.springframework.session:spring-session-jdbc")
+
+    implementation("org.mapstruct:mapstruct:1.6.3")
 
     implementation("gg.jte:jte:3.1.15")
     implementation("gg.jte:jte-native-resources:3.1.15")
@@ -32,7 +36,7 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.postgresql:postgresql")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

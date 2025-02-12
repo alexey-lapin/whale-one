@@ -24,7 +24,4 @@ public class EquipmentTypeEntity {
 
     private String name;
 
-    @MappedCollection(idColumn = "equipment_type_id", keyColumn = "order")
-    private List<EquipmentTypeAttributeEntity> attributes;
-
 }

@@ -2,6 +2,7 @@ package com.github.alexeylapin.whaleone.domain.repo;
 
 
 import java.util.List;
+import java.util.function.Function;
 
 public interface Page<T> {
 
@@ -22,5 +23,7 @@ public interface Page<T> {
     int getTotalPages();
 
     long getTotalElements();
+
+    <U> Page<U> map(Function<T, U> mapper);
 
 }

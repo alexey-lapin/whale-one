@@ -14,12 +14,11 @@ public record EquipmentType(
         long createdById,
         String createdBy,
 
-        String name,
-        List<EquipmentTypeAttribute> attributes
+        String name
 ) {
-//    public EquipmentType(long id, String name, List<EquipmentTypeAttribute> attributes) {
-//        this.id = id;
-//        this.name = name;
-//        this.attributes = attributes == null ? new ArrayList<>() : attributes;
-//    }
+
+    public List<EquipmentTypeAttribute> attributes() {
+        return List.of();
+    }
+
 }

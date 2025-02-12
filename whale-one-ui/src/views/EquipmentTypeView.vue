@@ -2,16 +2,18 @@
 import dayjs from 'dayjs'
 import InputNumber from 'primevue/inputnumber'
 import FloatLabel from 'primevue/floatlabel'
+import Textarea from 'primevue/textarea'
 import Fluid from 'primevue/fluid'
 import Panel from 'primevue/panel'
 import Button from 'primevue/button'
-import EquipmentAttribute from '@/components/EquipmentAttribute.vue'
 import InputText from 'primevue/inputtext'
+
+import { errorToast, successToast } from '@/utils/toasts'
 import { useToast } from 'primevue/usetoast'
-import { onMounted, ref, type Ref } from 'vue'
+import { onMounted, type Ref, ref } from 'vue'
+import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
-import { errorToast, successToast } from '@/utils/toasts.ts'
-import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
+import EquipmentTypeAttribute from '@/components/EquipmentTypeAttribute.vue'
 
 const toast = useToast()
 
@@ -19,44 +21,46 @@ const props = defineProps<{
   id: number
 }>()
 
-const model: Ref<EquipmentModel> = ref({
+const model: Ref<EquipmentTypeModel> = ref({
   id: 0,
   version: 0,
-  createdAt: '',
-  createdBy: '',
-  name: '',
-  type: -1,
-  attributes: [] as EquipmentAttributeModel[]
+  createdAt: "",
+  createdBy: "",
+  name: "",
+  equipmentTypeId: -1,
 })
 
-const equipmentTypeAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
+const attributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
+const newAttribute: Ref<EquipmentTypeAttributeModel> = ref({
+  id: 0,
+  equipmentTypeId: props.id,
+  version: 0,
+  name: "",
+  description: "",
+  type: "text",
+  metadata: undefined,
+})
 
 const loading = ref(false)
+const addingNewAttribute = ref(false)
 
-const getEquipment = () => {
-  return fetch(`/api/equipment/${props.id}`)
+const getEquipmentType = () => {
+  return fetch(`/api/equipment/types/${props.id}`)
     .then(response => response.json())
     .then(data => model.value = data)
     .catch(error => console.error(error))
 }
 
 const getAttributes = () => {
-  return fetch(`/api/equipment/types/${model.value.type}/attributes`)
+  return fetch(`/api/equipment/types/${props.id}/attributes`)
     .then(response => response.json())
-    .then(data => equipmentTypeAttributes.value = data)
-    .then(() => {
-      model.value.attributes = equipmentTypeAttributes.value.map(attribute => ({
-        id: 0,
-        equipmentTypeAttributeId: attribute.id,
-        value: model.value.attributes.find(a => a.equipmentTypeAttributeId === attribute.id)?.value ?? ''
-      }))
-    })
+    .then(data => attributes.value = data)
     .catch(error => console.error(error))
 }
 
-const updateEquipment = () => {
+const updateEquipmentType = () => {
   loading.value = true
-  fetch(`/api/equipment/${props.id}`, {
+  fetch(`/api/equipment/types/${props.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
@@ -67,12 +71,12 @@ const updateEquipment = () => {
       if (response.ok) {
         return response.json()
       } else {
-        throw new Error('Failed to update equipment')
+        throw new Error('Failed to update project')
       }
     })
     .then(data => {
       model.value = data
-      toast.add(successToast(`Equipment #${data.id} ${data.name} updated`))
+      toast.add(successToast(`Project #${data.id} ${data.name} updated`))
     })
     .catch(error => {
       toast.add(errorToast(error.message))
@@ -83,15 +87,24 @@ const updateEquipment = () => {
     })
 }
 
+const onAttributeUpdated = () => {
+  getAttributes()
+  addingNewAttribute.value = false
+}
+
+const onAttributeDeleted = () => {
+  addingNewAttribute.value = false
+}
+
 onMounted(() => {
-  getEquipment()
-    .then(() => getAttributes())
+  getEquipmentType()
+  getAttributes()
 })
 </script>
 
 <template>
   <div class="mt-5">
-    <h1 class="text-xl">Equipment</h1>
+    <h1 class="text-xl">Equipment Type</h1>
     <div class="flex flex-col gap-5 my-4">
       <Panel header="Id" toggleable collapsed>
         <Fluid>
@@ -125,28 +138,36 @@ onMounted(() => {
             <label for="name">Name</label>
           </FloatLabel>
 
-          <!--          <FloatLabel variant="on" class="w-full">-->
-          <!--            <Textarea class="w-full" v-model="project.description" />-->
-          <!--            <label for="1name">Description</label>-->
-          <!--          </FloatLabel>-->
-
-          <template v-if="model.attributes.length > 0" v-for="(attribute, index) in equipmentTypeAttributes">
-            <EquipmentAttribute v-model="model.attributes[index].value"
-                                :equipment-type-attribute="attribute" />
-          </template>
+<!--          <FloatLabel variant="on" class="w-full">-->
+<!--            <Textarea class="w-full" v-model="project.description" />-->
+<!--            <label for="1name">Description</label>-->
+<!--          </FloatLabel>-->
         </div>
         <Button label="Save" icon="pi pi-save" class="mt-4" :loading="loading"
-                @click="updateEquipment()" />
+                @click="updateEquipmentType()" />
       </Panel>
 
-<!--      <Panel header="Attributes" toggleable>-->
-<!--        <div class="mt-1 flex flex-col gap-3">-->
-<!--          <template v-if="model.attributes.length > 0" v-for="(attribute, index) in equipmentTypeAttributes">-->
-<!--            <EquipmentAttribute v-model="model.attributes[index].value"-->
-<!--                                :equipment-type-attribute="attribute" />-->
-<!--          </template>-->
-<!--        </div>-->
-<!--      </Panel>-->
+      <Panel header="Attributes" toggleable>
+        <div class="mt-1 flex flex-col gap-3">
+          <EquipmentTypeAttribute v-for="(attribute, index) in attributes"
+                       :key="attribute.id"
+                       :modelValue="attribute"
+                       @attribute-deleted="getAttributes()" />
+
+
+          <EquipmentTypeAttribute v-if="addingNewAttribute"
+                       v-model="newAttribute"
+                       :editable="true"
+                       @attribute-updated="onAttributeUpdated()"
+                       @attribute-deleted="onAttributeDeleted()" />
+        </div>
+        <Button v-if="!addingNewAttribute"
+                class="mt-3"
+                label="New"
+                severity="secondary"
+                icon="pi pi-plus"
+                @click="addingNewAttribute = true" />
+      </Panel>
     </div>
   </div>
 </template>

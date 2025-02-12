@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
-import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
 import { useToast } from 'primevue/usetoast'
+import { ref } from 'vue'
+import { errorToast, successToast } from '@/utils/toasts.ts'
 import router from '@/router'
-import { errorToast, successToast } from '@/utils/toasts'
 
 const toast = useToast()
 
@@ -22,7 +21,7 @@ const loading = ref(false)
 
 const create = () => {
   loading.value = true
-  fetch('/api/projects', {
+  fetch('/api/equipment/types', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -33,12 +32,12 @@ const create = () => {
       if (response.ok) {
         return response.json()
       } else {
-        throw new Error('Failed to create project')
+        throw new Error('Failed to create equipment type')
       }
     })
     .then(data => {
-      toast.add(successToast(`Project #${data.id} ${data.name} created`))
-      return router.push(`/projects/${data.id}`)
+      toast.add(successToast(`Equipment Type #${data.id} ${data.name} created`))
+      return router.push(`/equipment/types/${data.id}`)
     })
     .catch(error => {
       toast.add(errorToast(error.message))
@@ -52,7 +51,7 @@ const create = () => {
 
 <template>
   <div class="mt-5">
-    <h1 class="text-xl">Create New Project</h1>
+    <h1 class="text-xl">Create New Equipment Type</h1>
     <div class="flex flex-col gap-5 my-4">
       <FloatLabel variant="on" class="w-full">
         <InputText id="name" class="w-full" v-model="model.name" />

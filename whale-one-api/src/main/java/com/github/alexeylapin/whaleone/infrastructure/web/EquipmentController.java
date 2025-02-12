@@ -122,7 +122,7 @@ public class EquipmentController {
                 .createdAt(ZonedDateTime.now())
                 .createdById(user.getId())
                 .createdBy(user.getUsername())
-                .attributes(List.of())
+//                .attributes(List.of())
                 .build();
         equipmentTypeRepository.save(equipmentType);
         return "redirect:/equipment/types";
@@ -150,7 +150,7 @@ public class EquipmentController {
             @PathVariable("equipmentTypeId") int equipmentTypeId,
             @ModelAttribute("equipmentTypeAttribute") EquipmentTypeAttribute attribute) {
         EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
-        equipmentType.attributes().add(attribute);
+//        equipmentType.attributes().add(attribute);
         equipmentTypeRepository.save(equipmentType);
         return "redirect:/equipment/types/" + equipmentTypeId;
     }
@@ -161,12 +161,12 @@ public class EquipmentController {
             @RequestParam("id") List<Long> attributes,
             Model model) {
         EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
-        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
-                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
-        equipmentType.attributes().clear();
-        for (Long attribute : attributes) {
-            equipmentType.attributes().add(map.get(attribute));
-        }
+//        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
+//                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
+//        equipmentType.attributes().clear();
+//        for (Long attribute : attributes) {
+//            equipmentType.attributes().add(map.get(attribute));
+//        }
         equipmentTypeRepository.save(equipmentType);
         model.addAttribute("equipmentType", equipmentType);
         return "partials/equipment-type-attributes";
@@ -179,10 +179,10 @@ public class EquipmentController {
             @RequestParam("editable") boolean editable,
             Model model) {
         EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
-        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
-                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
+//        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
+//                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
 
-        model.addAttribute("attribute", map.get(attributeId));
+//        model.addAttribute("attribute", map.get(attributeId));
         model.addAttribute("isEditable", editable);
         return "partials/equipment-type-attribute";
     }
@@ -194,13 +194,13 @@ public class EquipmentController {
             @RequestParam("name") String name,
             Model model) {
         EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
-        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
-                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
-
-        equipmentType.attributes().clear();
-        EquipmentTypeAttribute attribute = map.get(attributeId).toBuilder().name(name).build();
-        map.put(attributeId, attribute);
-        equipmentType.attributes().addAll(map.values());
+//        Map<Long, EquipmentTypeAttribute> map = equipmentType.attributes().stream()
+//                .collect(Collectors.toMap(EquipmentTypeAttribute::id, Function.identity()));
+//
+//        equipmentType.attributes().clear();
+//        EquipmentTypeAttribute attribute = map.get(attributeId).toBuilder().name(name).build();
+//        map.put(attributeId, attribute);
+//        equipmentType.attributes().addAll(map.values());
 
         equipmentTypeRepository.save(equipmentType);
         model.addAttribute("equipmentType", equipmentType);
@@ -213,7 +213,7 @@ public class EquipmentController {
             @PathVariable("attributeId") int attributeId,
             Model model) {
         EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId).orElseThrow();
-        equipmentType.attributes().removeIf(it -> it.id() == attributeId);
+//        equipmentType.attributes().removeIf(it -> it.id() == attributeId);
         equipmentTypeRepository.save(equipmentType);
         model.addAttribute("equipmentType", equipmentType);
         return "partials/equipment-type-attributes";
