@@ -4,23 +4,29 @@ export interface EquipmentElementModel {
   id: number;
   version: number;
   createdAt: string;
-  createdBy: string;
+  createdBy: BaseRefModel;
   name: string;
   type: BaseRefModel;
 }
 
-export interface EquipmentModel {
+export interface EquipmentNewModel {
+  name: string | null;
+  type: BaseRefModel | null;
+}
+
+export interface EquipmentModel extends EquipmentNewModel {
   id: number;
   version: number;
   createdAt: string;
-  createdBy: string;
+  createdBy: BaseRefModel;
+  active: boolean;
   name: string;
-  type: number;
+  type: BaseRefModel;
   attributes: EquipmentAttributeModel[];
 }
 
 export interface EquipmentAttributeModel {
   id: number;
   equipmentTypeAttributeId: number;
-  value: string;
+  value: string | null;
 }

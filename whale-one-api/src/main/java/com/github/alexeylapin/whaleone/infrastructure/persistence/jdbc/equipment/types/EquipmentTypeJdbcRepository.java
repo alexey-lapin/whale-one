@@ -1,6 +1,8 @@
-package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
+package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment.types;
 
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Query;
@@ -18,7 +20,7 @@ public interface EquipmentTypeJdbcRepository extends ListCrudRepository<Equipmen
             FROM equipment_type e
                      JOIN tbl_user u on e.created_by_id = u.id
             WHERE e.id = :id""")
-    Optional<EquipmentTypeWithUserNameEntity> findOneById(long id);
+    Optional<EquipmentTypeProjection> findOneById(long id);
 
     @Query("""
             SELECT e.*,
@@ -27,8 +29,16 @@ public interface EquipmentTypeJdbcRepository extends ListCrudRepository<Equipmen
                      JOIN tbl_user u on e.created_by_id = u.id
             ORDER BY e.id DESC
             LIMIT :size OFFSET :offset""")
-    List<EquipmentTypeWithUserNameEntity> findAll(long size, long offset);
+    List<EquipmentTypeProjection> findAll(long size, long offset);
 
     Page<EquipmentTypeItem> findAllByNameContainingIgnoreCase(@Nullable String name, Pageable pageable);
+
+    @Getter
+    @Setter
+    class EquipmentTypeProjection extends EquipmentTypeEntity {
+
+        private String createdByName;
+
+    }
 
 }

@@ -10,11 +10,11 @@ public record Equipment(
         long id,
         int version,
         ZonedDateTime createdAt,
-        long createdById,
-        String createdBy,
+        UserRef createdBy,
 
+        boolean active,
         String name,
-        long type,
+        EquipmentTypeRef type,
         Long deploymentId,
         Set<EquipmentAttribute> attributes
 ) {

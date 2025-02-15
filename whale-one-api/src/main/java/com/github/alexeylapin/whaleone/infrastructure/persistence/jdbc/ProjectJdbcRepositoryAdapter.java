@@ -4,6 +4,7 @@ import com.github.alexeylapin.whaleone.domain.model.Project;
 import com.github.alexeylapin.whaleone.domain.model.ProjectItem;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectRepository;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

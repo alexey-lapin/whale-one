@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentType;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
+import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeAttributeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
@@ -44,8 +45,7 @@ public class EquipmentTypeApi {
                 .id(0)
                 .version(0)
                 .createdAt(ZonedDateTime.now())
-                .createdById(user.getId())
-                .createdBy(user.getUsername())
+                .createdBy(new UserRef(user.getId(), user.getUsername()))
                 .build();
         return equipmentTypeRepository.save(equipmentType);
     }
@@ -83,13 +83,14 @@ public class EquipmentTypeApi {
     }
 
     @PostMapping("/equipment/types/{id}/attributes")
-    public EquipmentTypeAttribute createSite(@PathVariable long id,
-                                             @RequestBody EquipmentTypeAttribute attribute) {
-        attribute = attribute.toBuilder()
+    public EquipmentTypeAttributeDto createSite(@PathVariable long id,
+                                                @RequestBody EquipmentTypeAttributeDto attributeDto) {
+        EquipmentTypeAttribute attribute = EquipmentTypeAttributeMapper.INSTANCE.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
-        return equipmentTypeAttributeRepository.save(attribute);
+        EquipmentTypeAttribute savedAttribute = equipmentTypeAttributeRepository.save(attribute);
+        return EquipmentTypeAttributeMapper.INSTANCE.toDto(savedAttribute);
     }
 
     @GetMapping("/equipment/types/{id}/attributes")
@@ -103,9 +104,9 @@ public class EquipmentTypeApi {
 //    }
 
     @PutMapping("/equipment/types/{id}/attributes/{attributeId}")
-    public EquipmentTypeAttributeDto updateSite(@PathVariable long id,
-                                             @PathVariable long attributeId,
-                                             @RequestBody EquipmentTypeAttributeDto attributeDto) {
+    public EquipmentTypeAttributeDto updateAttribute(@PathVariable long id,
+                                                     @PathVariable long attributeId,
+                                                     @RequestBody EquipmentTypeAttributeDto attributeDto) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing project expected");
         Assert.isTrue(attributeId > 0,
@@ -139,7 +140,7 @@ public class EquipmentTypeApi {
     }
 
     @Mapper
-    interface  EquipmentTypeAttributeMapper {
+    interface EquipmentTypeAttributeMapper {
 
         EquipmentTypeAttributeMapper INSTANCE = Mappers.getMapper(EquipmentTypeAttributeMapper.class);
 

@@ -3,6 +3,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 import com.github.alexeylapin.whaleone.domain.model.User;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.domain.repo.UserRepository;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

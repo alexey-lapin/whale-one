@@ -54,17 +54,17 @@ const router = createRouter({
         {
           path: '',
           name: 'equipment-list',
-          component: () => import('@/views/EquipmentListView.vue')
+          component: () => import('@/views/equipment/EquipmentListView.vue')
         },
         {
           path: 'new',
           name: 'equipment-new',
-          component: () => import('@/views/EquipmentNewView.vue')
+          component: () => import('@/views/equipment/EquipmentNewView.vue')
         },
         {
           path: ':id',
           name: 'equipment-detail',
-          component: () => import('@/views/EquipmentView.vue'),
+          component: () => import('@/views/equipment/EquipmentView.vue'),
           props: route => ({ id: parseInt(route.params.id as string) })
         },
         {
@@ -74,17 +74,17 @@ const router = createRouter({
             {
               path: '',
               name: 'equipment-type-list',
-              component: () => import('@/views/EquipmentTypeListView.vue')
+              component: () => import('@/views/equipment/types/EquipmentTypeListView.vue')
             },
             {
               path: 'new',
               name: 'equipment-type-new',
-              component: () => import('@/views/EquipmentTypeNewView.vue')
+              component: () => import('@/views/equipment/types/EquipmentTypeNewView.vue')
             },
             {
               path: ':id',
               name: 'equipment-type-detail',
-              component: () => import('@/views/EquipmentTypeView.vue'),
+              component: () => import('@/views/equipment/types/EquipmentTypeView.vue'),
               props: route => ({ id: parseInt(route.params.id as string) })
             }
           ]

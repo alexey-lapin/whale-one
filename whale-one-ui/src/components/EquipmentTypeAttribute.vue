@@ -2,19 +2,20 @@
 import { ref } from 'vue'
 
 import AutoComplete from 'primevue/autocomplete'
+
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
-import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 
 import {
   invokeAttributeCreateOrUpdate,
-  invokeAttributeDelete
+  invokeAttributeDelete,
 } from '@/client/equipmentTypeAttributeApi.ts'
 import { deleteConfirm } from '@/utils/confirms'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
@@ -34,15 +35,14 @@ const attributeTypes = [
   { label: 'number', value: 'number' },
   { label: 'select', value: 'select' },
   { label: 'text', value: 'text' },
-  { label: 'textarea', value: 'textarea' }
+  { label: 'textarea', value: 'textarea' },
 ]
 
 const createOrUpdateAttribute = () => {
-  invokeAttributeCreateOrUpdate(model.value, toast)
-    .then(data => {
-      editableState.value = false
-      emits('attribute-updated', data)
-    })
+  invokeAttributeCreateOrUpdate(model.value, toast).then((data) => {
+    editableState.value = false
+    emits('attribute-updated', data)
+  })
   // .catch(error => {
   //   toast.add(errorToast(error.message))
   //   console.error(error)
@@ -50,10 +50,9 @@ const createOrUpdateAttribute = () => {
 }
 
 const deleteAttribute = () => {
-  invokeAttributeDelete(model.value, toast)
-    .then(() => {
-      emits('attribute-deleted', model.value.id)
-    })
+  invokeAttributeDelete(model.value, toast).then(() => {
+    emits('attribute-deleted', model.value.id)
+  })
   // .catch(error => {
   //   toast.add(errorToast(error.message))
   //   console.error(error)
@@ -65,10 +64,11 @@ const confirmDelete = () => {
     emits('attribute-deleted', model.value.id)
     return
   }
-  confirm.require(deleteConfirm(
-    `Delete attribute #${model.value.id} ${model.value.name}?`,
-    () => deleteAttribute()
-  ))
+  confirm.require(
+    deleteConfirm(`Delete attribute #${model.value.id} ${model.value.name}?`, () =>
+      deleteAttribute(),
+    ),
+  )
 }
 
 const onTypeChange = () => {
@@ -81,23 +81,61 @@ const onTypeChange = () => {
 <template>
   <Card class="border hover:border-surface-500">
     <template #subtitle>
-      <div class="flex items-center">
+      <div class="flex items-center gap-2">
         <p class="flex-grow">{{ model.id > 0 ? `#${model.id}` : 'New' }} Attribute</p>
-        <Button variant="text" size="small" severity="secondary" icon="pi pi-pencil"
-                @click="editableState=!editableState"></Button>
-        <Button variant="text" size="small" severity="secondary" icon="pi pi-trash"
-                class="hover:!text-red-600" @click="confirmDelete()"></Button>
+        <Button
+          variant1="text"
+          size="small"
+          severity="secondary"
+          icon="pi pi-pencil"
+          @click="editableState = !editableState"
+        ></Button>
+        <Button
+          variant1="text"
+          size="small"
+          severity="secondary"
+          icon="pi pi-trash"
+          class="hover:!text-red-600"
+          @click="confirmDelete()"
+        ></Button>
       </div>
     </template>
     <template #content>
       <Fluid>
         <div class="flex flex-col gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-3 sm:gap-3">
+            <FloatLabel variant="on">
+              <Select
+                id="type"
+                v-model="model.type"
+                :options="attributeTypes"
+                option-label="label"
+                option-value="value"
+                :disabled="!editableState"
+                @change="onTypeChange()"
+              />
+              <label for="type">Type</label>
+            </FloatLabel>
+
+            <FloatLabel
+              variant="on"
+              class="col-span-2"
+            >
+              <InputText
+                id="name"
+                v-model="model.name"
+                :disabled="!editableState"
+              />
+              <label for="name">Name</label>
+            </FloatLabel>
+          </div>
+
           <FloatLabel variant="on">
-            <InputText id="name" v-model="model.name" :disabled="!editableState" />
-            <label for="name">Name</label>
-          </FloatLabel>
-          <FloatLabel variant="on">
-            <Textarea id="name" v-model="model.description" :disabled="!editableState" />
+            <Textarea
+              id="name"
+              v-model="model.description"
+              :disabled="!editableState"
+            />
             <label for="name">Description</label>
           </FloatLabel>
           <!--          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">-->
@@ -114,35 +152,29 @@ const onTypeChange = () => {
           <!--              <label for="depth">Depth</label>-->
           <!--            </FloatLabel>-->
           <!--          </div>-->
-          <FloatLabel variant="on">
-            <Select id="type"
-                    v-model="model.type"
-                    :options="attributeTypes"
-                    option-label="label"
-                    option-value="value"
-                    :disabled="!editableState"
-                    @change="onTypeChange()" />
-            <label for="type">Type</label>
-          </FloatLabel>
 
           <div v-if="model.type === 'select' && model.metadata">
             <FloatLabel variant="on">
-              <AutoComplete id="options"
-                            v-model="model.metadata.options"
-                            multiple
-                            fluid
-                            :typeahead="false"
-                            :disabled="!editableState" />
+              <AutoComplete
+                id="options"
+                v-model="model.metadata.options"
+                multiple
+                fluid
+                :typeahead="false"
+                :disabled="!editableState"
+              />
               <label for="options">Options</label>
             </FloatLabel>
           </div>
         </div>
       </Fluid>
-      <Button v-if="editableState"
-              label="Save"
-              icon="pi pi-save"
-              class="mt-4"
-              @click="createOrUpdateAttribute()" />
+      <Button
+        v-if="editableState"
+        label="Save"
+        icon="pi pi-save"
+        class="mt-4"
+        @click="createOrUpdateAttribute()"
+      />
     </template>
   </Card>
 </template>

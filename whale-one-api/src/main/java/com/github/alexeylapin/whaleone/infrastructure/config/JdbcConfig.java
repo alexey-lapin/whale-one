@@ -1,6 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.config;
 
-import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.JsonValue;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.SneakyThrows;
 import org.postgresql.util.PGobject;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,6 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
-import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -20,7 +19,10 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
 
     @Override
     protected List<?> userConverters() {
-        return List.of(new StringReadingConverter(), new StringWritingConverter(), new TimestampToZonedDateTimeConverter());
+        return List.of(new StringReadingConverter(),
+                new StringWritingConverter(),
+                new TimestampToZonedDateTimeConverter(),
+                new ZonedDateTimeToTimestampConverter());
     }
 
 
@@ -56,6 +58,16 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
         @Override
         public ZonedDateTime convert(Timestamp source) {
             return source.toInstant().atZone(ZoneId.systemDefault());
+        }
+
+    }
+
+    @WritingConverter
+    static class ZonedDateTimeToTimestampConverter implements Converter<ZonedDateTime, Timestamp> {
+
+        @Override
+        public Timestamp convert(ZonedDateTime source) {
+            return Timestamp.from(source.toInstant());
         }
 
     }

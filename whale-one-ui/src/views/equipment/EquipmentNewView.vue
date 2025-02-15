@@ -9,22 +9,17 @@ import { errorToast, successToast } from '@/utils/toasts.ts'
 import router from '@/router'
 import AutoComplete from 'primevue/autocomplete'
 import type { EquipmentTypeItemModel, EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
-import type { EquipmentModel } from '@/model/EquipmentModel.ts'
+import type { EquipmentModel, EquipmentNewModel } from '@/model/EquipmentModel.ts'
+import type { BaseRefModel } from '@/model/BaseRefModel.ts'
 
 const toast = useToast()
 
-const model: Ref<EquipmentModel> = ref({
-  id: 0,
-  version: 0,
-  createdAt: "",
-  createdBy: "",
-  name: "",
-  description: null,
-  type: -1,
-  attributes: []
+const model: Ref<EquipmentNewModel> = ref({
+  name: null,
+  type: null
 })
 
-const equipmentTypes = ref([])
+const equipmentTypes: Ref<BaseRefModel[]> = ref([])
 
 const loading = ref(false)
 
@@ -64,15 +59,15 @@ const equipmentTypeItems = (q: string | null) => {
     .catch(error => console.error(error))
 }
 
-const onEquipmentTypeSelected = (event: EquipmentTypeItemModel | string | null) => {
-  if (event === null) {
-    model.value.type = -1
-    return
-  } else if (typeof event === 'string') {
-    return
-  }
-  model.value.type = event.id
-}
+// const onEquipmentTypeSelected = (event: EquipmentTypeItemModel | string | null) => {
+//   if (event === null) {
+//     model.value.type = -1
+//     return
+//   } else if (typeof event === 'string') {
+//     return
+//   }
+//   model.value.type = event.id
+// }
 </script>
 
 <template>
@@ -80,12 +75,10 @@ const onEquipmentTypeSelected = (event: EquipmentTypeItemModel | string | null) 
     <h1 class="text-xl">Create New Equipment</h1>
     <div class="flex flex-col gap-5 my-4">
       <FloatLabel variant="on" class="w-full">
-        <AutoComplete dropdown :suggestions="equipmentTypes"
+        <AutoComplete v-model="model.type" dropdown :suggestions="equipmentTypes"
                       option-label="name"
                       force-selection
-                      @complete="equipmentTypeItems($event.query)"
-                      @option-select="onEquipmentTypeSelected($event.value)"
-                      @change="onEquipmentTypeSelected($event.value)" />
+                      @complete="equipmentTypeItems($event.query)" />
         <label for="1name">Type</label>
       </FloatLabel>
 

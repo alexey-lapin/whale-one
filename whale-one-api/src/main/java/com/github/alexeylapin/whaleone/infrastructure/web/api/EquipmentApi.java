@@ -2,6 +2,7 @@ package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
+import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,7 @@ public class EquipmentApi {
                 .id(0)
                 .version(0)
                 .createdAt(ZonedDateTime.now())
-                .createdById(user.getId())
-                .createdBy(user.getUsername())
+                .createdBy(new UserRef(user.getId(), user.getUsername()))
                 .build();
         return equipmentRepository.save(equipment);
     }

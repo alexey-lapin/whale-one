@@ -9,9 +9,9 @@ public record EquipmentListElement(
         long id,
         int version,
         ZonedDateTime createdAt,
-        long createdById,
-        String createdBy,
+        UserRef createdBy,
 
+        boolean active,
         String name,
         EquipmentTypeRef type,
         Long deploymentId

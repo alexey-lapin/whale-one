@@ -12,9 +12,6 @@ public interface EquipmentRepository {
 
     Optional<Equipment> findById(long id);
 
-    @Deprecated
-    Page<Equipment> findAll(int page, int size);
-
     Page<EquipmentListElement> findAllElements(int page, int size, String name, Long typeId);
 
     List<Equipment> findAllByDeploymentId(long id);

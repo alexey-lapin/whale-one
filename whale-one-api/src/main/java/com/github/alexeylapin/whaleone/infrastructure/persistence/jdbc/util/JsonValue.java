@@ -1,4 +1,4 @@
-package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
+package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
+package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +9,7 @@ import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -24,8 +25,9 @@ public class EquipmentEntity {
     private Instant createdAt;
     private long createdById;
 
+    private boolean active;
     private String name;
-    private long type;
+    private long typeId;
     private Long deploymentId;
 
     @MappedCollection(idColumn = "equipment_id")

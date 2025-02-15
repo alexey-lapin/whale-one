@@ -1,14 +1,13 @@
-package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
+package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment.types;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
-import java.util.List;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter

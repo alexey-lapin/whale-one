@@ -1,8 +1,10 @@
+import type { BaseRefModel } from '@/model/BaseRefModel.ts'
+
 export interface EquipmentTypeModel {
   id: number;
   version: number;
   createdAt: string,
-  createdBy: string,
+  createdBy: BaseRefModel,
   name: string;
 }
 

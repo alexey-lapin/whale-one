@@ -17,7 +17,7 @@
         <%--            </div>--%>
         <%--            <div class="control is-flex-shrink-4">--%>
         <%--                <input class="input is-static"--%>
-        <%--                       type="text"--%>
+        <%--                       typeId="text"--%>
         <%--                       name="id"--%>
         <%--                       value="${attribute.id()}"--%>
         <%--                       readonly--%>
@@ -25,7 +25,7 @@
         <%--            </div>--%>
         <%--            <div class="control">--%>
         <%--                <input class="input"--%>
-        <%--                       type="text"--%>
+        <%--                       typeId="text"--%>
         <%--                       name="name"--%>
         <%--                       placeholder="Name"--%>
         <%--                       value="${attribute.name()}"--%>

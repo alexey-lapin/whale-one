@@ -1,5 +1,6 @@
-package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
+package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment.types;
 
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;

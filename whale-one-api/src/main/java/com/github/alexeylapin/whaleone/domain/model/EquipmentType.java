@@ -11,8 +11,7 @@ public record EquipmentType(
         long id,
         int version,
         ZonedDateTime createdAt,
-        long createdById,
-        String createdBy,
+        UserRef createdBy,
 
         String name
 ) {
