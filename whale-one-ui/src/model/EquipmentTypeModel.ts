@@ -1,4 +1,4 @@
-import type { BaseRefModel } from '@/model/BaseRefModel.ts'
+import type { BaseRefModel } from '@/model/BaseModel.ts'
 
 export interface EquipmentTypeModel {
   id: number;

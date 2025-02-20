@@ -34,7 +34,7 @@ public class EquipmentApi {
                 .id(0)
                 .version(0)
                 .createdAt(ZonedDateTime.now())
-                .createdBy(new UserRef(user.getId(), user.getUsername()))
+                .createdBy(new UserRef(user.getId(), user.getName()))
                 .build();
         return equipmentRepository.save(equipment);
     }

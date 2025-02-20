@@ -15,7 +15,11 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.2.5",
+    "@vueuse/core": "^12.7.0",
+    "@vueuse/integrations": "^12.7.0",
+    "axios": "^1.7.9",
     "dayjs": "^1.11.13",
+    "jwt-decode": "^4.0.0",
     "pinia": "^2.3.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",

@@ -19,8 +19,15 @@ public class ProjectEntity {
     private int version;
     private Instant createdAt;
     private long createdById;
+    private Instant lastUpdatedAt;
+    private long lastUpdatedById;
 
     private String name;
+    private String client;
+    private String ownership;
+    private String region;
+    private String type;
+    private String goal;
     private String description;
 
 }

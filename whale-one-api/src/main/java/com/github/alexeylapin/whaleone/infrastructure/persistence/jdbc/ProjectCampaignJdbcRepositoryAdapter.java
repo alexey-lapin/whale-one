@@ -1,9 +1,9 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
-import com.github.alexeylapin.whaleone.domain.model.ProjectSite;
-import com.github.alexeylapin.whaleone.domain.model.ProjectSiteItem;
+import com.github.alexeylapin.whaleone.domain.model.ProjectCampaign;
+import com.github.alexeylapin.whaleone.domain.model.ProjectCampaignItem;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
-import com.github.alexeylapin.whaleone.domain.repo.ProjectSiteRepository;
+import com.github.alexeylapin.whaleone.domain.repo.ProjectCampaignRepository;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
@@ -19,32 +19,32 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
-public class ProjectSiteJdbcRepositoryAdapter implements ProjectSiteRepository {
+public class ProjectCampaignJdbcRepositoryAdapter implements ProjectCampaignRepository {
 
-    private static final ProjectSiteMapper MAPPER = Mappers.getMapper(ProjectSiteMapper.class);
+    private static final ProjectCampaignMapper MAPPER = Mappers.getMapper(ProjectCampaignMapper.class);
 
-    private final ProjectSiteJdbcRepository repository;
+    private final ProjectCampaignJdbcRepository repository;
 
     @Override
-    public ProjectSite save(ProjectSite projectSite) {
-        ProjectSiteEntity entity = MAPPER.map(projectSite);
-        ProjectSiteEntity savedEntity = repository.save(entity);
+    public ProjectCampaign save(ProjectCampaign projectCampaign) {
+        ProjectCampaignEntity entity = MAPPER.map(projectCampaign);
+        ProjectCampaignEntity savedEntity = repository.save(entity);
         return MAPPER.map(savedEntity);
     }
 
     @Override
-    public Optional<ProjectSite> findById(long id) {
+    public Optional<ProjectCampaign> findById(long id) {
         return repository.findById(id).map(MAPPER::map);
     }
 
     @Override
-    public Page<ProjectSite> findAll(long projectId) {
+    public Page<ProjectCampaign> findAll(long projectId) {
         var page = repository.findAllByProjectId(projectId, Pageable.unpaged(Sort.by("id")));
         return new DefaultPage<>(page.map(MAPPER::map));
     }
 
     @Override
-    public List<ProjectSiteItem> findAllItems(long projectId, String nameQuery) {
+    public List<ProjectCampaignItem> findAllItems(long projectId, String nameQuery) {
         var pageable = PageRequest.of(0, 50, Sort.by("id").descending());
         return repository.findAllByProjectIdAndNameContainingIgnoreCase(projectId, nameQuery, pageable).getContent();
     }
@@ -55,11 +55,11 @@ public class ProjectSiteJdbcRepositoryAdapter implements ProjectSiteRepository {
     }
 
     @Mapper(uses = BaseMapper.class)
-    interface ProjectSiteMapper {
+    interface ProjectCampaignMapper {
 
-        ProjectSiteEntity map(ProjectSite source);
+        ProjectCampaignEntity map(ProjectCampaign source);
 
-        ProjectSite map(ProjectSiteEntity source);
+        ProjectCampaign map(ProjectCampaignEntity source);
 
     }
 

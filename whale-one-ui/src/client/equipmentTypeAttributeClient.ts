@@ -1,7 +1,6 @@
 import type { ToastServiceMethods } from 'primevue'
 
 import { errorToast, successToast } from '@/utils/toasts.ts'
-import { defaultHeaders } from '@/client/baseapi.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 
 export const invokeAttributeCreateOrUpdate = (
@@ -19,7 +18,9 @@ export const invokeAttributeCreate = (
   toast: ToastServiceMethods | null = null) => {
   return fetch(`/api/equipment/types/${attribute.equipmentTypeId}/attributes`, {
     method: 'POST',
-    headers: defaultHeaders,
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(attribute)
   })
     .then(response => {

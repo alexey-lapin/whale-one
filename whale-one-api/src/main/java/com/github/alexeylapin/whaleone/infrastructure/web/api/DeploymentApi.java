@@ -27,7 +27,7 @@ public class DeploymentApi {
                 .version(0)
                 .createdAt(ZonedDateTime.now())
                 .createdById(user.getId())
-                .createdBy(user.getUsername())
+                .createdBy(user.getName())
                 .build();
         return deploymentRepository.save(deployment);
     }

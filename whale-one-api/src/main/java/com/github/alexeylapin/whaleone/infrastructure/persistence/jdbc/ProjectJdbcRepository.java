@@ -16,28 +16,33 @@ public interface ProjectJdbcRepository extends ListCrudRepository<ProjectEntity,
 
     @Query("""
             SELECT p.*,
-                   u.username created_by_name
+                   u1.username created_by_name,
+                   u2.username last_updated_by_name
             FROM project p
-                     JOIN tbl_user u on p.created_by_id = u.id
+                     JOIN tbl_user u1 on p.created_by_id = u1.id
+                     JOIN tbl_user u2 on p.last_updated_by_id = u2.id
             WHERE p.id = :id""")
-    Optional<ProjectWithUserNameEntity> findOneById(long id);
+    Optional<ProjectProjection> findOneById(long id);
 
     @Query("""
             SELECT p.*,
-                   u.username created_by_name
+                   u1.username created_by_name,
+                   u2.username last_updated_by_name
             FROM project p
-                     JOIN tbl_user u ON p.created_by_id = u.id
+                     JOIN tbl_user u1 on p.created_by_id = u1.id
+                     JOIN tbl_user u2 on p.last_updated_by_id = u2.id
             ORDER BY p.id DESC
             LIMIT :size OFFSET :offset""")
-    List<ProjectWithUserNameEntity> findAll(long size, long offset);
+    List<ProjectProjection> findAll(long size, long offset);
 
     Page<ProjectItem> findAllByNameContainingIgnoreCase(@Nullable String name, Pageable pageable);
 
     @Getter
     @Setter
-    class ProjectWithUserNameEntity extends ProjectEntity {
+    class ProjectProjection extends ProjectEntity {
 
         private String createdByName;
+        private String lastUpdatedByName;
 
     }
 

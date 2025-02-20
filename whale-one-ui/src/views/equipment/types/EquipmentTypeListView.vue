@@ -6,7 +6,7 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
-import type PageModel from '@/model/PageModel.ts'
+import type { PageModel } from '@/model/BaseModel.ts'
 
 const list: Ref<PageModel<EquipmentTypeModel> | null> = ref(null)
 

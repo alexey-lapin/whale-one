@@ -10,7 +10,8 @@ import router from '@/router'
 import AutoComplete from 'primevue/autocomplete'
 import type { EquipmentTypeItemModel, EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 import type { EquipmentModel, EquipmentNewModel } from '@/model/EquipmentModel.ts'
-import type { BaseRefModel } from '@/model/BaseRefModel.ts'
+
+import type { BaseRefModel } from '@/model/BaseModel.ts'
 
 const toast = useToast()
 

@@ -16,7 +16,7 @@ import { useToast } from 'primevue/usetoast'
 import {
   invokeAttributeCreateOrUpdate,
   invokeAttributeDelete,
-} from '@/client/equipmentTypeAttributeApi.ts'
+} from '@/client/equipmentTypeAttributeClient.ts'
 import { deleteConfirm } from '@/utils/confirms'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 

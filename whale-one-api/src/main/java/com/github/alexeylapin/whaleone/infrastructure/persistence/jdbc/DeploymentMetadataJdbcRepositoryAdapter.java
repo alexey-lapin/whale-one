@@ -4,6 +4,7 @@ import com.github.alexeylapin.whaleone.domain.model.DeploymentMetadata;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentMetadataRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -11,14 +12,11 @@ import org.springframework.stereotype.Repository;
 import java.time.ZoneId;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
 public class DeploymentMetadataJdbcRepositoryAdapter implements DeploymentMetadataRepository {
 
     private final DeploymentMetadataJdbcRepository repository;
-
-    public DeploymentMetadataJdbcRepositoryAdapter(DeploymentMetadataJdbcRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public DeploymentMetadata save(DeploymentMetadata deploymentMetadata) {

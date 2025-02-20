@@ -2,18 +2,16 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipment;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentEquipmentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Repository
 public class DeploymentEquipmentJdbcRepositoryAdapter implements DeploymentEquipmentRepository {
 
     private final DeploymentEquipmentJdbcRepository repository;
-
-    public DeploymentEquipmentJdbcRepositoryAdapter(DeploymentEquipmentJdbcRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<DeploymentEquipment> findAllByDeploymentId(long deploymentId) {

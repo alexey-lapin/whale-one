@@ -4,9 +4,12 @@ import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.UserEntit
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.UserJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class JdbcUserDetailsManager implements UserDetailsManager {
@@ -45,14 +48,18 @@ public class JdbcUserDetailsManager implements UserDetailsManager {
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    private static IdUser getIdUser(UserEntity it) {
-        return new IdUser(it.id(),
-                it.username(),
+    private static UserDetailsIdUser getIdUser(UserEntity it) {
+        List<SimpleGrantedAuthority> authorities = it.authorities().stream()
+                .map(i -> new SimpleGrantedAuthority(i.name()))
+                .toList();
+        User userDetails = new User(it.username(),
                 it.password(),
                 it.enabled(),
-                it.authorities().stream()
-                        .map(i -> new SimpleGrantedAuthority(i.name()))
-                        .toList());
+                true,
+                true,
+                true,
+                authorities);
+        return new UserDetailsIdUser(it.id(), userDetails);
     }
 
 }

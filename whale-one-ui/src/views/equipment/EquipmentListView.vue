@@ -9,7 +9,7 @@ import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
 import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
-import type PageModel from '@/model/PageModel.ts'
+import type { PageModel } from '@/model/BaseModel.ts'
 
 const list: Ref<PageModel<EquipmentElementModel> | null> = ref(null)
 
@@ -107,7 +107,8 @@ const equipmentTypes = ref([])
           field="id"
           header="Id"
           class="w-1/12"
-        ></Column>
+        >
+        </Column>
         <Column
           field="name"
           header="Name"

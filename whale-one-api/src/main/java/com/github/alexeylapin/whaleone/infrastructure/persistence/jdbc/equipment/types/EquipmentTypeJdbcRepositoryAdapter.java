@@ -21,16 +21,16 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
 
     private static final EquipmentTypeMapper MAPPER = Mappers.getMapper(EquipmentTypeMapper.class);
 
-    private final EquipmentTypeJdbcRepository repository;
+    private final EquipmentTypeJdbcRepository delegate;
 
-    public EquipmentTypeJdbcRepositoryAdapter(EquipmentTypeJdbcRepository repository) {
-        this.repository = repository;
+    public EquipmentTypeJdbcRepositoryAdapter(EquipmentTypeJdbcRepository delegate) {
+        this.delegate = delegate;
     }
 
     @Override
     public EquipmentType save(EquipmentType equipmentType) {
         EquipmentTypeEntity entity = MAPPER.map(equipmentType);
-        entity = repository.save(entity);
+        entity = delegate.save(entity);
         return MAPPER.map(entity).toBuilder()
                 .createdBy(equipmentType.createdBy())
                 .build();
@@ -38,22 +38,22 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
 
     @Override
     public Optional<EquipmentType> findById(long id) {
-        return repository.findOneById(id)
+        return delegate.findOneById(id)
                 .map(MAPPER::map);
     }
 
     @Override
     public Page<EquipmentType> findAll(int page, int size) {
         var pageable = PageRequest.of(page, size);
-        var items = repository.findAll(pageable.getPageSize(), pageable.getOffset());
-        var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
+        var items = delegate.findAll(pageable.getPageSize(), pageable.getOffset());
+        var aPage = PageableExecutionUtils.getPage(items, pageable, delegate::count);
         return new DefaultPage<>(aPage.map(MAPPER::map));
     }
 
     @Override
     public List<EquipmentTypeItem> findAllItems(String nameQuery) {
         var pageable = PageRequest.of(0, 50);
-        return repository.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
+        return delegate.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
     }
 
     @Mapper(uses = {BaseMapper.class})

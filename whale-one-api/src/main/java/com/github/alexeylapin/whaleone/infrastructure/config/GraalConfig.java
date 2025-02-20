@@ -1,6 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.config;
 
-import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
+import com.github.alexeylapin.whaleone.infrastructure.security.UserDetailsIdUser;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ public class GraalConfig {
 
         @Override
         public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-            hints.serialization().registerType(IdUser.class);
+            hints.serialization().registerType(UserDetailsIdUser.class);
         }
 
     }

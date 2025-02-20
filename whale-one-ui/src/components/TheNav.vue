@@ -3,6 +3,9 @@ import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
 
 import type { MenuItem } from 'primevue/menuitem'
+import { useAuthStore } from '@/stores/auth.ts'
+
+let auth = useAuthStore()
 
 const items: MenuItem[] = [
   {
@@ -55,7 +58,7 @@ const items: MenuItem[] = [
       <!--      <div class="flex items-center gap-2">-->
       <!--        <Avatar image="/images/avatar/amyelsner.png" shape="circle" />-->
       <!--      </div>-->
-      <!--      <Button label="Logout" severity="secondary" @click="sessionStore.logout()"/>-->
+            <Button label="Logout" severity="secondary" @click="auth.logout()"/>
     </template>
   </Menubar>
 </template>

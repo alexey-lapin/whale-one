@@ -10,8 +10,8 @@ import InputText from 'primevue/inputtext'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 
-import type ProjectSiteModel from '@/model/ProjectSiteModel.ts'
-import { invokeSiteCreateOrUpdate, invokeSiteDelete } from '@/client/projectsiteapi.ts'
+import type { ProjectSiteModel } from '@/model/ProjectModel.ts'
+import { invokeSiteCreateOrUpdate, invokeSiteDelete } from '@/client/projectClient.ts'
 import { deleteConfirm } from '@/utils/confirms'
 
 const toast = useToast()
@@ -26,26 +26,20 @@ const emits = defineEmits(['site-updated', 'site-deleted'])
 const editableState = ref(editable)
 
 const createOrUpdateSite = () => {
-  invokeSiteCreateOrUpdate(model.value, toast)
-    .then(data => {
+  invokeSiteCreateOrUpdate(model.value)
+    .then((data) => {
       editableState.value = false
       emits('site-updated', data)
     })
-  // .catch(error => {
-  //   toast.add(errorToast(error.message))
-  //   console.error(error)
-  // })
+    .catch(() => {})
 }
 
 const deleteSite = () => {
-  invokeSiteDelete(model.value, toast)
+  invokeSiteDelete(model.value)
     .then(() => {
       emits('site-deleted', model.value.id)
     })
-  // .catch(error => {
-  //   toast.add(errorToast(error.message))
-  //   console.error(error)
-  // })
+    .catch(() => {})
 }
 
 const confirmDelete = () => {
@@ -53,10 +47,9 @@ const confirmDelete = () => {
     emits('site-deleted', model.value.id)
     return
   }
-  confirm.require(deleteConfirm(
-    `Delete site #${model.value.id} ${model.value.name}?`,
-    () => deleteSite()
-  ))
+  confirm.require(
+    deleteConfirm(`Delete site #${model.value.id} ${model.value.name}?`, () => deleteSite()),
+  )
 }
 </script>
 
@@ -65,40 +58,69 @@ const confirmDelete = () => {
     <template #subtitle>
       <div class="flex items-center">
         <p class="flex-grow">{{ model.id > 0 ? `#${model.id}` : 'New' }} Site</p>
-        <Button variant="text" size="small" severity="secondary" icon="pi pi-pencil"
-                @click="editableState=!editableState"></Button>
-        <Button variant="text" size="small" severity="secondary" icon="pi pi-trash"
-                class="hover:!text-red-600" @click="confirmDelete()"></Button>
+        <Button
+          variant="text"
+          size="small"
+          severity="secondary"
+          icon="pi pi-pencil"
+          @click="editableState = !editableState"
+        ></Button>
+        <Button
+          variant="text"
+          size="small"
+          severity="secondary"
+          icon="pi pi-trash"
+          class="hover:!text-red-600"
+          @click="confirmDelete()"
+        ></Button>
       </div>
     </template>
     <template #content>
       <Fluid>
         <div class="flex flex-col gap-4">
           <FloatLabel variant="on">
-            <InputText id="name" v-model="model.name" :disabled="!editableState" />
+            <InputText
+              id="name"
+              v-model="model.name"
+              :disabled="!editableState"
+            />
             <label for="name">Name</label>
           </FloatLabel>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <FloatLabel variant="on">
-              <InputNumber id="longitude" v-model="model.longitude" :disabled="!editableState" />
+              <InputNumber
+                id="longitude"
+                v-model="model.longitude"
+                :disabled="!editableState"
+              />
               <label for="longitude">Longitude</label>
             </FloatLabel>
             <FloatLabel variant="on">
-              <InputNumber id="latitude" v-model="model.latitude" :disabled="!editableState" />
+              <InputNumber
+                id="latitude"
+                v-model="model.latitude"
+                :disabled="!editableState"
+              />
               <label for="latitude">Latitude</label>
             </FloatLabel>
             <FloatLabel variant="on">
-              <InputNumber id="depth" v-model="model.depth" :disabled="!editableState" />
+              <InputNumber
+                id="depth"
+                v-model="model.depth"
+                :disabled="!editableState"
+              />
               <label for="depth">Depth</label>
             </FloatLabel>
           </div>
         </div>
       </Fluid>
-      <Button v-if="editableState"
-              label="Save"
-              icon="pi pi-save"
-              class="mt-4"
-              @click="createOrUpdateSite()" />
+      <Button
+        v-if="editableState"
+        label="Save"
+        icon="pi pi-save"
+        class="mt-4"
+        @click="createOrUpdateSite()"
+      />
     </template>
   </Card>
 </template>

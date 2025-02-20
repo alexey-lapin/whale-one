@@ -9,9 +9,16 @@ public record Project(
         long id,
         int version,
         ZonedDateTime createdAt,
-        long createdById,
-        String createdBy,
+        UserRef createdBy,
+        ZonedDateTime lastUpdatedAt,
+        UserRef lastUpdatedBy,
+
         String name,
+        String client,
+        String ownership,
+        String region,
+        String type,
+        String goal,
         String description
 ) {
 }
