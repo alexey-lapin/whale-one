@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, type Ref } from 'vue'
+import { onMounted, ref, type Ref } from 'vue'
+
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
@@ -7,16 +8,14 @@ import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
 import Panel from 'primevue/panel'
 import ToggleButton from 'primevue/togglebutton'
-import { useToast } from 'primevue/usetoast'
 import dayjs from 'dayjs'
 
 import EquipmentAttribute from '@/components/EquipmentAttribute.vue'
-import { errorToast, successToast } from '@/utils/toasts.ts'
 
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
-
-const toast = useToast()
+import { invokeEquipmentGet, invokeEquipmentUpdate } from '@/client/equipmentClient.ts'
+import { invokeEquipmentTypeAttributeListGet } from '@/client/equipmentTypeClient.ts'
 
 const props = defineProps<{
   id: number
@@ -46,21 +45,17 @@ const attributes: Ref<EquipmentAttributeModel[]> = ref([])
 const loading = ref(false)
 const editing = ref(false)
 
-const variant = computed(() => (editing.value ? 'outlined' : 'filled'))
-
 const getEquipment = () => {
-  return fetch(`/api/equipment/${props.id}`)
-    .then((response) => response.json())
+  return invokeEquipmentGet(props.id)
     .then((data) => (model.value = data))
-    .catch((error) => console.error(error))
+    .catch(() => {})
 }
 
 const getEquipmentTypeAttributes = () => {
-  return fetch(`/api/equipment/types/${model.value.type.id}/attributes`)
-    .then((response) => response.json())
+  invokeEquipmentTypeAttributeListGet(model.value.type.id)
     .then((data) => (equipmentTypeAttributes.value = data))
     .then(() => (attributes.value = collectAttributes()))
-    .catch((error) => console.error(error))
+    .catch(() => {})
 }
 
 function collectAttributes(): EquipmentAttributeModel[] {
@@ -76,42 +71,18 @@ function collectAttributes(): EquipmentAttributeModel[] {
 const updateEquipment = () => {
   loading.value = true
   model.value.attributes = attributes.value.filter((a) => a.value)
-  fetch(`/api/equipment/${props.id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(model.value),
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error('Failed to update equipment')
-      }
-    })
+  invokeEquipmentUpdate(model.value)
     .then((data) => {
       model.value = data
       model.value.attributes = collectAttributes()
-      toast.add(successToast(`Equipment #${data.id} ${data.name} updated`))
       editing.value = false
     })
-    .catch((error) => {
-      toast.add(errorToast(error.message))
-      console.error(error)
-    })
-    .finally(() => {
-      loading.value = false
-    })
+    .catch(() => {})
+    .finally(() => (loading.value = false))
 }
 
 onMounted(() => {
-  getEquipment()
-    .then(() => getEquipmentTypeAttributes())
-    .then(() => {
-      console.log(model.value)
-      console.log(equipmentTypeAttributes.value)
-    })
+  getEquipment().then(() => getEquipmentTypeAttributes())
 })
 </script>
 
@@ -197,7 +168,6 @@ onMounted(() => {
                 class="w-full"
                 v-model="model.name"
                 :disabled="!editing"
-                :variant="variant"
               />
               <label for="name">Name</label>
             </FloatLabel>

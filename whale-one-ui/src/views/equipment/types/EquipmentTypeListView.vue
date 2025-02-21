@@ -7,24 +7,24 @@ import DataTable from 'primevue/datatable'
 
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 import type { PageModel } from '@/model/BaseModel.ts'
+import { invokeEquipmentListGet } from '@/client/equipmentTypeClient.ts'
 
 const list: Ref<PageModel<EquipmentTypeModel> | null> = ref(null)
 
 const loading = ref(false)
 const pageSize = ref(10)
 
+const loadPage = (page: number, size: number) => {
+  loading.value = true
+  invokeEquipmentListGet(page, size)
+    .then((data) => (list.value = data))
+    .catch(() => {})
+    .finally(() => (loading.value = false))
+}
+
 onMounted(() => {
   loadPage(0, pageSize.value)
 })
-
-const loadPage = (page: number, size: number) => {
-  loading.value = true
-  fetch(`/api/equipment/types?page=${page}&size=${size}`)
-    .then((response) => response.json())
-    .then((data) => (list.value = data))
-    .catch((error) => console.error(error))
-    .finally(() => (loading.value = false))
-}
 </script>
 
 <template>

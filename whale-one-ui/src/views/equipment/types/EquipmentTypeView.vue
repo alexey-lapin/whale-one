@@ -12,10 +12,14 @@ import Textarea from 'primevue/textarea'
 import { useToast } from 'primevue/usetoast'
 
 import EquipmentTypeAttribute from '@/components/EquipmentTypeAttribute.vue'
-import { errorToast, successToast } from '@/utils/toasts.ts'
 
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
+import {
+  invokeEquipmentTypeAttributeListGet,
+  invokeEquipmentTypeGet,
+  invokeEquipmentTypeUpdate,
+} from '@/client/equipmentTypeClient.ts'
 
 const toast = useToast()
 
@@ -50,44 +54,25 @@ const editing = ref(false)
 const addingNewAttribute = ref(false)
 
 const getEquipmentType = () => {
-  return fetch(`/api/equipment/types/${props.id}`)
-    .then((response) => response.json())
+  invokeEquipmentTypeGet(props.id)
     .then((data) => (model.value = data))
-    .catch((error) => console.error(error))
+    .catch(() => {})
 }
 
 const getAttributes = () => {
-  return fetch(`/api/equipment/types/${props.id}/attributes`)
-    .then((response) => response.json())
+  invokeEquipmentTypeAttributeListGet(props.id)
     .then((data) => (attributes.value = data))
-    .catch((error) => console.error(error))
+    .catch(() => {})
 }
 
 const updateEquipmentType = () => {
   loading.value = true
-  fetch(`/api/equipment/types/${props.id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(model.value),
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error('Failed to update project')
-      }
-    })
+  invokeEquipmentTypeUpdate(model.value)
     .then((data) => {
       model.value = data
-      toast.add(successToast(`Project #${data.id} ${data.name} updated`))
       editing.value = false
     })
-    .catch((error) => {
-      toast.add(errorToast(error.message))
-      console.error(error)
-    })
+    .catch(() => {})
     .finally(() => {
       loading.value = false
     })

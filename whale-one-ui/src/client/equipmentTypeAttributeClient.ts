@@ -1,89 +1,62 @@
-import type { ToastServiceMethods } from 'primevue'
-
 import { errorToast, successToast } from '@/utils/toasts.ts'
+import { apiClient, apiClientContext } from '@/client/baseClient.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 
-export const invokeAttributeCreateOrUpdate = (
-  attribute: EquipmentTypeAttributeModel,
-  toast: ToastServiceMethods | null = null) => {
+export const invokeAttributeCreateOrUpdate = (attribute: EquipmentTypeAttributeModel) => {
   if (attribute.id > 0) {
-    return invokeAttributeUpdate(attribute, toast)
+    return invokeAttributeUpdate(attribute)
   } else {
-    return invokeAttributeCreate(attribute, toast)
+    return invokeAttributeCreate(attribute)
   }
 }
 
-export const invokeAttributeCreate = (
-  attribute: EquipmentTypeAttributeModel,
-  toast: ToastServiceMethods | null = null) => {
-  return fetch(`/api/equipment/types/${attribute.equipmentTypeId}/attributes`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(attribute)
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json() as Promise<EquipmentTypeAttributeModel>
-      } else {
-        throw new Error('Failed to create attribute')
-      }
-    })
-    .then(data => {
-      toast?.add(successToast(`Attribute #${data.id} ${data.name} has been created`))
+export const invokeAttributeCreate = (attribute: EquipmentTypeAttributeModel) => {
+  return apiClient
+    .post<EquipmentTypeAttributeModel>(
+      `/api/equipment/types/${attribute.equipmentTypeId}/attributes`,
+      attribute,
+    )
+    .then((response) => {
+      const data = response.data
+      apiClientContext.toast?.add(
+        successToast(`Attribute #${data.id} ${data.name} has been created`),
+      )
       return data
     })
-    .catch(error => {
-      toast?.add(errorToast(error.message))
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
       throw error
     })
 }
 
-export const invokeAttributeUpdate = (
-  attribute: EquipmentTypeAttributeModel,
-  toast: ToastServiceMethods | null = null) => {
-  return fetch(`/api/equipment/types/${attribute.equipmentTypeId}/attributes/${attribute.id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(attribute)
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json() as Promise<EquipmentTypeAttributeModel>
-      } else {
-        throw new Error('Failed to update attribute')
-      }
+export const invokeAttributeUpdate = (attribute: EquipmentTypeAttributeModel) => {
+  return apiClient
+    .put<EquipmentTypeAttributeModel>(
+      `/api/equipment/types/${attribute.equipmentTypeId}/attributes/${attribute.id}`,
+      attribute,
+    )
+    .then((response) => {
+      const data = response.data
+      apiClientContext.toast?.add(
+        successToast(`Attribute #${data.id} ${data.name} has been updated`),
+      )
     })
-    .then(data => {
-      toast?.add(successToast(`Attribute #${data.id} ${data.name} has been updated`))
-    })
-    .catch(error => {
-      toast?.add(errorToast(error.message))
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
       throw error
     })
 }
 
-export const invokeAttributeDelete = (
-  attribute: EquipmentTypeAttributeModel,
-  toast: ToastServiceMethods | null = null) => {
-  return fetch(`/api/equipment/types/${attribute.equipmentTypeId}/attributes/${attribute.id}`, {
-    method: 'DELETE'
-  })
-    .then(response => {
-      if (response.ok) {
-        return
-      } else {
-        throw new Error('Failed to delete attribute')
-      }
-    })
-    .then(data => {
-      toast?.add(successToast(`Attribute #${attribute.id} ${attribute.name} has been deleted`))
+export const invokeAttributeDelete = (attribute: EquipmentTypeAttributeModel) => {
+  return apiClient
+    .delete(`/api/equipment/types/${attribute.equipmentTypeId}/attributes/${attribute.id}`)
+    .then((data) => {
+      apiClientContext.toast?.add(
+        successToast(`Attribute #${attribute.id} ${attribute.name} has been deleted`),
+      )
       return data
     })
-    .catch(error => {
-      toast?.add(errorToast(error.message))
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
     })
 }

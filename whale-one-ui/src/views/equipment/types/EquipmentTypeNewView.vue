@@ -5,17 +5,19 @@ import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
-import { useToast } from 'primevue/usetoast'
 
-import { errorToast, successToast } from '@/utils/toasts.ts'
 import router from '@/router'
-
-const toast = useToast()
+import { invokeEquipmentTypeCreate } from '@/client/equipmentTypeClient.ts'
 
 const model = ref({
   id: 0,
   version: 0,
-  name: null,
+  createdAt: '',
+  createdBy: {
+    id: 0,
+    name: '',
+  },
+  name: '',
   description: null,
 })
 
@@ -23,28 +25,11 @@ const loading = ref(false)
 
 const create = () => {
   loading.value = true
-  fetch('/api/equipment/types', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(model.value),
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error('Failed to create equipment type')
-      }
-    })
+  invokeEquipmentTypeCreate(model.value)
     .then((data) => {
-      toast.add(successToast(`Equipment Type #${data.id} ${data.name} created`))
       return router.push(`/equipment/types/${data.id}`)
     })
-    .catch((error) => {
-      toast.add(errorToast(error.message))
-      console.error(error)
-    })
+    .catch(() => {})
     .finally(() => {
       loading.value = false
     })

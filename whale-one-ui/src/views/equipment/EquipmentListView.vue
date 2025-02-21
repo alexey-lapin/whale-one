@@ -9,34 +9,27 @@ import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
 import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
-import type { PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
+import { invokeEquipmentListGet } from '@/client/equipmentClient.ts'
+import { invokeEquipmentTypeItemListGet } from '@/client/equipmentTypeClient.ts'
 
 const list: Ref<PageModel<EquipmentElementModel> | null> = ref(null)
 
 const loading = ref(false)
 const pageSize = ref(10)
 
-onMounted(() => {
-  loadPage(0, pageSize.value)
-  equipmentTypeItems(null)
-})
-
 const loadPage = (page: number, size: number) => {
   loading.value = true
-  fetch(
-    `/api/equipment?page=${page}&size=${size}&typeId=${filters.value['typeId'].value ?? ''}&name=${filters.value['name'].value ?? ''}`,
-  )
-    .then((response) => response.json())
+  invokeEquipmentListGet(page, size, filters.value['typeId'].value, filters.value['name'].value)
     .then((data) => (list.value = data))
-    .catch((error) => console.error(error))
+    .catch(() => {})
     .finally(() => (loading.value = false))
 }
 
 const equipmentTypeItems = (q: string | null) => {
-  fetch(`/api/equipment/types/items?q=${q ?? ''}`)
-    .then((response) => response.json())
+  invokeEquipmentTypeItemListGet(q)
     .then((data) => (equipmentTypes.value = data))
-    .catch((error) => console.error(error))
+    .catch(() => {})
 }
 
 const filters = ref({
@@ -44,7 +37,12 @@ const filters = ref({
   typeId: { value: null, matchMode: FilterMatchMode.EQUALS },
 })
 
-const equipmentTypes = ref([])
+onMounted(() => {
+  loadPage(0, pageSize.value)
+  equipmentTypeItems(null)
+})
+
+const equipmentTypes: Ref<BaseRefModel[]> = ref([])
 </script>
 
 <template>

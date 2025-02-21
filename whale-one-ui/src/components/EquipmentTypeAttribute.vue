@@ -39,24 +39,20 @@ const attributeTypes = [
 ]
 
 const createOrUpdateAttribute = () => {
-  invokeAttributeCreateOrUpdate(model.value, toast).then((data) => {
-    editableState.value = false
-    emits('attribute-updated', data)
-  })
-  // .catch(error => {
-  //   toast.add(errorToast(error.message))
-  //   console.error(error)
-  // })
+  invokeAttributeCreateOrUpdate(model.value, toast)
+    .then((data) => {
+      editableState.value = false
+      emits('attribute-updated', data)
+    })
+    .catch(() => {})
 }
 
 const deleteAttribute = () => {
-  invokeAttributeDelete(model.value, toast).then(() => {
-    emits('attribute-deleted', model.value.id)
-  })
-  // .catch(error => {
-  //   toast.add(errorToast(error.message))
-  //   console.error(error)
-  // })
+  invokeAttributeDelete(model.value, toast)
+    .then(() => {
+      emits('attribute-deleted', model.value.id)
+    })
+    .catch(() => {})
 }
 
 const confirmDelete = () => {
