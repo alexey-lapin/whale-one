@@ -1,27 +1,24 @@
 <script setup lang="ts">
 import { onMounted, type Ref, ref } from 'vue'
-import dayjs from 'dayjs'
 
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
-import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import Fluid from 'primevue/fluid'
 import Panel from 'primevue/panel'
 import Textarea from 'primevue/textarea'
-import { useToast } from 'primevue/usetoast'
 
 import EquipmentTypeAttribute from '@/components/EquipmentTypeAttribute.vue'
 
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 import {
-  invokeEquipmentTypeAttributeListGet,
   invokeEquipmentTypeGet,
   invokeEquipmentTypeUpdate,
 } from '@/client/equipmentTypeClient.ts'
-
-const toast = useToast()
+import EntityHeader from '@/components/EntityHeader.vue'
+import {
+  invokeAttributeListGet
+} from '@/client/equipmentTypeAttributeClient.ts'
 
 const props = defineProps<{
   id: number
@@ -39,7 +36,19 @@ const model: Ref<EquipmentTypeModel> = ref({
 })
 
 const attributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
+const deploymentAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
+
 const newAttribute: Ref<EquipmentTypeAttributeModel> = ref({
+  id: 0,
+  equipmentTypeId: props.id,
+  version: 0,
+  name: '',
+  description: '',
+  type: 'text',
+  metadata: undefined,
+})
+
+const newDeploymentAttribute: Ref<EquipmentTypeAttributeModel> = ref({
   id: 0,
   equipmentTypeId: props.id,
   version: 0,
@@ -52,6 +61,7 @@ const newAttribute: Ref<EquipmentTypeAttributeModel> = ref({
 const loading = ref(false)
 const editing = ref(false)
 const addingNewAttribute = ref(false)
+const addingNewDeploymentAttribute = ref(false)
 
 const getEquipmentType = () => {
   invokeEquipmentTypeGet(props.id)
@@ -60,8 +70,14 @@ const getEquipmentType = () => {
 }
 
 const getAttributes = () => {
-  invokeEquipmentTypeAttributeListGet(props.id)
+  invokeAttributeListGet('equipment', props.id)
     .then((data) => (attributes.value = data))
+    .catch(() => {})
+}
+
+const getDeploymentAttributes = () => {
+  invokeAttributeListGet('deployment', props.id)
+    .then((data) => (deploymentAttributes.value = data))
     .catch(() => {})
 }
 
@@ -87,64 +103,29 @@ const onAttributeDeleted = () => {
   addingNewAttribute.value = false
 }
 
+const onDeploymentAttributeUpdated = () => {
+  getDeploymentAttributes()
+  addingNewDeploymentAttribute.value = false
+}
+
+const onDeploymentAttributeDeleted = () => {
+  addingNewDeploymentAttribute.value = false
+}
+
 onMounted(() => {
   getEquipmentType()
   getAttributes()
+  getDeploymentAttributes()
 })
 </script>
 
 <template>
   <div class="mt-5">
-    <h1 class="text-xl">Equipment Type</h1>
     <div class="flex flex-col gap-5 my-4">
-      <Panel
-        header="Id"
-        toggleable
-        collapsed
-      >
-        <Fluid>
-          <div class="mt-1 grid grid-cols-6 gap-3 xs:grid-cols-1">
-            <FloatLabel variant="on">
-              <InputNumber
-                id="id"
-                v-model="model.id"
-                disabled
-              />
-              <label for="id">Id</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-              <InputNumber
-                id="version"
-                v-model="model.version"
-                disabled
-              />
-              <label for="version">Version</label>
-            </FloatLabel>
-            <FloatLabel
-              variant="on"
-              class="col-span-2"
-            >
-              <InputText
-                id="version"
-                :model-value="dayjs(model.createdAt).format('YYYY-MM-DD HH:mm:ss ZZ')"
-                disabled
-              />
-              <label for="version">Created At</label>
-            </FloatLabel>
-            <FloatLabel
-              variant="on"
-              class="col-span-2"
-            >
-              <InputText
-                id="version"
-                v-model="model.createdBy.name"
-                disabled
-              />
-              <label for="version">Created By</label>
-            </FloatLabel>
-          </div>
-        </Fluid>
-      </Panel>
+      <EntityHeader
+        :header="`Equipment Type #${model.id}`"
+        :model="model"
+      />
 
       <Panel header="Info">
         <template #icons>
@@ -195,12 +176,13 @@ onMounted(() => {
       </Panel>
 
       <Panel
-        header="Attributes"
+        header="Equipment Attributes"
         toggleable
       >
         <div class="mt-1 flex flex-col gap-3">
           <EquipmentTypeAttribute
             v-for="(attribute, index) in attributes"
+            attribute-entity="equipment"
             :key="attribute.id"
             :modelValue="attribute"
             @attribute-deleted="getAttributes()"
@@ -209,6 +191,7 @@ onMounted(() => {
           <EquipmentTypeAttribute
             v-if="addingNewAttribute"
             v-model="newAttribute"
+            attribute-entity="equipment"
             :editable="true"
             @attribute-updated="onAttributeUpdated()"
             @attribute-deleted="onAttributeDeleted()"
@@ -221,6 +204,38 @@ onMounted(() => {
           severity="secondary"
           icon="pi pi-plus"
           @click="addingNewAttribute = true"
+        />
+      </Panel>
+
+      <Panel
+        header="Deployment Attributes"
+        toggleable
+      >
+        <div class="mt-1 flex flex-col gap-3">
+          <EquipmentTypeAttribute
+            v-for="(attribute, index) in deploymentAttributes"
+            attribute-entity="deployment"
+            :key="attribute.id"
+            :modelValue="attribute"
+            @attribute-deleted="getDeploymentAttributes()"
+          />
+
+          <EquipmentTypeAttribute
+            v-if="addingNewDeploymentAttribute"
+            v-model="newDeploymentAttribute"
+            attribute-entity="deployment"
+            :editable="true"
+            @attribute-updated="onDeploymentAttributeUpdated()"
+            @attribute-deleted="onDeploymentAttributeDeleted()"
+          />
+        </div>
+        <Button
+          v-if="!addingNewDeploymentAttribute"
+          class="mt-3"
+          label="New"
+          severity="secondary"
+          icon="pi pi-plus"
+          @click="addingNewDeploymentAttribute = true"
         />
       </Panel>
     </div>

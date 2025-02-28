@@ -12,6 +12,7 @@ import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
 import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
 import { invokeEquipmentListGet } from '@/client/equipmentClient.ts'
 import { invokeEquipmentTypeItemListGet } from '@/client/equipmentTypeClient.ts'
+import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
 
 const list: Ref<PageModel<EquipmentElementModel> | null> = ref(null)
 
@@ -53,6 +54,7 @@ const equipmentTypes: Ref<BaseRefModel[]> = ref([])
         :total-records="list?.totalElements"
         v-model:rows="pageSize"
         :loading="loading"
+        size="small"
         filter-display="menu"
         v-model:filters="filters"
         paginator
@@ -139,6 +141,36 @@ const equipmentTypes: Ref<BaseRefModel[]> = ref([])
               @change="filterCallback()"
             />
           </template>
+          <template #body="slotProps">
+            <EquipmentTypeTag :name="slotProps.data.type.name" />
+          </template>
+        </Column>
+        <Column
+          field="deploymentId"
+          header="Deployed"
+          class="w-1/12"
+        >
+          <template #body="slotProps">
+            <router-link
+              v-if="slotProps.data.deploymentId"
+              v-slot="{ href, navigate }"
+              :to="`/deployments/${slotProps.data.deploymentId}`"
+            >
+              <a
+                :href="href"
+                @click="navigate"
+              >
+                <Button
+                  icon="pi pi-external-link"
+                  icon-pos="right"
+                  :label="`${slotProps.data.deploymentId}`"
+                  size="small"
+                  variant="outlined"
+                  severity="secondary"
+                />
+              </a>
+            </router-link>
+          </template>
         </Column>
         <Column
           field="active"
@@ -209,3 +241,9 @@ const equipmentTypes: Ref<BaseRefModel[]> = ref([])
     </div>
   </div>
 </template>
+
+<style scoped>
+:deep(.p-datatable-header-cell:hover) {
+  background-color: var(--p-surface-50);
+}
+</style>

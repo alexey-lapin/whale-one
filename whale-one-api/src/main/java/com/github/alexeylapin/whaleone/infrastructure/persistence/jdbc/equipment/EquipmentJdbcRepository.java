@@ -1,5 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
+import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,9 +47,29 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
 
     List<EquipmentEntity> findAllByDeploymentId(long id);
 
+    @Query("""
+            SELECT e.id, e.name
+            FROM equipment e
+            WHERE
+                1 = 1
+                AND e.type_id = :typeId
+                AND e.active = TRUE
+                AND (:name IS NULL OR e.name ILIKE '%' || :name || '%')
+                AND (:includeAllocated = TRUE OR e.deployment_id IS NULL)
+            """)
+    List<EquipmentItem> findAllItems(long size,
+                                     long offset,
+                                     long typeId,
+                                     @Nullable String name,
+                                     boolean includeAllocated);
+
     class EquipmentListElementRowMapper implements RowMapper<EquipmentListElement> {
         @Override
         public EquipmentListElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Long deploymentId = rs.getLong("deployment_id");
+            if (rs.wasNull()) {
+                deploymentId = null;
+            }
             return EquipmentListElement.builder()
                     .id(rs.getLong("id"))
                     .version(rs.getInt("version"))
@@ -56,7 +78,7 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .active(rs.getBoolean("active"))
                     .name(rs.getString("name"))
                     .type(new EquipmentTypeRef(rs.getLong("type_id"), rs.getString("type_name")))
-                    .deploymentId(rs.getLong("deployment_id"))
+                    .deploymentId(deploymentId)
                     .build();
         }
     }

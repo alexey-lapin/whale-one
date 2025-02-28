@@ -4,7 +4,7 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 
 import java.util.Optional;
 
-public interface EquipmentTypeAttributeRepository {
+public interface EquipmentTypeDeploymentAttributeRepository {
 
     EquipmentTypeAttribute save(EquipmentTypeAttribute equipmentTypeAttribute);
 

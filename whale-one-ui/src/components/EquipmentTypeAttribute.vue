@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 
 import AutoComplete from 'primevue/autocomplete'
-
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import FloatLabel from 'primevue/floatlabel'
@@ -11,20 +10,21 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
 import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
 
 import {
+  type AttributeEntity,
   invokeAttributeCreateOrUpdate,
-  invokeAttributeDelete,
+  invokeAttributeDelete
 } from '@/client/equipmentTypeAttributeClient.ts'
 import { deleteConfirm } from '@/utils/confirms'
+
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 
-const toast = useToast()
 const confirm = useConfirm()
 
 const model = defineModel<EquipmentTypeAttributeModel>({ required: true })
-const { editable = false } = defineProps<{
+const { attributeEntity, editable = false } = defineProps<{
+  attributeEntity: AttributeEntity
   editable?: boolean
 }>()
 const emits = defineEmits(['attribute-updated', 'attribute-deleted'])
@@ -39,7 +39,7 @@ const attributeTypes = [
 ]
 
 const createOrUpdateAttribute = () => {
-  invokeAttributeCreateOrUpdate(model.value, toast)
+  invokeAttributeCreateOrUpdate(attributeEntity, model.value)
     .then((data) => {
       editableState.value = false
       emits('attribute-updated', data)
@@ -48,7 +48,7 @@ const createOrUpdateAttribute = () => {
 }
 
 const deleteAttribute = () => {
-  invokeAttributeDelete(model.value, toast)
+  invokeAttributeDelete(attributeEntity, model.value)
     .then(() => {
       emits('attribute-deleted', model.value.id)
     })

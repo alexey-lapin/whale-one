@@ -2,20 +2,19 @@
 import { onMounted, ref, type Ref } from 'vue'
 
 import Button from 'primevue/button'
-import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel'
-import Fluid from 'primevue/fluid'
 import Panel from 'primevue/panel'
 import ToggleButton from 'primevue/togglebutton'
-import dayjs from 'dayjs'
 
+import EntityHeader from '@/components/EntityHeader.vue'
 import EquipmentAttribute from '@/components/EquipmentAttribute.vue'
 
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
 import { invokeEquipmentGet, invokeEquipmentUpdate } from '@/client/equipmentClient.ts'
-import { invokeEquipmentTypeAttributeListGet } from '@/client/equipmentTypeClient.ts'
+import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
+import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
 
 const props = defineProps<{
   id: number
@@ -52,7 +51,7 @@ const getEquipment = () => {
 }
 
 const getEquipmentTypeAttributes = () => {
-  invokeEquipmentTypeAttributeListGet(model.value.type.id)
+  invokeAttributeListGet('equipment', model.value.type.id)
     .then((data) => (equipmentTypeAttributes.value = data))
     .then(() => (attributes.value = collectAttributes()))
     .catch(() => {})
@@ -88,58 +87,16 @@ onMounted(() => {
 
 <template>
   <div class="mt-5">
-    <h1 class="text-xl">Equipment</h1>
     <div class="flex flex-col gap-5 my-4">
-      <Panel
-        header="Id"
-        toggleable
-        collapsed
-      >
-        <Fluid>
-          <div class="mt-1 grid grid-cols-6 gap-3 xs:grid-cols-1">
-            <FloatLabel variant="on">
-              <InputNumber
-                id="id"
-                v-model="model.id"
-                disabled
-              />
-              <label for="id">Id</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-              <InputNumber
-                id="version"
-                v-model="model.version"
-                disabled
-              />
-              <label for="version">Version</label>
-            </FloatLabel>
-            <FloatLabel
-              variant="on"
-              class="col-span-2"
-            >
-              <InputText
-                id="version"
-                :model-value="dayjs(model.createdAt).format('YYYY-MM-DD HH:mm:ss ZZ')"
-                disabled
-              />
-              <label for="version">Created At</label>
-            </FloatLabel>
-            <FloatLabel
-              variant="on"
-              class="col-span-2"
-            >
-              <InputText
-                id="version"
-                v-model="model.createdBy.name"
-                disabled
-              />
-              <label for="version">Created By</label>
-            </FloatLabel>
-          </div>
-        </Fluid>
-      </Panel>
+      <EntityHeader
+        :header="`Equipment #${model.id}`"
+        :model="model"
+      />
 
       <Panel header="Info">
+        <template #header>
+          <EquipmentTypeTag :name="model.type.name" />
+        </template>
         <template #icons>
           <div class="flex gap-2">
             <ToggleButton

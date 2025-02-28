@@ -22,7 +22,7 @@ public class DeploymentEntity {
     private long createdById;
 
     private long projectId;
-    private long siteId;
+    private long projectSiteId;
     private String name;
     private String description;
     private DeploymentStatus status;

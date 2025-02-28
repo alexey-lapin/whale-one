@@ -1,5 +1,5 @@
 import { apiClient, apiClientContext } from '@/client/baseClient.ts'
-import type { PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
 import type {
   EquipmentElementModel,
@@ -59,6 +59,16 @@ export const invokeEquipmentListGet = (
     .get<PageModel<EquipmentElementModel>>(
       `/api/equipment?page=${page}&size=${size}&typeId=${typeId ?? ''}&name=${name ?? ''}`,
     )
+    .then((response) => response.data)
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
+      throw error
+    })
+}
+
+export const invokeEquipmentItemListGet = (typeId: number, q?: string | null) => {
+  return apiClient
+    .get<BaseRefModel[]>(`/api/equipment/items?typeId=${typeId}&q=${q ?? ''}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))

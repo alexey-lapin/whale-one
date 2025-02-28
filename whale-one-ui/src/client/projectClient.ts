@@ -2,7 +2,7 @@ import { errorToast, successToast } from '@/utils/toasts.ts'
 import { apiClient, apiClientContext } from '@/client/baseClient.ts'
 
 import type { ProjectCampaignModel, ProjectModel, ProjectSiteModel } from '@/model/ProjectModel.ts'
-import type { PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
 
 export const invokeProjectCreate = (project: ProjectModel) => {
   return apiClient
@@ -52,6 +52,16 @@ export const invokeProjectListGet = (page: number, size: number) => {
     })
 }
 
+export const invokeProjectItemListGet = (q: string | null) => {
+  return apiClient
+    .get<BaseRefModel[]>(`/api/projects/items?q=${q}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
+      throw error
+    })
+}
+
 export const invokeSiteCreateOrUpdate = (site: ProjectSiteModel) => {
   if (site.id > 0) {
     return invokeSiteUpdate(site)
@@ -91,6 +101,16 @@ export const invokeSiteUpdate = (site: ProjectSiteModel) => {
 export const invokeSiteListGet = (id: number) => {
   return apiClient
     .get<ProjectSiteModel[]>(`/api/projects/${id}/sites`)
+    .then((response) => response.data)
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
+      throw error
+    })
+}
+
+export const invokeSiteItemListGet = (projectId: number, q: string | null) => {
+  return apiClient
+    .get<BaseRefModel[]>(`/api/projects/${projectId}/sites/items?q=${q ?? ''}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))

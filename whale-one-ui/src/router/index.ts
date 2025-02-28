@@ -39,17 +39,17 @@ const router = createRouter({
         {
           path: '',
           name: 'deployment-list',
-          component: () => import('@/views/DeploymentsView.vue'),
+          component: () => import('@/views/deployment/DeploymentListView.vue'),
         },
         {
           path: 'new',
           name: 'deployment-new',
-          component: () => import('@/views/DeploymentNewView.vue'),
+          component: () => import('@/views/deployment/DeploymentNewView.vue'),
         },
         {
           path: ':id',
           name: 'deployment-detail',
-          component: () => import('@/views/DeploymentView.vue'),
+          component: () => import('@/views/deployment/DeploymentView.vue'),
           props: (route) => ({ id: parseInt(route.params.id as string) }),
         },
       ],

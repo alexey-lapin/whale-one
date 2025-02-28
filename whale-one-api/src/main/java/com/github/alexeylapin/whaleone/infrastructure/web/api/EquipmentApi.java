@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -67,6 +69,13 @@ public class EquipmentApi {
                                                 @RequestParam Optional<Long> typeId) {
         var aPage = equipmentRepository.findAllElements(page, size, name.orElse(null), typeId.orElse(null));
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
+    }
+
+    @GetMapping("/equipment/items")
+    public List<EquipmentItem> getAll(@RequestParam Long typeId,
+                                      @RequestParam Optional<String> name,
+                                      @RequestParam Optional<Long> deploymentId) {
+        return equipmentRepository.findAllItems(typeId, name.orElse(null), false);
     }
 
 }

@@ -3,7 +3,12 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 import com.github.alexeylapin.whaleone.domain.model.Deployment;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
+import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -11,37 +16,29 @@ import org.springframework.stereotype.Repository;
 import java.time.ZoneId;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
 public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
 
-    private final DeploymentJdbcRepository repository;
+    private static final DeploymentMapper MAPPER = Mappers.getMapper(DeploymentMapper.class);
 
-    public DeploymentJdbcRepositoryAdapter(DeploymentJdbcRepository repository) {
-        this.repository = repository;
-    }
+    private final DeploymentJdbcRepository repository;
 
     @Override
     public Deployment save(Deployment deployment) {
-        DeploymentEntity entity = new DeploymentEntity();
-        entity.setId(deployment.id());
-        entity.setVersion(deployment.version());
-        entity.setCreatedAt(deployment.createdAt().toInstant());
-        entity.setCreatedById(deployment.createdById());
-        entity.setProjectId(deployment.projectId());
-        entity.setSiteId(deployment.siteId());
-        entity.setName(deployment.name());
-        entity.setDescription(deployment.description());
-        entity.setStatus(deployment.status());
-        entity = repository.save(entity);
-        return map(entity).toBuilder()
+        DeploymentEntity entity = MAPPER.map(deployment);
+        DeploymentEntity savedEntity = repository.save(entity);
+        return MAPPER.map(savedEntity).toBuilder()
                 .createdBy(deployment.createdBy())
+                .projectRef(deployment.projectRef())
+                .projectSiteRef(deployment.projectSiteRef())
                 .build();
     }
 
     @Override
     public Optional<Deployment> findById(long id) {
         return repository.findOneById(id)
-                .map(DeploymentJdbcRepositoryAdapter::map);
+                .map(MAPPER::map);
     }
 
     @Override
@@ -49,27 +46,30 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         var pageable = PageRequest.of(page, size);
         var items = repository.findAll(pageable.getPageSize(), pageable.getOffset());
         var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
-        return new DefaultPage<>(aPage.map(DeploymentJdbcRepositoryAdapter::map));
+        return new DefaultPage<>(aPage.map(MAPPER::map));
     }
 
-    private static Deployment map(DeploymentWithUserNameEntity entity) {
-        return map((DeploymentEntity) entity).toBuilder()
-                .createdBy(entity.getCreatedByName())
-                .build();
-    }
+    @Mapper(uses = BaseMapper.class)
+    interface DeploymentMapper {
 
-    private static Deployment map(DeploymentEntity entity) {
-        return Deployment.builder()
-                .id(entity.getId())
-                .version(entity.getVersion())
-                .createdAt(entity.getCreatedAt().atZone(ZoneId.systemDefault()))
-                .createdById(entity.getCreatedById())
-                .projectId(entity.getProjectId())
-                .siteId(entity.getSiteId())
-                .name(entity.getName())
-                .description(entity.getDescription())
-                .status(entity.getStatus())
-                .build();
+        @Mapping(source = "createdBy.id", target = "createdById")
+//        @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
+        @Mapping(source = "projectRef.id", target = "projectId")
+        @Mapping(source = "projectSiteRef.id", target = "projectSiteId")
+        DeploymentEntity map(Deployment deployment);
+
+        Deployment map(DeploymentEntity entity);
+
+        @Mapping(source = "createdById", target = "createdBy.id")
+        @Mapping(source = "createdByName", target = "createdBy.name")
+//        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
+//        @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
+        @Mapping(source = "projectId", target = "projectRef.id")
+        @Mapping(source = "projectName", target = "projectRef.name")
+        @Mapping(source = "projectSiteId", target = "projectSiteRef.id")
+        @Mapping(source = "projectSiteName", target = "projectSiteRef.name")
+        Deployment map(DeploymentJdbcRepository.DeploymentProjection entity);
+
     }
 
 }

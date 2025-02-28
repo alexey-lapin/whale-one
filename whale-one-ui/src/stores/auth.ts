@@ -52,6 +52,13 @@ export const useAuthStore = defineStore('auth', () => {
         Authorization: `Bearer ${token.value?.refresh_token}`,
       },
     })
+      .then((res) => {
+        if (res.ok) {
+          return res
+        } else {
+          throw new Error("Session expired - please login again")
+        }
+      })
       .then((res) => res.json())
       .then((data) => {
         token.value = data
@@ -60,7 +67,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     token.value = null
-    return router.push({ name: 'login' })
+    let redirect = ''
+    if (router.currentRoute.value.name !== 'login') {
+      redirect = router.currentRoute.value.fullPath
+    }
+    return router.push({ name: 'login', query: { redirect } })
   }
 
   const username = computed(() => jwt.value?.payload.value?.sub)

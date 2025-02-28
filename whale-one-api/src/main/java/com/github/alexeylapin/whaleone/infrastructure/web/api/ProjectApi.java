@@ -123,9 +123,9 @@ public class ProjectApi {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing project expected");
         Assert.isTrue(siteId > 0,
-                "siteId must be greater than 0 - existing site expected");
+                "project must be greater than 0 - existing site expected");
         Assert.isTrue(siteId == site.id(),
-                "siteId must match");
+                "project must match");
         site = site.toBuilder()
                 .id(siteId)
                 .projectId(id)

@@ -15,6 +15,6 @@ export interface EntityHeaderModel {
   version: number
   createdAt: string
   createdBy: BaseRefModel
-  lastUpdatedAt: string
-  lastUpdatedBy: BaseRefModel
+  lastUpdatedAt?: string | null
+  lastUpdatedBy?: BaseRefModel | null
 }

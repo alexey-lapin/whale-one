@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
@@ -45,6 +46,17 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         var items = repository.findAllElements(pageable.getPageSize(), pageable.getOffset(), name, typeId);
         var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
         return new DefaultPage<>(aPage);
+    }
+
+    @Override
+    public List<EquipmentItem> findAllItems(long typeId, String nameQuery, boolean includeAllocated) {
+        var pageable = PageRequest.of(0, 50);
+        return repository.findAllItems(
+                pageable.getPageSize(),
+                pageable.getOffset(),
+                typeId,
+                nameQuery,
+                includeAllocated);
     }
 
     @Override

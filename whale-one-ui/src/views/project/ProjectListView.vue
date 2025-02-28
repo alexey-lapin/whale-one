@@ -48,6 +48,7 @@ onMounted(() => {
         :rows="pageSize"
         :rows-per-page-options="[5, 10, 20, 50]"
         :loading="loading"
+        size="small"
         row-hover
         filter-display="menu"
         v-model:filters="filters"
