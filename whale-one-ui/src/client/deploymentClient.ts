@@ -5,7 +5,7 @@ import type {
   DeploymentModel,
   DeploymentNewModel,
 } from '@/model/DeploymentModel.ts'
-import type { EquipmentElementModel, EquipmentModel } from '@/model/EquipmentModel.ts'
+import type { EquipmentModel } from '@/model/EquipmentModel.ts'
 import type { PageModel } from '@/model/BaseModel.ts'
 
 export const invokeDeploymentCreate = (deployment: DeploymentNewModel) => {
@@ -34,14 +34,9 @@ export const invokeDeploymentGet = (id: number) => {
     })
 }
 
-export const invokeDeploymentListGet = (
-  page: number,
-  size: number,
-) => {
+export const invokeDeploymentListGet = (page: number, size: number) => {
   return apiClient
-    .get<PageModel<DeploymentModel>>(
-      `/api/deployments?page=${page}&size=${size}`,
-    )
+    .get<PageModel<DeploymentModel>>(`/api/deployments?page=${page}&size=${size}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))
@@ -51,9 +46,7 @@ export const invokeDeploymentListGet = (
 
 export const invokeDeploymentStatusUpdate = (deploymentId: number, status: string) => {
   return apiClient
-    .put<DeploymentModel>(
-      `/api/deployments/${deploymentId}/status?status=${status}`,
-    )
+    .put<DeploymentModel>(`/api/deployments/${deploymentId}/status?status=${status}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))

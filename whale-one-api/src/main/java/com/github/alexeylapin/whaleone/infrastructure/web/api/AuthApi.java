@@ -1,7 +1,8 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
-import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -22,26 +23,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthApi {
 
-
-    private final DefaultOAuth2AccessTokenResponseMapConverter convert = new DefaultOAuth2AccessTokenResponseMapConverter();
-    private final AuthenticationConfiguration authenticationConfiguration;
+    private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
+    private final Duration refreshTokenTimeToLive;
+    private final Duration accessTokenTimeToLive;
+    private final DefaultOAuth2AccessTokenResponseMapConverter convert;
+
+    @SneakyThrows
+    public AuthApi(AuthenticationConfiguration authenticationConfiguration,
+                   JwtEncoder jwtEncoder,
+                   @Value("${security.jwt.token.refresh-token-time-to-live:7d}") Duration refreshTokenTimeToLive,
+                   @Value("${security.jwt.token.access-token-time-to-live:15m}") Duration accessTokenTimeToLive) {
+        this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
+        this.jwtEncoder = jwtEncoder;
+        this.refreshTokenTimeToLive = refreshTokenTimeToLive;
+        this.accessTokenTimeToLive = accessTokenTimeToLive;
+        this.convert = new DefaultOAuth2AccessTokenResponseMapConverter();
+    }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginRequest loginRequest) throws Exception {
-        AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
-
-        var authRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
+    public Map<String, Object> login(@RequestBody LoginRequest loginRequest) {
+        var authRequest = UsernamePasswordAuthenticationToken.unauthenticated(
+                loginRequest.username(),
                 loginRequest.password());
 
         var authResult = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(authRequest);
@@ -57,19 +70,21 @@ public class AuthApi {
     }
 
     @PostMapping("/refresh")
-    public Map<String, Object> refresh(@AuthenticationPrincipal IdUser token) throws Exception {
+    public Map<String, Object> refresh(@AuthenticationPrincipal IdUser token) {
         var jwt = (Jwt) token.getDelegate();
-
-        var tokenResponse = createTokenResponse(token.getId(), jwt.getSubject(), jwt.getClaim(OAuth2ParameterNames.SCOPE));
-
+        var tokenResponse = createTokenResponse(token.getId(),
+                jwt.getSubject(),
+                jwt.getClaim(OAuth2ParameterNames.SCOPE));
         return convert.convert(tokenResponse);
     }
 
-    private OAuth2AccessTokenResponse createTokenResponse(long userId, String subject, Collection<String> scopes) {
+    private OAuth2AccessTokenResponse createTokenResponse(long userId,
+                                                          String subject,
+                                                          Collection<String> scopes) {
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
 
         Instant issuedAt = Instant.now();
-        Instant expiresAt = issuedAt.plusSeconds(60);
+        Instant expiresAt = issuedAt.plusSeconds(accessTokenTimeToLive.toSeconds());
 
         JwtClaimsSet accessTokenClaims = JwtClaimsSet.builder()
                 .subject(subject)
@@ -83,7 +98,7 @@ public class AuthApi {
         String accessToken = jwtEncoder.encode(JwtEncoderParameters.from(header, accessTokenClaims)).getTokenValue();
 
         JwtClaimsSet refreshTokenClaims = JwtClaimsSet.from(accessTokenClaims)
-                .expiresAt(issuedAt.plusSeconds(180))
+                .expiresAt(issuedAt.plusSeconds(refreshTokenTimeToLive.toSeconds()))
                 .id(UUID.randomUUID().toString())
                 .build();
 

@@ -7,6 +7,7 @@ import lombok.experimental.Delegate;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
+@SuppressWarnings("unchecked")
 public class DefaultPage<T> implements Page<T> {
 
     @Delegate

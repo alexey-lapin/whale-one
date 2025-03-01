@@ -7,13 +7,13 @@ plugins {
 
 node {
     download = false
-    npmCommand = "/opt/homebrew/opt/node@22/bin/npm"
+    npmCommand = project.findProperty("npmCommand") as String? ?: "npm"
 }
 
 tasks.register<NpmTask>("npmBuild") {
     dependsOn("npmInstall")
     args = listOf("run", "build")
-    environment = mapOf("VITE_APP_PUBLIC_PATH" to "/new")
+//    environment = mapOf("VITE_APP_PUBLIC_PATH" to "/new")
 }
 
 tasks.register<Jar>("frontendJar") {
@@ -22,7 +22,7 @@ tasks.register<Jar>("frontendJar") {
     destinationDirectory.set(file(layout.buildDirectory.file("libs")))
 
     from("dist") {
-        into("static/new") // Include built assets in a 'static' folder inside the JAR
+        into("static")
     }
 }
 

@@ -58,6 +58,9 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         @Mapping(source = "projectSiteRef.id", target = "projectSiteId")
         DeploymentEntity map(Deployment deployment);
 
+        @Mapping(source = "createdById", target = "createdBy.id")
+        @Mapping(source = "projectId", target = "projectRef.id")
+        @Mapping(source = "projectSiteId", target = "projectSiteRef.id")
         Deployment map(DeploymentEntity entity);
 
         @Mapping(source = "createdById", target = "createdBy.id")

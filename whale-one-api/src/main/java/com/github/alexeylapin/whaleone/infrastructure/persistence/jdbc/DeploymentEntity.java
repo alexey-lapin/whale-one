@@ -21,10 +21,13 @@ public class DeploymentEntity {
     private Instant createdAt;
     private long createdById;
 
-    private long projectId;
-    private long projectSiteId;
+    private DeploymentStatus status;
     private String name;
     private String description;
-    private DeploymentStatus status;
+    private long projectId;
+    private long projectSiteId;
+    private String platform;
+    private String providerOrganisations;
+    private String providerParticipants;
 
 }

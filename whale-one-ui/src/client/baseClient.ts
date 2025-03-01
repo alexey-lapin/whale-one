@@ -2,6 +2,8 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth.ts'
 import type { ToastServiceMethods } from 'primevue'
 
+export const baseURL = import.meta.env.VITE_APP_API_BASE_URL
+
 export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',

@@ -3,7 +3,6 @@ plugins {
     id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "0.10.4"
-    id("gg.jte.gradle") version "3.1.15"
     id("pl.allegro.tech.build.axion-release") version "1.18.7"
 }
 
@@ -17,8 +16,6 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok")
 
-    jteGenerate("gg.jte:jte-native-resources:3.1.15")
-
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -26,13 +23,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
-//    implementation("org.springframework.session:spring-session-jdbc")
 
     implementation("org.mapstruct:mapstruct:1.6.3")
-
-    implementation("gg.jte:jte:3.1.15")
-    implementation("gg.jte:jte-native-resources:3.1.15")
-    implementation("gg.jte:jte-spring-boot-starter-3:3.1.15")
 
     implementation(project(":whale-one-ui"))
 
@@ -64,12 +56,6 @@ graalvmNative {
             buildArgs.add("--verbose")
         }
     }
-}
-
-jte {
-    generate()
-    targetDirectory.set(file("build/classes/java/main").toPath())
-    jteExtension("gg.jte.nativeimage.NativeResourcesExtension")
 }
 
 tasks.bootBuildImage {
