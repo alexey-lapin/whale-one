@@ -4,6 +4,8 @@ import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipment;
 import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment.EquipmentJdbcRepository;
+import org.springframework.aot.hint.annotation.RegisterReflection;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.Repository;

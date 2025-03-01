@@ -4,12 +4,21 @@ import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipment;
 import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipmentItem;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentEquipmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.annotation.RegisterReflection;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
+@RegisterReflection(
+        classes = DeploymentEquipmentJdbcRepository.DeploymentEquipmentItemRowMapper.class,
+        memberCategories = {
+                MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+                MemberCategory.INVOKE_DECLARED_METHODS
+        }
+)
 public class DeploymentEquipmentJdbcRepositoryAdapter implements DeploymentEquipmentRepository {
 
     private final DeploymentEquipmentJdbcRepository repository;

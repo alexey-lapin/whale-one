@@ -6,6 +6,7 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.aot.hint.annotation.RegisterReflection;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.jdbc.core.RowMapper;

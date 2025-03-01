@@ -4,12 +4,12 @@ import com.github.alexeylapin.whaleone.domain.model.Project;
 import com.github.alexeylapin.whaleone.domain.model.ProjectItem;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectRepository;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -22,15 +22,14 @@ import java.util.Optional;
 @Repository
 public class ProjectJdbcRepositoryAdapter implements ProjectRepository {
 
-    private static final ProjectMapper MAPPER = Mappers.getMapper(ProjectMapper.class);
-
     private final ProjectJdbcRepository repository;
+    private final ProjectMapper mapper;
 
     @Override
     public Project save(Project project) {
-        ProjectEntity entity = MAPPER.map(project);
+        ProjectEntity entity = mapper.map(project);
         entity = repository.save(entity);
-        return MAPPER.map(entity).toBuilder()
+        return mapper.map(entity).toBuilder()
                 .createdBy(project.createdBy())
                 .lastUpdatedBy(project.lastUpdatedBy())
                 .build();
@@ -39,7 +38,7 @@ public class ProjectJdbcRepositoryAdapter implements ProjectRepository {
     @Override
     public Optional<Project> findById(long id) {
         return repository.findOneById(id)
-                .map(MAPPER::map);
+                .map(mapper::map);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class ProjectJdbcRepositoryAdapter implements ProjectRepository {
         var pageable = PageRequest.of(page, size);
         var items = repository.findAll(pageable.getPageSize(), pageable.getOffset());
         var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
-        return new DefaultPage<>(aPage.map(MAPPER::map));
+        return new DefaultPage<>(aPage.map(mapper::map));
     }
 
     @Override
@@ -56,7 +55,7 @@ public class ProjectJdbcRepositoryAdapter implements ProjectRepository {
         return repository.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
     }
 
-    @Mapper(uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
     interface ProjectMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")

@@ -10,6 +10,7 @@ import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeAttributeReposit
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeDeploymentAttributeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import com.github.alexeylapin.whaleone.infrastructure.web.api.serde.RawJsonDeserializer;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class EquipmentTypeApi {
     private final EquipmentTypeRepository equipmentTypeRepository;
     private final EquipmentTypeAttributeRepository equipmentTypeAttributeRepository;
     private final EquipmentTypeDeploymentAttributeRepository equipmentTypeDeploymentAttributeRepository;
+    private final EquipmentTypeAttributeMapper mapper;
 
     @PostMapping("/equipment/types")
     public EquipmentType create(@RequestBody EquipmentType equipmentType,
@@ -89,18 +91,18 @@ public class EquipmentTypeApi {
     @PostMapping("/equipment/types/{id}/attributes/equipment")
     public EquipmentTypeAttributeDto createSite(@PathVariable long id,
                                                 @RequestBody EquipmentTypeAttributeDto attributeDto) {
-        EquipmentTypeAttribute attribute = EquipmentTypeAttributeMapper.INSTANCE.fromDto(attributeDto).toBuilder()
+        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
         EquipmentTypeAttribute savedAttribute = equipmentTypeAttributeRepository.save(attribute);
-        return EquipmentTypeAttributeMapper.INSTANCE.toDto(savedAttribute);
+        return mapper.toDto(savedAttribute);
     }
 
     @GetMapping("/equipment/types/{id}/attributes/equipment")
     public List<EquipmentTypeAttributeDto> getAllSites(@PathVariable long id) {
         return equipmentTypeAttributeRepository.findAll(id)
-                .map(EquipmentTypeAttributeMapper.INSTANCE::toDto)
+                .map(mapper::toDto)
                 .getContent();
     }
 
@@ -119,12 +121,12 @@ public class EquipmentTypeApi {
                 "project must be greater than 0 - existing attribute expected");
         Assert.isTrue(attributeId == attributeDto.id(),
                 "project must match");
-        EquipmentTypeAttribute attribute = EquipmentTypeAttributeMapper.INSTANCE.fromDto(attributeDto).toBuilder()
+        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(attributeId)
                 .equipmentTypeId(id)
                 .build();
         EquipmentTypeAttribute savedAttribute = equipmentTypeAttributeRepository.save(attribute);
-        return EquipmentTypeAttributeMapper.INSTANCE.toDto(savedAttribute);
+        return mapper.toDto(savedAttribute);
     }
 
     @DeleteMapping("/equipment/types/{id}/attributes/equipment/{attributeId}")
@@ -137,18 +139,18 @@ public class EquipmentTypeApi {
     @PostMapping("/equipment/types/{id}/attributes/deployment")
     public EquipmentTypeAttributeDto createDeploymentAttribute(@PathVariable long id,
                                                                @RequestBody EquipmentTypeAttributeDto attributeDto) {
-        EquipmentTypeAttribute attribute = EquipmentTypeAttributeMapper.INSTANCE.fromDto(attributeDto).toBuilder()
+        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
         EquipmentTypeAttribute savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
-        return EquipmentTypeAttributeMapper.INSTANCE.toDto(savedAttribute);
+        return mapper.toDto(savedAttribute);
     }
 
     @GetMapping("/equipment/types/{id}/attributes/deployment")
     public List<EquipmentTypeAttributeDto> getAllDeploymentAttributes(@PathVariable long id) {
         return equipmentTypeDeploymentAttributeRepository.findAll(id)
-                .map(EquipmentTypeAttributeMapper.INSTANCE::toDto)
+                .map(mapper::toDto)
                 .getContent();
     }
 
@@ -162,12 +164,12 @@ public class EquipmentTypeApi {
                 "project must be greater than 0 - existing attribute expected");
         Assert.isTrue(attributeId == attributeDto.id(),
                 "project must match");
-        EquipmentTypeAttribute attribute = EquipmentTypeAttributeMapper.INSTANCE.fromDto(attributeDto).toBuilder()
+        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(attributeId)
                 .equipmentTypeId(id)
                 .build();
         EquipmentTypeAttribute savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
-        return EquipmentTypeAttributeMapper.INSTANCE.toDto(savedAttribute);
+        return mapper.toDto(savedAttribute);
     }
 
     @DeleteMapping("/equipment/types/{id}/attributes/deployment/{attributeId}")
@@ -188,10 +190,8 @@ public class EquipmentTypeApi {
     ) {
     }
 
-    @Mapper
+    @Mapper(config = MappingConfig.class)
     interface EquipmentTypeAttributeMapper {
-
-        EquipmentTypeAttributeMapper INSTANCE = Mappers.getMapper(EquipmentTypeAttributeMapper.class);
 
         EquipmentTypeAttribute fromDto(EquipmentTypeAttributeDto attribute);
 

@@ -3,45 +3,40 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipmen
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeDeploymentAttributeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
+import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
 public class EquipmentTypeDeploymentAttributeJdbcRepositoryAdapter implements EquipmentTypeDeploymentAttributeRepository {
 
-    private static final EquipmentTypeDeploymentAttributeMapper MAPPER =
-            Mappers.getMapper(EquipmentTypeDeploymentAttributeMapper.class);
-
     private final EquipmentTypeDeploymentAttributeJdbcRepository delegate;
-
-    public EquipmentTypeDeploymentAttributeJdbcRepositoryAdapter(
-            EquipmentTypeDeploymentAttributeJdbcRepository delegate) {
-        this.delegate = delegate;
-    }
+    private final EquipmentTypeDeploymentAttributeMapper mapper;
 
     @Override
     public EquipmentTypeAttribute save(EquipmentTypeAttribute equipmentTypeAttribute) {
-        var entity = MAPPER.map(equipmentTypeAttribute);
+        var entity = mapper.map(equipmentTypeAttribute);
         var savedEntity = delegate.save(entity);
-        return MAPPER.map(savedEntity);
+        return mapper.map(savedEntity);
     }
 
     @Override
     public Optional<EquipmentTypeAttribute> findById(long id) {
-        return delegate.findById(id).map(MAPPER::map);
+        return delegate.findById(id).map(mapper::map);
     }
 
     @Override
     public Page<EquipmentTypeAttribute> findAll(long equipmentTypeId) {
         var page = delegate.findByEquipmentTypeId(equipmentTypeId, Pageable.unpaged(Sort.by("id")));
-        return new DefaultPage<>(page.map(MAPPER::map));
+        return new DefaultPage<>(page.map(mapper::map));
     }
 
     @Override
@@ -49,7 +44,7 @@ public class EquipmentTypeDeploymentAttributeJdbcRepositoryAdapter implements Eq
         delegate.deleteById(id);
     }
 
-    @Mapper
+    @Mapper(config = MappingConfig.class)
     interface EquipmentTypeDeploymentAttributeMapper {
 
         EquipmentTypeAttribute map(EquipmentTypeDeploymentAttributeEntity source);

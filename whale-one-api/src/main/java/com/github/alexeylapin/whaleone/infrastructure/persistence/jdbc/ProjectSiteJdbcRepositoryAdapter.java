@@ -4,11 +4,11 @@ import com.github.alexeylapin.whaleone.domain.model.ProjectSite;
 import com.github.alexeylapin.whaleone.domain.model.ProjectSiteItem;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectSiteRepository;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,26 +21,25 @@ import java.util.Optional;
 @Repository
 public class ProjectSiteJdbcRepositoryAdapter implements ProjectSiteRepository {
 
-    private static final ProjectSiteMapper MAPPER = Mappers.getMapper(ProjectSiteMapper.class);
-
     private final ProjectSiteJdbcRepository repository;
+    private final ProjectSiteMapper mapper;
 
     @Override
     public ProjectSite save(ProjectSite projectSite) {
-        ProjectSiteEntity entity = MAPPER.map(projectSite);
+        ProjectSiteEntity entity = mapper.map(projectSite);
         ProjectSiteEntity savedEntity = repository.save(entity);
-        return MAPPER.map(savedEntity);
+        return mapper.map(savedEntity);
     }
 
     @Override
     public Optional<ProjectSite> findById(long id) {
-        return repository.findById(id).map(MAPPER::map);
+        return repository.findById(id).map(mapper::map);
     }
 
     @Override
     public Page<ProjectSite> findAll(long projectId) {
         var page = repository.findAllByProjectId(projectId, Pageable.unpaged(Sort.by("id")));
-        return new DefaultPage<>(page.map(MAPPER::map));
+        return new DefaultPage<>(page.map(mapper::map));
     }
 
     @Override
@@ -54,7 +53,7 @@ public class ProjectSiteJdbcRepositoryAdapter implements ProjectSiteRepository {
         repository.deleteById(id);
     }
 
-    @Mapper(uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
     interface ProjectSiteMapper {
 
         ProjectSiteEntity map(ProjectSite source);

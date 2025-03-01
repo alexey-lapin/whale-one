@@ -3,6 +3,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 import com.github.alexeylapin.whaleone.domain.model.Deployment;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
@@ -13,22 +14,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.time.ZoneId;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
 public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
 
-    private static final DeploymentMapper MAPPER = Mappers.getMapper(DeploymentMapper.class);
-
     private final DeploymentJdbcRepository repository;
+    private final DeploymentMapper mapper;
 
     @Override
     public Deployment save(Deployment deployment) {
-        DeploymentEntity entity = MAPPER.map(deployment);
+        DeploymentEntity entity = mapper.map(deployment);
         DeploymentEntity savedEntity = repository.save(entity);
-        return MAPPER.map(savedEntity).toBuilder()
+        return mapper.map(savedEntity).toBuilder()
                 .createdBy(deployment.createdBy())
                 .projectRef(deployment.projectRef())
                 .projectSiteRef(deployment.projectSiteRef())
@@ -38,7 +37,7 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
     @Override
     public Optional<Deployment> findById(long id) {
         return repository.findOneById(id)
-                .map(MAPPER::map);
+                .map(mapper::map);
     }
 
     @Override
@@ -46,11 +45,11 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         var pageable = PageRequest.of(page, size);
         var items = repository.findAll(pageable.getPageSize(), pageable.getOffset());
         var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
-        return new DefaultPage<>(aPage.map(MAPPER::map));
+        return new DefaultPage<>(aPage.map(mapper::map));
     }
 
-    @Mapper(uses = BaseMapper.class)
-    interface DeploymentMapper {
+    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    public interface DeploymentMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")
 //        @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")

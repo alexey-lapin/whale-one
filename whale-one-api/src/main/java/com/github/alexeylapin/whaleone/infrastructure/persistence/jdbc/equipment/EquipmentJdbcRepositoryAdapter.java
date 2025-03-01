@@ -5,12 +5,14 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.annotation.RegisterReflection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -20,15 +22,23 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
+@RegisterReflection(
+        classes = EquipmentJdbcRepository.EquipmentListElementRowMapper.class,
+        memberCategories = {
+                MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+                MemberCategory.INVOKE_DECLARED_METHODS
+        }
+)
 public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
 
     private final EquipmentJdbcRepository repository;
+    private final EquipmentMapper mapper;
 
     @Override
     public Equipment save(Equipment equipment) {
-        EquipmentEntity entity = EquipmentMapper.INSTANCE.map(equipment);
+        EquipmentEntity entity = mapper.map(equipment);
         entity = repository.save(entity);
-        return EquipmentMapper.INSTANCE.map(entity).toBuilder()
+        return mapper.map(entity).toBuilder()
                 .createdBy(equipment.createdBy())
                 .type(equipment.type())
                 .build();
@@ -37,7 +47,7 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     @Override
     public Optional<Equipment> findById(long id) {
         return repository.findOneById(id)
-                .map(EquipmentMapper.INSTANCE::map);
+                .map(mapper::map);
     }
 
     @Override
@@ -67,10 +77,8 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         throw new UnsupportedOperationException();
     }
 
-    @Mapper(uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
     interface EquipmentMapper {
-
-        EquipmentMapper INSTANCE = Mappers.getMapper(EquipmentMapper.class);
 
         @Mapping(source = "type.id", target = "typeId")
         @Mapping(source = "createdBy.id", target = "createdById")
