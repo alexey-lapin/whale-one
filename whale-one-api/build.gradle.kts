@@ -59,6 +59,9 @@ graalvmNative {
             buildArgs.add("--verbose")
         }
     }
+    metadataRepository {
+        version = "0.3.17"
+    }
 }
 
 tasks.bootBuildImage {
