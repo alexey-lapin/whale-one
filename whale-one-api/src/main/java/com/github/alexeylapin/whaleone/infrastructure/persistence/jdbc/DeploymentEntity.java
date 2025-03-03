@@ -20,6 +20,8 @@ public class DeploymentEntity {
     private int version;
     private Instant createdAt;
     private long createdById;
+    private Instant lastUpdatedAt;
+    private long lastUpdatedById;
 
     private DeploymentStatus status;
     private String name;

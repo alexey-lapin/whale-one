@@ -40,6 +40,7 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         entity = repository.save(entity);
         return mapper.map(entity).toBuilder()
                 .createdBy(equipment.createdBy())
+                .lastUpdatedBy(equipment.lastUpdatedBy())
                 .type(equipment.type())
                 .build();
     }
@@ -80,16 +81,20 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
     interface EquipmentMapper {
 
-        @Mapping(source = "type.id", target = "typeId")
         @Mapping(source = "createdBy.id", target = "createdById")
+        @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
+        @Mapping(source = "type.id", target = "typeId")
         EquipmentEntity map(Equipment source);
 
         @Mapping(source = "createdById", target = "createdBy.id")
+        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
         @Mapping(source = "typeId", target = "type.id")
         Equipment map(EquipmentEntity source);
 
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "createdByName", target = "createdBy.name")
+        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
+        @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
         @Mapping(source = "typeId", target = "type.id")
         @Mapping(source = "typeName", target = "type.name")
         Equipment map(EquipmentJdbcRepository.EquipmentProjection source);

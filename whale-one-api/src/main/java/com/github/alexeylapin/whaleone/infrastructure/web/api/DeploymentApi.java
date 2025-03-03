@@ -4,7 +4,6 @@ import com.github.alexeylapin.whaleone.domain.model.Deployment;
 import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipment;
 import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.DeploymentStatus;
-import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentEquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentRepository;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,11 +38,15 @@ public class DeploymentApi {
     @PostMapping("/deployments")
     public Deployment create(@RequestBody Deployment deployment,
                              @AuthenticationPrincipal IdUser user) {
+        var now = ZonedDateTime.now();
+        var userRef = new UserRef(user.getId(), user.getName());
         deployment = deployment.toBuilder()
                 .id(0)
                 .version(0)
-                .createdAt(ZonedDateTime.now())
-                .createdBy(new UserRef(user.getId(), user.getName()))
+                .createdAt(now)
+                .createdBy(userRef)
+                .lastUpdatedAt(now)
+                .lastUpdatedBy(userRef)
                 .status(DeploymentStatus.NEW)
                 .build();
         return deploymentRepository.save(deployment);
@@ -55,8 +59,17 @@ public class DeploymentApi {
 
     @GetMapping("/deployments")
     public PageDto<Deployment> getAll(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
-        var aPage = deploymentRepository.findAll(page, size);
+                                      @RequestParam(defaultValue = "10") int size,
+                                      @RequestParam Optional<String> name,
+                                      @RequestParam Optional<Long> projectId,
+                                      @RequestParam Optional<Long> projectSiteId,
+                                      @RequestParam Optional<DeploymentStatus> status) {
+        var aPage = deploymentRepository.findAll(page,
+                size,
+                name.orElse(null),
+                projectId.orElse(null),
+                projectSiteId.orElse(null),
+                status.map(Enum::name).orElse(null));
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
     }
 
@@ -64,8 +77,8 @@ public class DeploymentApi {
     public Deployment create(@PathVariable long deploymentId,
                              @RequestParam DeploymentStatus status,
                              @AuthenticationPrincipal IdUser user) {
-        Deployment deployment = deploymentRepository.findById(deploymentId).orElseThrow();
-        Deployment alteredDeployment = deployment.toBuilder()
+        var deployment = deploymentRepository.findById(deploymentId).orElseThrow();
+        var alteredDeployment = deployment.toBuilder()
                 .status(status)
                 .build();
         return deploymentRepository.save(alteredDeployment);
@@ -78,7 +91,7 @@ public class DeploymentApi {
     public void deploymentEquipmentAdd(@PathVariable long deploymentId,
                                        @RequestBody DeploymentEquipment deploymentEquipment) {
         deploymentEquipmentRepository.save(deploymentEquipment);
-        Equipment equipment = equipmentRepository.findById(deploymentEquipment.equipmentId()).orElseThrow();
+        var equipment = equipmentRepository.findById(deploymentEquipment.equipmentId()).orElseThrow();
         if (equipment.deploymentId() != null) {
             throw new RuntimeException("Equipment is already deployed");
         }
@@ -97,7 +110,7 @@ public class DeploymentApi {
     public void deploymentEquipmentDelete(@PathVariable long deploymentId,
                                           @PathVariable long equipmentId) {
         deploymentEquipmentRepository.delete(new DeploymentEquipment(deploymentId, equipmentId));
-        Equipment equipment = equipmentRepository.findById(equipmentId).orElseThrow();
+        var equipment = equipmentRepository.findById(equipmentId).orElseThrow();
         if (equipment.deploymentId() != deploymentId) {
             throw new RuntimeException("Deployment Equipment mismatch");
         }

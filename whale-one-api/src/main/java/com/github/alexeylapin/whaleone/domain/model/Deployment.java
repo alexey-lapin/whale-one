@@ -10,6 +10,8 @@ public record Deployment(
         int version,
         ZonedDateTime createdAt,
         UserRef createdBy,
+        ZonedDateTime lastUpdatedAt,
+        UserRef lastUpdatedBy,
 
         ProjectItem projectRef,
         ProjectSiteItem projectSiteRef,

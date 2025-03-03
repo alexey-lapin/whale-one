@@ -9,13 +9,11 @@ import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeAttributeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeDeploymentAttributeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
-import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import com.github.alexeylapin.whaleone.infrastructure.web.api.serde.RawJsonDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,11 +43,15 @@ public class EquipmentTypeApi {
     @PostMapping("/equipment/types")
     public EquipmentType create(@RequestBody EquipmentType equipmentType,
                                 @AuthenticationPrincipal IdUser user) {
+        var now = ZonedDateTime.now();
+        var userRef = new UserRef(user.getId(), user.getName());
         equipmentType = equipmentType.toBuilder()
                 .id(0)
                 .version(0)
-                .createdAt(ZonedDateTime.now())
-                .createdBy(new UserRef(user.getId(), user.getName()))
+                .createdAt(now)
+                .createdBy(userRef)
+                .lastUpdatedAt(now)
+                .lastUpdatedBy(userRef)
                 .build();
         return equipmentTypeRepository.save(equipmentType);
     }
@@ -66,6 +68,8 @@ public class EquipmentTypeApi {
                 "id must match");
         equipmentType = equipmentType.toBuilder()
                 .id(id)
+                .lastUpdatedAt(ZonedDateTime.now())
+                .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
                 .build();
         return equipmentTypeRepository.save(equipmentType);
     }
@@ -77,7 +81,7 @@ public class EquipmentTypeApi {
 
     @GetMapping("/equipment/types")
     public PageDto<EquipmentType> getAll(@RequestParam int page, @RequestParam int size) {
-        Page<EquipmentType> aPage = equipmentTypeRepository.findAll(page, size);
+        var aPage = equipmentTypeRepository.findAll(page, size);
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
     }
 
@@ -91,11 +95,11 @@ public class EquipmentTypeApi {
     @PostMapping("/equipment/types/{id}/attributes/equipment")
     public EquipmentTypeAttributeDto createSite(@PathVariable long id,
                                                 @RequestBody EquipmentTypeAttributeDto attributeDto) {
-        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
-        EquipmentTypeAttribute savedAttribute = equipmentTypeAttributeRepository.save(attribute);
+        var savedAttribute = equipmentTypeAttributeRepository.save(attribute);
         return mapper.toDto(savedAttribute);
     }
 
@@ -121,11 +125,11 @@ public class EquipmentTypeApi {
                 "project must be greater than 0 - existing attribute expected");
         Assert.isTrue(attributeId == attributeDto.id(),
                 "project must match");
-        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(attributeId)
                 .equipmentTypeId(id)
                 .build();
-        EquipmentTypeAttribute savedAttribute = equipmentTypeAttributeRepository.save(attribute);
+        var savedAttribute = equipmentTypeAttributeRepository.save(attribute);
         return mapper.toDto(savedAttribute);
     }
 
@@ -139,11 +143,11 @@ public class EquipmentTypeApi {
     @PostMapping("/equipment/types/{id}/attributes/deployment")
     public EquipmentTypeAttributeDto createDeploymentAttribute(@PathVariable long id,
                                                                @RequestBody EquipmentTypeAttributeDto attributeDto) {
-        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
-        EquipmentTypeAttribute savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
+        var savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
         return mapper.toDto(savedAttribute);
     }
 
@@ -164,11 +168,11 @@ public class EquipmentTypeApi {
                 "project must be greater than 0 - existing attribute expected");
         Assert.isTrue(attributeId == attributeDto.id(),
                 "project must match");
-        EquipmentTypeAttribute attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = mapper.fromDto(attributeDto).toBuilder()
                 .id(attributeId)
                 .equipmentTypeId(id)
                 .build();
-        EquipmentTypeAttribute savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
+        var savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
         return mapper.toDto(savedAttribute);
     }
 
@@ -183,6 +187,7 @@ public class EquipmentTypeApi {
             long equipmentTypeId,
             String name,
             String description,
+            int order,
             String type,
             @JsonRawValue
             @JsonDeserialize(using = RawJsonDeserializer.class)

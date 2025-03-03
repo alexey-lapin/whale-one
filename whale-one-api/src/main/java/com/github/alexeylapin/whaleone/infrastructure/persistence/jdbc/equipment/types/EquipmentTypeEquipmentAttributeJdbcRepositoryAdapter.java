@@ -16,10 +16,10 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
-public class EquipmentTypeAttributeJdbcRepositoryAdapter implements EquipmentTypeAttributeRepository {
+public class EquipmentTypeEquipmentAttributeJdbcRepositoryAdapter implements EquipmentTypeAttributeRepository {
 
-    private final EquipmentTypeAttributeJdbcRepository delegate;
-    private final EquipmentTypeAttributeMapper mapper;
+    private final EquipmentTypeEquipmentAttributeJdbcRepository delegate;
+    private final EquipmentTypeEquipmentAttributeMapper mapper;
 
     @Override
     public EquipmentTypeAttribute save(EquipmentTypeAttribute equipmentTypeAttribute) {
@@ -45,11 +45,11 @@ public class EquipmentTypeAttributeJdbcRepositoryAdapter implements EquipmentTyp
     }
 
     @Mapper(config = MappingConfig.class)
-    interface EquipmentTypeAttributeMapper {
+    interface EquipmentTypeEquipmentAttributeMapper {
 
-        EquipmentTypeAttribute map(EquipmentTypeAttributeEntity source);
+        EquipmentTypeAttribute map(EquipmentTypeEquipmentAttributeEntity source);
 
-        EquipmentTypeAttributeEntity map(EquipmentTypeAttribute source);
+        EquipmentTypeEquipmentAttributeEntity map(EquipmentTypeAttribute source);
 
         default String map(JsonValue source) {
             if (source == null) {

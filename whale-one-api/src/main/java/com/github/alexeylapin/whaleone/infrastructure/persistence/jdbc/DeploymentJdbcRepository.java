@@ -12,11 +12,13 @@ public interface DeploymentJdbcRepository extends ListCrudRepository<DeploymentE
 
     @Query("""
             SELECT d.*,
-                   u.username created_by_name,
+                   u1.username created_by_name,
+                   u2.username last_updated_by_name,
                    p.name project_name,
                    ps.name project_site_name
             FROM deployment d
-                     JOIN tbl_user u on d.created_by_id = u.id
+                     JOIN tbl_user u1 on d.created_by_id = u1.id
+                     JOIN tbl_user u2 on d.last_updated_by_id = u2.id
                      JOIN project p on d.project_id = p.id
                      JOIN project_site ps on d.project_site_id = ps.id
             WHERE d.id = :id""")
@@ -24,22 +26,36 @@ public interface DeploymentJdbcRepository extends ListCrudRepository<DeploymentE
 
     @Query("""
             SELECT d.*,
-                   u.username created_by_name,
+                   u1.username created_by_name,
+                   u2.username last_updated_by_name,
                    p.name project_name,
                    ps.name project_site_name
             FROM deployment d
-                     JOIN tbl_user u ON d.created_by_id = u.id
+                     JOIN tbl_user u1 on d.created_by_id = u1.id
+                     JOIN tbl_user u2 on d.last_updated_by_id = u2.id
                      JOIN project p on d.project_id = p.id
                      JOIN project_site ps on d.project_site_id = ps.id
+            WHERE
+                1 = 1
+                AND (:name IS NULL OR d.name ILIKE '%' || :name || '%')
+                AND (:projectId IS NULL OR d.project_id = :projectId)
+                AND (:projectSiteId IS NULL OR d.project_site_id = :projectSiteId)
+                AND (:status IS NULL OR d.status = :status)
             ORDER BY d.id DESC
             LIMIT :size OFFSET :offset""")
-    List<DeploymentProjection> findAll(long size, long offset);
+    List<DeploymentProjection> findAll(int size,
+                                       long offset,
+                                       String name,
+                                       Long projectId,
+                                       Long projectSiteId,
+                                       String status);
 
     @Getter
     @Setter
     class DeploymentProjection extends DeploymentEntity {
 
         private String createdByName;
+        private String lastUpdatedByName;
         private String projectName;
         private String projectSiteName;
 

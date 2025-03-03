@@ -12,12 +12,9 @@ public record EquipmentType(
         int version,
         ZonedDateTime createdAt,
         UserRef createdBy,
+        ZonedDateTime lastUpdatedAt,
+        UserRef lastUpdatedBy,
 
         String name
 ) {
-
-    public List<EquipmentTypeAttribute> attributes() {
-        return List.of();
-    }
-
 }

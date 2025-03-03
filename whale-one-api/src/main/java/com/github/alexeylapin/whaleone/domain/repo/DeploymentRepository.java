@@ -10,6 +10,11 @@ public interface DeploymentRepository {
 
     Optional<Deployment> findById(long id);
 
-    Page<Deployment> findAll(int page, int size);
+    Page<Deployment> findAll(int page,
+                             int size,
+                             String name,
+                             Long projectId,
+                             Long projectSiteId,
+                             String status);
 
 }

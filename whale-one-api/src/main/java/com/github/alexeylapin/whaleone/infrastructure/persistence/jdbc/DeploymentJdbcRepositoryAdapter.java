@@ -29,6 +29,7 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         DeploymentEntity savedEntity = repository.save(entity);
         return mapper.map(savedEntity).toBuilder()
                 .createdBy(deployment.createdBy())
+                .lastUpdatedBy(deployment.lastUpdatedBy())
                 .projectRef(deployment.projectRef())
                 .projectSiteRef(deployment.projectSiteRef())
                 .build();
@@ -41,9 +42,14 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
     }
 
     @Override
-    public Page<Deployment> findAll(int page, int size) {
+    public Page<Deployment> findAll(int page,
+                                    int size,
+                                    String name,
+                                    Long projectId,
+                                    Long projectSiteId,
+                                    String status) {
         var pageable = PageRequest.of(page, size);
-        var items = repository.findAll(pageable.getPageSize(), pageable.getOffset());
+        var items = repository.findAll(pageable.getPageSize(), pageable.getOffset(), name, projectId, projectSiteId, status);
         var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
         return new DefaultPage<>(aPage.map(mapper::map));
     }
@@ -52,20 +58,21 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
     public interface DeploymentMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")
-//        @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
+        @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
         @Mapping(source = "projectRef.id", target = "projectId")
         @Mapping(source = "projectSiteRef.id", target = "projectSiteId")
         DeploymentEntity map(Deployment deployment);
 
         @Mapping(source = "createdById", target = "createdBy.id")
+        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
         @Mapping(source = "projectId", target = "projectRef.id")
         @Mapping(source = "projectSiteId", target = "projectSiteRef.id")
         Deployment map(DeploymentEntity entity);
 
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "createdByName", target = "createdBy.name")
-//        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
-//        @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
+        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
+        @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
         @Mapping(source = "projectId", target = "projectRef.id")
         @Mapping(source = "projectName", target = "projectRef.name")
         @Mapping(source = "projectSiteId", target = "projectSiteRef.id")

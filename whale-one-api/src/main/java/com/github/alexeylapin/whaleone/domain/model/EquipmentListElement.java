@@ -10,6 +10,8 @@ public record EquipmentListElement(
         int version,
         ZonedDateTime createdAt,
         UserRef createdBy,
+        ZonedDateTime lastUpdatedAt,
+        UserRef lastUpdatedBy,
 
         boolean active,
         String name,

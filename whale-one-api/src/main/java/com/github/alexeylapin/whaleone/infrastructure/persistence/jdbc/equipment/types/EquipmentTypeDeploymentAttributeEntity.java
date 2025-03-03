@@ -20,6 +20,7 @@ public class EquipmentTypeDeploymentAttributeEntity {
 
     private String name;
     private String description;
+    private int order;
     private String type;
     private JsonValue metadata;
 

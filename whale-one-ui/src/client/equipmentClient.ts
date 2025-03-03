@@ -52,7 +52,7 @@ export const invokeEquipmentGet = (id: number) => {
 export const invokeEquipmentListGet = (
   page: number,
   size: number,
-  typeId?: number | null,
+  typeId? : number | null,
   name?: string | null,
 ) => {
   return apiClient

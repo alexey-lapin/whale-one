@@ -43,6 +43,7 @@ const newAttribute: Ref<EquipmentTypeAttributeModel> = ref({
   equipmentTypeId: props.id,
   version: 0,
   name: '',
+  order: 0,
   description: '',
   type: 'text',
   metadata: undefined,
@@ -53,6 +54,7 @@ const newDeploymentAttribute: Ref<EquipmentTypeAttributeModel> = ref({
   equipmentTypeId: props.id,
   version: 0,
   name: '',
+  order: 0,
   description: '',
   type: 'text',
   metadata: undefined,
@@ -208,7 +210,7 @@ onMounted(() => {
       </Panel>
 
       <Panel
-        header="Deployment Attributes"
+        header="Deployment Attributes 1"
         toggleable
       >
         <div class="mt-1 flex flex-col gap-3">

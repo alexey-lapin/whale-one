@@ -34,9 +34,18 @@ export const invokeDeploymentGet = (id: number) => {
     })
 }
 
-export const invokeDeploymentListGet = (page: number, size: number) => {
+export const invokeDeploymentListGet = (
+  page: number,
+  size: number,
+  name?: string | null,
+  projectId?: number | null,
+  projectSiteId?: number | null,
+  status?: string | null,
+) => {
   return apiClient
-    .get<PageModel<DeploymentModel>>(`/api/deployments?page=${page}&size=${size}`)
+    .get<PageModel<DeploymentModel>>(
+      `/api/deployments?page=${page}&size=${size}&projectId=${projectId ?? ''}&projectSiteId=${projectSiteId ?? ''}&status=${status ?? ''}&name=${name ?? ''}`,
+    )
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))

@@ -1,10 +1,6 @@
 import type { EntityHeaderModel } from '@/model/BaseModel.ts'
 
 export interface ProjectModel extends EntityHeaderModel {
-  // id: number,
-  // version: number,
-  // createdAt: string,
-  // createdBy: BaseRefModel,
   name: string
   client: string | null
   ownership: string | null

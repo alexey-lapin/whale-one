@@ -23,20 +23,24 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
     @Query("""
             SELECT e.*,
                    et.name type_name,
-                   u.username created_by_name
+                   u1.username created_by_name,
+                   u2.username last_updated_by_name
             FROM equipment e
                      JOIN equipment_type et on e.type_id = et.id
-                     JOIN tbl_user u on e.created_by_id = u.id
+                     JOIN tbl_user u1 on e.created_by_id = u1.id
+                     JOIN tbl_user u2 on e.last_updated_by_id = u2.id
             WHERE e.id = :id""")
     Optional<EquipmentProjection> findOneById(long id);
 
     @Query(value = """
             SELECT e.*,
                    et.name type_name,
-                   u.username created_by_name
+                   u1.username created_by_name,
+                   u2.username last_updated_by_name
             FROM equipment e
                      JOIN equipment_type et on e.type_id = et.id
-                     JOIN tbl_user u on e.created_by_id = u.id
+                     JOIN tbl_user u1 on e.created_by_id = u1.id
+                     JOIN tbl_user u2 on e.last_updated_by_id = u2.id
             WHERE
                 1 = 1
                 AND (:name IS NULL OR e.name ILIKE '%' || :name || '%')
@@ -76,6 +80,8 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .version(rs.getInt("version"))
                     .createdAt(rs.getTimestamp("created_at").toInstant().atZone(ZoneId.systemDefault()))
                     .createdBy(new UserRef(rs.getLong("created_by_id"), rs.getString("created_by_name")))
+                    .lastUpdatedAt(rs.getTimestamp("last_updated_at").toInstant().atZone(ZoneId.systemDefault()))
+                    .lastUpdatedBy(new UserRef(rs.getLong("last_updated_by_id"), rs.getString("last_updated_by_name")))
                     .active(rs.getBoolean("active"))
                     .name(rs.getString("name"))
                     .type(new EquipmentTypeRef(rs.getLong("type_id"), rs.getString("type_name")))
@@ -89,6 +95,7 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
     class EquipmentProjection extends EquipmentEntity {
 
         private String createdByName;
+        private String lastUpdatedByName;
         private String typeName;
 
     }

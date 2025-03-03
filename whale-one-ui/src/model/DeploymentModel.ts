@@ -1,4 +1,4 @@
-import type { BaseRefModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, EntityHeaderModel } from '@/model/BaseModel.ts'
 
 export interface DeploymentNewModel {
   projectRef: BaseRefModel | null
@@ -7,11 +7,7 @@ export interface DeploymentNewModel {
   description: string | null
 }
 
-export interface DeploymentModel {
-  id: number
-  version: number,
-  createdAt: string
-  createdBy: BaseRefModel
+export interface DeploymentModel extends EntityHeaderModel {
   projectRef: BaseRefModel
   projectSiteRef: BaseRefModel
   name: string

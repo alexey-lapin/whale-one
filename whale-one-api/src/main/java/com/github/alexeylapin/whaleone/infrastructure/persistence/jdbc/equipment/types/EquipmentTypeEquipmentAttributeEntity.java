@@ -9,8 +9,8 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
-@Table(value = "equipment_type_attribute")
-public class EquipmentTypeAttributeEntity {
+@Table(value = "equipment_type_equipment_attribute")
+public class EquipmentTypeEquipmentAttributeEntity {
 
     @Id
     private long id;
@@ -20,6 +20,7 @@ public class EquipmentTypeAttributeEntity {
 
     private String name;
     private String description;
+    private int order;
     private String type;
     private JsonValue metadata;
 

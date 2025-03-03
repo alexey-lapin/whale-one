@@ -32,11 +32,15 @@ public class EquipmentApi {
     @PostMapping("/equipment")
     public Equipment create(@RequestBody Equipment equipment,
                             @AuthenticationPrincipal IdUser user) {
+        var now = ZonedDateTime.now();
+        var userRef = new UserRef(user.getId(), user.getName());
         equipment = equipment.toBuilder()
                 .id(0)
                 .version(0)
-                .createdAt(ZonedDateTime.now())
-                .createdBy(new UserRef(user.getId(), user.getName()))
+                .createdAt(now)
+                .createdBy(userRef)
+                .lastUpdatedAt(now)
+                .lastUpdatedBy(userRef)
                 .build();
         return equipmentRepository.save(equipment);
     }
@@ -53,6 +57,8 @@ public class EquipmentApi {
                 "id must match");
         equipment = equipment.toBuilder()
                 .id(id)
+                .lastUpdatedAt(ZonedDateTime.now())
+                .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
                 .build();
         return equipmentRepository.save(equipment);
     }

@@ -9,6 +9,7 @@ public record EquipmentTypeAttribute(
         long equipmentTypeId,
         String name,
         String description,
+        int order,
         String type,
         String metadata
 ) {
