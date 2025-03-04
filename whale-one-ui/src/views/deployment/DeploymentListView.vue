@@ -138,10 +138,6 @@ onMounted(() => {
       :show-apply-button="false"
     >
       <template #filter="{ filterModel, filterCallback }">
-<!--        <InputText-->
-<!--          v-model="filterModel.value"-->
-<!--          @change="filterCallback()"-->
-<!--        />-->
         <AutoComplete
           v-model="filterModel.value"
           dropdown
@@ -163,10 +159,6 @@ onMounted(() => {
       :show-apply-button="false"
     >
       <template #filter="{ filterModel, filterCallback }">
-<!--        <InputText-->
-<!--          v-model="filterModel.value"-->
-<!--          @change="filterCallback()"-->
-<!--        />-->
         <AutoComplete
           v-model="filterModel.value"
           dropdown
@@ -197,7 +189,7 @@ onMounted(() => {
 
     <Column
       header="Actions"
-      class="w-1/12 !text-end"
+      class="w-1/12"
     >
       <template #body="slotProps">
         <router-link

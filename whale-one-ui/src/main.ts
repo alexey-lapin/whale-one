@@ -39,6 +39,20 @@ const preset = definePreset(Aura, {
         },
       },
     },
+    autocomplete: {
+      extend: {
+        disabled: {
+          background: '{surface.100}',
+        },
+      },
+    },
+    pcinputtext: {
+      extend: {
+        disabled: {
+          background: '{surface.100}',
+        },
+      },
+    },
     select: {
       extend: {
         disabled: {

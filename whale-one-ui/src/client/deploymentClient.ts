@@ -24,6 +24,22 @@ export const invokeDeploymentCreate = (deployment: DeploymentNewModel) => {
     })
 }
 
+export const invokeDeploymentUpdate = (deployment: DeploymentModel) => {
+  return apiClient
+    .put<DeploymentModel>(`/api/deployments/${deployment.id}`, deployment)
+    .then((response) => {
+      const data = response.data
+      apiClientContext.toast?.add(
+        successToast(`Deployment #${data.id} ${data.name} has been updated`),
+      )
+      return data
+    })
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
+      throw error
+    })
+}
+
 export const invokeDeploymentGet = (id: number) => {
   return apiClient
     .get<DeploymentModel>(`/api/deployments/${id}`)

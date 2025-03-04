@@ -9,12 +9,12 @@ import ToggleButton from 'primevue/togglebutton'
 
 import EntityHeader from '@/components/EntityHeader.vue'
 import EquipmentAttribute from '@/components/EquipmentAttribute.vue'
-
-import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
-import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
-import { invokeEquipmentGet, invokeEquipmentUpdate } from '@/client/equipmentClient.ts'
 import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
+import { invokeEquipmentGet, invokeEquipmentUpdate } from '@/client/equipmentClient.ts'
 import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
+
+import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
+import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 
 const props = defineProps<{
   id: number
@@ -110,8 +110,7 @@ onMounted(() => {
               size="small"
               icon="pi pi-pencil"
               @click="editing = !editing"
-            >
-            </Button>
+            />
           </div>
         </template>
         <template #default>
@@ -157,3 +156,7 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<!--<style scoped>-->
+<!--:deep()-->
+<!--</style>-->

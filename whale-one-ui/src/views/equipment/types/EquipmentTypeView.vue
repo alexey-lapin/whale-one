@@ -35,10 +35,10 @@ const model: Ref<EquipmentTypeModel> = ref({
   name: '',
 })
 
-const attributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
+const equipmentAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
 const deploymentAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
 
-const newAttribute: Ref<EquipmentTypeAttributeModel> = ref({
+const newEquipmentAttribute: Ref<EquipmentTypeAttributeModel> = ref({
   id: 0,
   equipmentTypeId: props.id,
   version: 0,
@@ -62,7 +62,7 @@ const newDeploymentAttribute: Ref<EquipmentTypeAttributeModel> = ref({
 
 const loading = ref(false)
 const editing = ref(false)
-const addingNewAttribute = ref(false)
+const addingNewEquipmentAttribute = ref(false)
 const addingNewDeploymentAttribute = ref(false)
 
 const getEquipmentType = () => {
@@ -71,9 +71,9 @@ const getEquipmentType = () => {
     .catch(() => {})
 }
 
-const getAttributes = () => {
+const getEquipmentAttributes = () => {
   invokeAttributeListGet('equipment', props.id)
-    .then((data) => (attributes.value = data))
+    .then((data) => (equipmentAttributes.value = data))
     .catch(() => {})
 }
 
@@ -96,13 +96,13 @@ const updateEquipmentType = () => {
     })
 }
 
-const onAttributeUpdated = () => {
-  getAttributes()
-  addingNewAttribute.value = false
+const onEquipmentAttributeUpdated = () => {
+  getEquipmentAttributes()
+  addingNewEquipmentAttribute.value = false
 }
 
-const onAttributeDeleted = () => {
-  addingNewAttribute.value = false
+const onEquipmentAttributeDeleted = () => {
+  addingNewEquipmentAttribute.value = false
 }
 
 const onDeploymentAttributeUpdated = () => {
@@ -116,7 +116,7 @@ const onDeploymentAttributeDeleted = () => {
 
 onMounted(() => {
   getEquipmentType()
-  getAttributes()
+  getEquipmentAttributes()
   getDeploymentAttributes()
 })
 </script>
@@ -183,34 +183,34 @@ onMounted(() => {
       >
         <div class="mt-1 flex flex-col gap-3">
           <EquipmentTypeAttribute
-            v-for="(attribute, index) in attributes"
+            v-for="(attribute, index) in equipmentAttributes"
             attribute-entity="equipment"
             :key="attribute.id"
             :modelValue="attribute"
-            @attribute-deleted="getAttributes()"
+            @attribute-deleted="getEquipmentAttributes()"
           />
 
           <EquipmentTypeAttribute
-            v-if="addingNewAttribute"
-            v-model="newAttribute"
+            v-if="addingNewEquipmentAttribute"
+            v-model="newEquipmentAttribute"
             attribute-entity="equipment"
             :editable="true"
-            @attribute-updated="onAttributeUpdated()"
-            @attribute-deleted="onAttributeDeleted()"
+            @attribute-updated="onEquipmentAttributeUpdated()"
+            @attribute-deleted="onEquipmentAttributeDeleted()"
           />
         </div>
         <Button
-          v-if="!addingNewAttribute"
+          v-if="!addingNewEquipmentAttribute"
           class="mt-3"
           label="New"
           severity="secondary"
           icon="pi pi-plus"
-          @click="addingNewAttribute = true"
+          @click="addingNewEquipmentAttribute = true"
         />
       </Panel>
 
       <Panel
-        header="Deployment Attributes 1"
+        header="Deployment Attributes"
         toggleable
       >
         <div class="mt-1 flex flex-col gap-3">

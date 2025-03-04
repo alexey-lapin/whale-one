@@ -52,6 +52,18 @@ public class DeploymentApi {
         return deploymentRepository.save(deployment);
     }
 
+    @PutMapping("/deployments/{id}")
+    public Deployment update(@PathVariable long id,
+                             @RequestBody Deployment deployment,
+                             @AuthenticationPrincipal IdUser user) {
+        deployment = deployment.toBuilder()
+                .id(id)
+                .lastUpdatedAt(ZonedDateTime.now())
+                .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
+                .build();
+        return deploymentRepository.save(deployment);
+    }
+
     @GetMapping("/deployments/{id}")
     public Deployment get(@PathVariable long id) {
         return deploymentRepository.findById(id).orElseThrow();
@@ -80,6 +92,8 @@ public class DeploymentApi {
         var deployment = deploymentRepository.findById(deploymentId).orElseThrow();
         var alteredDeployment = deployment.toBuilder()
                 .status(status)
+                .lastUpdatedAt(ZonedDateTime.now())
+                .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
                 .build();
         return deploymentRepository.save(alteredDeployment);
     }

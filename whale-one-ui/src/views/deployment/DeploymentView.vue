@@ -4,7 +4,6 @@ import { onMounted, ref, type Ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
-import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import Timeline from 'primevue/timeline'
 
@@ -14,7 +13,7 @@ import {
   invokeDeploymentEquipmentAdd,
   invokeDeploymentEquipmentListGet,
   invokeDeploymentGet,
-  invokeDeploymentStatusUpdate,
+  invokeDeploymentStatusUpdate, invokeDeploymentUpdate
 } from '@/client/deploymentClient.ts'
 import { invokeEquipmentTypeItemListGet } from '@/client/equipmentTypeClient.ts'
 import { invokeEquipmentItemListGet } from '@/client/equipmentClient.ts'
@@ -22,7 +21,7 @@ import { invokeEquipmentItemListGet } from '@/client/equipmentClient.ts'
 import type { BaseRefModel } from '@/model/BaseModel.ts'
 import type { DeploymentEquipmentItemModel, DeploymentModel } from '@/model/DeploymentModel.ts'
 import DeploymentEquipment from '@/components/DeploymentEquipment.vue'
-import { invokeProjectItemListGet, invokeSiteItemListGet } from '@/client/projectClient.ts'
+import DeploymentInfo from '@/components/DeploymentInfo.vue'
 
 const props = defineProps<{
   id: number
@@ -68,9 +67,6 @@ const equipmentTypes: Ref<BaseRefModel[]> = ref([])
 const equipmentList: Ref<BaseRefModel[]> = ref([])
 const equipment: Ref<BaseRefModel | null> = ref(null)
 
-const projects: Ref<BaseRefModel[]> = ref([])
-const sites: Ref<BaseRefModel[]> = ref([])
-
 const deploymentEquipmentList: Ref<DeploymentEquipmentItemModel[]> = ref([])
 
 const getDeployment = () => {
@@ -110,24 +106,16 @@ const addEquipment = () => {
     .catch(() => {})
 }
 
+const updateDeployment = () => {
+  invokeDeploymentUpdate(model.value)
+    .then((data) => (model.value = data))
+    .then(() => (editing.value = false))
+    .catch(() => {})
+}
+
 const updateStatus = (status: DeploymentStatus) => {
   invokeDeploymentStatusUpdate(props.id, status)
     .then((data) => (model.value = data))
-    .catch(() => {})
-}
-
-const projectItems = (q: string) => {
-  invokeProjectItemListGet(q)
-    .then((data) => (projects.value = data))
-    .catch(() => {})
-}
-
-const siteItems = (projectId: number | null, q: string | null) => {
-  if (!projectId) {
-    return
-  }
-  invokeSiteItemListGet(projectId, q)
-    .then((data) => (sites.value = data))
     .catch(() => {})
 }
 
@@ -169,66 +157,21 @@ onMounted(() => {
               class="mt-3"
               toggleable
             >
+              <template #icons>
+                <Button
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  variant="text"
+                  @click="editing = !editing"
+                />
+              </template>
               <template #default>
-                <div class="flex flex-col gap-3">
-                  <FloatLabel variant="on">
-                    <InputText
-                      v-model="model.name"
-                      disabled
-                    />
-                    <label for="name">Name</label>
-                  </FloatLabel>
-                  <FloatLabel variant="on">
-                    <InputText
-                      v-model="model.description"
-                      disabled
-                    />
-                    <label for="description">Description</label>
-                  </FloatLabel>
-                  <FloatLabel variant="on">
-                    <AutoComplete
-                      v-model="model.projectRef"
-                      dropdown
-                      :suggestions="projects"
-                      option-label="name"
-                      force-selection
-                      @change="model.projectSiteRef = { id: -1, name: '' }"
-                      @complete="projectItems($event.query)"
-                    />
-                    <label for="description">Project</label>
-                  </FloatLabel>
-                  <FloatLabel variant="on">
-                    <AutoComplete
-                      v-model="model.projectSiteRef"
-                      dropdown
-                      :suggestions="sites"
-                      option-label="name"
-                      force-selection
-                      @complete="siteItems(model.projectRef?.id ?? null, $event.query)"
-                    />
-                    <label for="description">Site</label>
-                  </FloatLabel>
-                  <FloatLabel variant="on">
-                    <InputText
-                      v-model="model.platform"
-                      disabled
-                    />
-                    <label for="description">Platform</label>
-                  </FloatLabel>
-                  <FloatLabel variant="on">
-                    <InputText
-                      v-model="model.providerOrganisations"
-                      disabled
-                    />
-                    <label for="description">Provider Organizations</label>
-                  </FloatLabel>
-                  <FloatLabel variant="on">
-                    <InputText
-                      v-model="model.providerParticipants"
-                      disabled
-                    />
-                    <label for="description">Provider Participants</label>
-                  </FloatLabel>
+                <div class="w-1/2">
+                  <DeploymentInfo
+                    :editing="editing"
+                    v-model="model"
+                    @save-clicked="updateDeployment()"
+                  />
                 </div>
               </template>
             </Panel>
@@ -261,7 +204,7 @@ onMounted(() => {
                   </template>
                 </div>
 
-                <div class="mt-3 flex flex-wrap gap-3">
+                <div v-if="hasStatusOf('ASSIGN')" class="mt-3 flex flex-wrap gap-3">
                   <FloatLabel variant="on">
                     <AutoComplete
                       v-model="equipmentType"
@@ -289,7 +232,7 @@ onMounted(() => {
                     label="Add"
                     :disabled="equipment === null"
                     @click="addEquipment()"
-                  ></Button>
+                  />
                 </div>
               </template>
             </Panel>
@@ -312,7 +255,7 @@ onMounted(() => {
               class="mt-3"
               toggleable
             >
-              <template #default> qwer</template>
+              <template #default>deployment info</template>
             </Panel>
             <Button
               v-if="hasStatusOf('DEPLOYED')"
@@ -333,7 +276,7 @@ onMounted(() => {
               class="mt-3"
               toggleable
             >
-              <template #default> qwer</template>
+              <template #default>recovery info</template>
             </Panel>
             <Button
               v-if="hasStatusOf('RECOVERED')"
@@ -355,7 +298,7 @@ onMounted(() => {
               class="mt-3"
               toggleable
             >
-              <template #default> qwer</template>
+              <template #default>analysis</template>
             </Panel>
           </template>
         </DeploymentPanel>
