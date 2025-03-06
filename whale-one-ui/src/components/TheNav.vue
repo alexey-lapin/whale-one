@@ -1,26 +1,65 @@
 <script setup lang="ts">
+import { type Ref, ref } from 'vue'
+
+import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
+import TieredMenu from 'primevue/tieredmenu'
 
 import type { MenuItem } from 'primevue/menuitem'
 import { useAuthStore } from '@/stores/auth.ts'
+import router from '@/router'
 
 let auth = useAuthStore()
 
 const items: MenuItem[] = [
   {
     label: 'Projects',
-    route: '/projects'
+    route: '/projects',
   },
   {
     label: 'Deployments',
-    route: '/deployments'
+    route: '/deployments',
   },
   {
     label: 'Equipment',
-    route: '/equipment'
-  }
+    route: '/equipment',
+  },
+  {
+    label: 'Administration',
+    routeRoot: '/administration',
+    visible: auth.hasAuthority('ADMIN'),
+    items: [
+      {
+        label: 'Equipment Types',
+        route: '/administration/equipment/types',
+      },
+      {
+        label: 'Users',
+        route: '/administration/users',
+      },
+    ],
+  },
 ]
+
+const userMenuItems = ref([
+  {
+    label: 'Settings',
+    icon: 'pi pi-user-edit',
+    command: () => router.push('/profile'),
+  },
+  {
+    label: 'Logout',
+    icon: 'pi pi-sign-out',
+    command: () => auth.logout(),
+  },
+])
+
+const menu: Ref<any> = ref(null)
+
+const toggleMenu = (event: any) => {
+  menu.value?.toggle(event)
+}
 </script>
 
 <template>
@@ -37,28 +76,60 @@ const items: MenuItem[] = [
     <!--      </a>-->
     <!--    </template>-->
     <template #item="{ item, props, hasSubmenu }">
-      <router-link v-if="item.route" v-slot="{ href, navigate, isActive }" :to="item.route" custom>
+      <router-link
+        v-if="item.route"
+        v-slot="{ href, navigate, isActive }"
+        :to="item.route"
+        custom
+      >
         <!--        <a :href="href" v-bind="props.action" @click="navigate">-->
         <!--          <span :class="item.icon"/>-->
         <!--          <span>{{ item.label }}</span>-->
-        <Button :label="item.label as string"
-                size="small"
-                variant="text"
-                :class="`${isActive ? 'active': ''}`"
-                @click="navigate"></Button>
+        <Button
+          :label="item.label as string"
+          size="small"
+          variant="text"
+          :class="`${isActive ? 'active' : ''}`"
+          @click="navigate"
+        />
         <!--        </a>-->
       </router-link>
-      <!--      <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">-->
-      <!--        <span :class="item.icon"/>-->
-      <!--        <span>{{ item.label }}</span>-->
-      <!--        <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down"/>-->
-      <!--      </a>-->
+      <router-link
+        v-else-if="item.routeRoot"
+        v-slot="{ href, navigate, isActive }"
+        :to="item.routeRoot"
+        custom
+      >
+        <Button
+          :label="item.label as string"
+          icon-pos="right"
+          icon="pi pi-angle-down"
+          size="small"
+          variant="text"
+          :class="`${isActive ? 'active' : ''}`"
+        />
+      </router-link>
     </template>
     <template #end>
       <!--      <div class="flex items-center gap-2">-->
       <!--        <Avatar image="/images/avatar/amyelsner.png" shape="circle" />-->
       <!--      </div>-->
-            <Button label="Logout" severity="secondary" @click="auth.logout()"/>
+      <!--      <Button-->
+      <!--        label="Logout"-->
+      <!--        severity="secondary"-->
+      <!--        @click="auth.logout()"-->
+      <!--      />-->
+      <Avatar
+        :label="auth.username?.charAt(0).toUpperCase()"
+        shape="circle"
+        class="cursor-pointer"
+        @click="toggleMenu"
+      />
+      <TieredMenu
+        ref="menu"
+        :model="userMenuItems"
+        :popup="true"
+      />
     </template>
   </Menubar>
 </template>

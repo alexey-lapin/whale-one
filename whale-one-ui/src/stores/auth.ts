@@ -32,12 +32,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = (username: string, password: string, redirect?: string) => {
-    fetch('/api/auth/login', {
+    return fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          throw new Error('Invalid username or password')
+        }
+      })
       .then((data) => {
         token.value = data
         router.push({ path: redirect ?? '/' })
@@ -68,10 +74,10 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     token.value = null
     let redirect = ''
-    if (router.currentRoute.value.name !== 'login') {
-      redirect = router.currentRoute.value.fullPath
-    }
-    return router.push({ name: 'login', query: { redirect } })
+    // if (router.currentRoute.value.name !== 'login') {
+    //   redirect = router.currentRoute.value.fullPath
+    // }
+    return router.push({ name: 'login' })
   }
 
   const username = computed(() => jwt.value?.payload.value?.sub)

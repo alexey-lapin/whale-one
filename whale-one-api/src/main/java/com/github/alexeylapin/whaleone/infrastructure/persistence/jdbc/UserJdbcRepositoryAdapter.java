@@ -1,64 +1,81 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.User;
+import com.github.alexeylapin.whaleone.domain.model.UserListElement;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.domain.repo.UserRepository;
+import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
+import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Repository
 public class UserJdbcRepositoryAdapter implements UserRepository {
 
     private final UserJdbcRepository repository;
-
-    public UserJdbcRepositoryAdapter(UserJdbcRepository repository) {
-        this.repository = repository;
-    }
+    private final UserMapper mapper;
 
     @Override
     public User save(User user) {
-        UserEntity entity = new UserEntity(user.id(),
-                user.version(),
-                user.username(),
-                user.password(),
-                user.enabled(),
-                user.authorities().stream()
-                        .map(UserAuthorityEntity::new)
-                        .collect(Collectors.toSet()));
+        UserEntity entity = mapper.map(user);
         UserEntity saved = repository.save(entity);
-        return mapUser(saved);
+        return mapper.map(saved).toBuilder()
+                .createdBy(user.createdBy())
+                .lastUpdatedBy(user.lastUpdatedBy())
+                .build();
     }
 
     @Override
     public Optional<User> findById(long id) {
-        return repository.findById(id)
-                .map(UserJdbcRepositoryAdapter::mapUser);
+        return repository.findOneById(id).map(mapper::map);
     }
 
     @Override
-    public Page<User> findAll(int page, int size) {
+    public Page<UserListElement> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("username"));
-        var aPage = repository.findAllByUsernameNotIn(List.of("admin"), pageable);
-        return new DefaultPage<>(aPage.map(UserJdbcRepositoryAdapter::mapUser));
+        var items = repository.findAllByUsernameNotIn(List.of("admin"), pageable.getPageSize(), pageable.getOffset());
+        var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
+        return new DefaultPage<>(aPage);
     }
 
-    private static User mapUser(UserEntity it) {
-        return new User(it.id(),
-                it.version(),
-                it.username(),
-                it.password(),
-                it.enabled(),
-                new TreeSet<>(it.authorities().stream()
-                        .map(UserAuthorityEntity::name)
-                        .toList()));
+    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    interface UserMapper {
+
+        @Mapping(source = "createdBy.id", target = "createdById")
+        @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
+        UserEntity map(User source);
+
+        @Mapping(source = "createdById", target = "createdBy.id")
+//        @Mapping(source = "createdByName", target = "createdBy.name")
+        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
+//        @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
+        User map(UserEntity source);
+
+        @Mapping(source = "createdById", target = "createdBy.id")
+        @Mapping(source = "createdByName", target = "createdBy.name")
+        @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
+        @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
+        User map(UserJdbcRepository.UserProjection source);
+
+        default UserAuthorityEntity map(String value) {
+            return new UserAuthorityEntity(value);
+        }
+
+        default String map(UserAuthorityEntity entity) {
+            return entity.name();
+        }
+
     }
 
 }

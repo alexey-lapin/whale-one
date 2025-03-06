@@ -27,7 +27,7 @@ const create = () => {
   loading.value = true
   invokeEquipmentTypeCreate(model.value)
     .then((data) => {
-      return router.push(`/equipment/types/${data.id}`)
+      return router.push(`/administration/equipment/types/${data.id}`)
     })
     .catch(() => {})
     .finally(() => {

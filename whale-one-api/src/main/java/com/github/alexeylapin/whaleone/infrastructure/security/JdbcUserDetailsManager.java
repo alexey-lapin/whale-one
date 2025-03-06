@@ -49,17 +49,17 @@ public class JdbcUserDetailsManager implements UserDetailsManager {
     }
 
     private static UserDetailsIdUser getIdUser(UserEntity it) {
-        List<SimpleGrantedAuthority> authorities = it.authorities().stream()
+        List<SimpleGrantedAuthority> authorities = it.getAuthorities().stream()
                 .map(i -> new SimpleGrantedAuthority(i.name()))
                 .toList();
-        User userDetails = new User(it.username(),
-                it.password(),
-                it.enabled(),
+        User userDetails = new User(it.getUsername(),
+                it.getPassword(),
+                it.isEnabled(),
                 true,
                 true,
                 true,
                 authorities);
-        return new UserDetailsIdUser(it.id(), userDetails);
+        return new UserDetailsIdUser(it.getId(), userDetails);
     }
 
 }

@@ -20,8 +20,13 @@ const model = ref({
   password: '',
 })
 
+const error = ref(false)
+
 const login = () => {
-  auth.login(model.value.username, model.value.password, props.redirect)
+  auth
+    .login(model.value.username, model.value.password, props.redirect)
+    .then(() => (error.value = false))
+    .catch(() => (error.value = true))
 }
 </script>
 
@@ -37,6 +42,7 @@ const login = () => {
             <InputText
               v-model="model.username"
               placeholder="Username"
+              :invalid="error"
               @keyup.enter="login()"
             />
             <Password
@@ -44,6 +50,7 @@ const login = () => {
               toggle-mask
               :feedback="false"
               placeholder="Password"
+              :invalid="error"
               @keyup.enter="login()"
             />
             <Button

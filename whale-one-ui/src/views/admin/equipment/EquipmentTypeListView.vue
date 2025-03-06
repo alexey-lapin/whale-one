@@ -52,7 +52,7 @@ onMounted(() => {
         />
         <router-link
           v-slot="{ href, navigate }"
-          to="/equipment/types/new"
+          to="/administration/equipment/types/new"
         >
           <a
             :href="href"
@@ -92,7 +92,7 @@ onMounted(() => {
       <template #body="slotProps">
         <router-link
           v-slot="{ href, navigate }"
-          :to="`/equipment/types/${slotProps.data.id}`"
+          :to="`/administration/equipment/types/${slotProps.data.id}`"
         >
           <a
             :href="href"

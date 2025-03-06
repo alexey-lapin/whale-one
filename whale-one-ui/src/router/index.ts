@@ -81,24 +81,61 @@ const router = createRouter({
             {
               path: '',
               name: 'equipment-type-list',
-              component: () => import('@/views/equipment/types/EquipmentTypeListView.vue'),
+              component: () => import('@/views/admin/equipment/EquipmentTypeListView.vue'),
             },
             {
               path: 'new',
               name: 'equipment-type-new',
-              component: () => import('@/views/equipment/types/EquipmentTypeNewView.vue'),
+              component: () => import('@/views/admin/equipment/EquipmentTypeNewView.vue'),
             },
             {
               path: ':id',
               name: 'equipment-type-detail',
-              component: () => import('@/views/equipment/types/EquipmentTypeView.vue'),
+              component: () => import('@/views/admin/equipment/EquipmentTypeView.vue'),
               props: (route) => ({ id: parseInt(route.params.id as string) }),
             },
           ],
         },
       ],
     },
-
+    {
+      path: '/administration',
+      name: 'administration',
+      children: [
+        {
+          path: 'equipment/types',
+          name: 'equipment-type-list',
+          component: () => import('@/views/admin/equipment/EquipmentTypeListView.vue'),
+        },
+        {
+          path: 'equipment/types/new',
+          name: 'equipment-type-new',
+          component: () => import('@/views/admin/equipment/EquipmentTypeNewView.vue'),
+        },
+        {
+          path: 'equipment/types/:id',
+          name: 'equipment-type-detail',
+          component: () => import('@/views/admin/equipment/EquipmentTypeView.vue'),
+          props: (route) => ({ id: parseInt(route.params.id as string) }),
+        },
+        {
+          path: 'users',
+          name: 'user-list',
+          component: () => import('@/views/admin/user/UserListView.vue'),
+        },
+        {
+          path: 'users/new',
+          name: 'user-new',
+          component: () => import('@/views/admin/user/UserNewView.vue'),
+        },
+        {
+          path: 'users/:id',
+          name: 'user-detail',
+          component: () => import('@/views/admin/user/UserView.vue'),
+          props: (route) => ({ id: parseInt(route.params.id as string) }),
+        },
+      ],
+    },
   ],
 })
 
