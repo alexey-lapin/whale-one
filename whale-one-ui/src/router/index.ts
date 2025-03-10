@@ -52,6 +52,11 @@ const router = createRouter({
           component: () => import('@/views/deployment/DeploymentView.vue'),
           props: (route) => ({ id: parseInt(route.params.id as string) }),
         },
+        {
+          path: 'map',
+          name: 'deployment-map',
+          component: () => import('@/views/deployment/DeploymentMapView.vue'),
+        },
       ],
     },
     {
