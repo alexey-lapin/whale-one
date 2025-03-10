@@ -27,6 +27,8 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
 
+    implementation("software.amazon.awssdk:s3:2.30.36")
+
     implementation("org.mapstruct:mapstruct:1.6.3")
 
     implementation(project(":whale-one-ui"))

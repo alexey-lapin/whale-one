@@ -53,30 +53,26 @@ onMounted(() => {
 </script>
 
 <template>
-  <!--  <div class="flex items-center gap-2">-->
-  <!--    <p>{{ deploymentEquipment.equipmentTypeRef.name }}</p>-->
-  <!--    <p>{{ deploymentEquipment.equipmentRef.name }}</p>-->
-  <!--    <Button-->
-  <!--      icon="pi pi-trash"-->
-  <!--      variant="text"-->
-  <!--      @click="deleteEquipment()"-->
-  <!--    />-->
-  <!--  </div>-->
   <Panel>
     <template #header>
       <div class="flex flex-wrap gap-2 items-center">
-        <!--        <span class="font-mono lowercase rounded-md px-2 bg-cyan-100">{{-->
-        <!--          deploymentEquipment.equipmentTypeRef.name-->
-        <!--        }}</span>-->
         <EquipmentTypeTag :name="deploymentEquipment.equipmentTypeRef.name" />
         <span class="font-bold">{{ deploymentEquipment.equipmentRef.name }}</span>
       </div>
     </template>
     <template #icons>
       <Button
-        icon="pi pi-trash"
-        variant="text"
+        icon="pi pi-pencil"
         severity="secondary"
+        size="small"
+        variant="text"
+        @click="editing = !editing"
+      />
+      <Button
+        icon="pi pi-trash"
+        severity="secondary"
+        size="small"
+        variant="text"
         @click="deleteEquipment()"
       />
     </template>
@@ -87,7 +83,7 @@ onMounted(() => {
             <EquipmentAttribute
               v-model="attributes[index].value"
               :equipment-type-attribute="attribute"
-              :editing="false"
+              :editing="editing"
             />
           </template>
         </template>

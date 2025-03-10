@@ -9,6 +9,7 @@ import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
@@ -129,6 +130,7 @@ public class UserApi {
 
         UserInfo map(User user);
 
+        @Mapping(target = "password", ignore = true)
         User map(UserInfo userInfo);
 
     }

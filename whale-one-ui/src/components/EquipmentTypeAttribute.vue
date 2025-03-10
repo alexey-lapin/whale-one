@@ -36,6 +36,7 @@ const attributeTypes = [
   { label: 'select', value: 'select' },
   { label: 'text', value: 'text' },
   { label: 'textarea', value: 'textarea' },
+  { label: 'files', value: 'files' },
 ]
 
 const createOrUpdateAttribute = () => {

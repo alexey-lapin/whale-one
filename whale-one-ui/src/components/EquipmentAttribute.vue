@@ -10,6 +10,7 @@ import Select from 'primevue/select'
 import Message from 'primevue/message'
 
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
+import FileAttribute from '@/components/FileAttribute.vue'
 
 const model = defineModel<string | null>({ required: true })
 const { editing, equipmentTypeAttribute } = defineProps<{
@@ -35,7 +36,15 @@ const number = computed({
 <template>
   <Fluid>
     <div class="flex flex-col gap-0">
-      <FloatLabel variant="on">
+      <FloatLabel
+        v-if="
+          equipmentTypeAttribute.type == 'text' ||
+          equipmentTypeAttribute.type == 'number' ||
+          equipmentTypeAttribute.type == 'textarea' ||
+          equipmentTypeAttribute.type == 'select'
+        "
+        variant="on"
+      >
         <InputText
           v-if="equipmentTypeAttribute.type == 'text'"
           :id="`${equipmentTypeAttribute.id}`"
@@ -64,6 +73,15 @@ const number = computed({
         />
         <label :for="`${equipmentTypeAttribute.id}`">{{ equipmentTypeAttribute.name }}</label>
       </FloatLabel>
+
+      <div v-if="equipmentTypeAttribute.type == 'files'">
+        <FileAttribute
+          v-model="model"
+          :attribute-name="equipmentTypeAttribute.name"
+          :editing="editing"
+        />
+      </div>
+
       <Message
         severity="secondary"
         size="small"

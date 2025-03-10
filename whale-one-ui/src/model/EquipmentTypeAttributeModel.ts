@@ -5,6 +5,6 @@ export default interface EquipmentTypeAttributeModel {
   order: number
   name: string
   description: string
-  type: 'number' | 'select' | 'text' | 'textarea'
+  type: 'number' | 'select' | 'text' | 'textarea' | 'files'
   metadata?: Record<string, unknown>
 }

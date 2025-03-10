@@ -156,7 +156,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<!--<style scoped>-->
-<!--:deep()-->
-<!--</style>-->

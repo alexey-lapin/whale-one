@@ -10,15 +10,24 @@ export const apiClient = axios.create({
   },
 })
 
-export const apiClientContext: { toast: ToastServiceMethods | undefined } = {
+const getAccessToken = () => {
+  const auth = useAuthStore()
+  return auth.token?.access_token
+}
+
+export const apiClientContext: {
+  toast: ToastServiceMethods | undefined
+  getAccessToken: () => string | undefined
+} = {
   toast: undefined,
+  getAccessToken,
 }
 
 apiClient.interceptors.request.use(
   (config) => {
     const auth = useAuthStore()
     if (auth.isAuthenticated()) {
-      config.headers.Authorization = `Bearer ${auth.token?.access_token}`
+      config.headers.Authorization = `Bearer ${getAccessToken()}`
     }
     return config
   },
@@ -33,7 +42,8 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.log('trying to refresh token')
       const auth = useAuthStore()
-      return auth.refresh()
+      return auth
+        .refresh()
         .then(() => {
           console.log('refresh successful')
           return apiClient.request(error.config)
