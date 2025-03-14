@@ -157,7 +157,23 @@ create table whale_one.deployment
             references whale_one.project_site,
     platform               text,
     provider_organisations text,
-    provider_participants  text
+    provider_participants  text,
+
+    latitude               double precision,
+    longitude              double precision,
+    bathymetry             double precision,
+    deployed_at            timestamp with time zone,
+    deployment_campaign_id integer
+        constraint deployment_campaign_id_fk
+            references whale_one.project_campaign,
+    first_file_at          timestamp with time zone,
+    last_file_at           timestamp with time zone,
+
+    recovery_status        text,
+    recovered_at           timestamp with time zone,
+    recovery_campaign_id   integer
+        constraint recovery_campaign_id_fk
+            references whale_one.project_campaign
 );
 
 -- TBL equipment

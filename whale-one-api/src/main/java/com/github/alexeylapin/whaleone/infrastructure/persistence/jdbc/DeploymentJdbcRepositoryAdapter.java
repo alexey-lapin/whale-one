@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.Deployment;
+import com.github.alexeylapin.whaleone.domain.model.ProjectCampaignItem;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
@@ -9,7 +10,6 @@ import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.Defa
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -32,6 +32,8 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
                 .lastUpdatedBy(deployment.lastUpdatedBy())
                 .projectRef(deployment.projectRef())
                 .projectSiteRef(deployment.projectSiteRef())
+                .deploymentCampaignRef(deployment.deploymentCampaignRef())
+                .recoveryCampaignRef(deployment.recoveryCampaignRef())
                 .build();
     }
 
@@ -61,13 +63,17 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
         @Mapping(source = "projectRef.id", target = "projectId")
         @Mapping(source = "projectSiteRef.id", target = "projectSiteId")
-        DeploymentEntity map(Deployment deployment);
+        @Mapping(source = "deploymentCampaignRef.id", target = "deploymentCampaignId")
+        @Mapping(source = "recoveryCampaignRef.id", target = "recoveryCampaignId")
+        DeploymentEntity map(Deployment source);
 
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
         @Mapping(source = "projectId", target = "projectRef.id")
         @Mapping(source = "projectSiteId", target = "projectSiteRef.id")
-        Deployment map(DeploymentEntity entity);
+        @Mapping(target = "deploymentCampaignRef", expression = "java(mapDeploymentCampaignRef(source))")
+        @Mapping(target = "recoveryCampaignRef", expression = "java(mapRecoveryCampaignRef(source))")
+        Deployment map(DeploymentEntity source);
 
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "createdByName", target = "createdBy.name")
@@ -77,7 +83,37 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         @Mapping(source = "projectName", target = "projectRef.name")
         @Mapping(source = "projectSiteId", target = "projectSiteRef.id")
         @Mapping(source = "projectSiteName", target = "projectSiteRef.name")
-        Deployment map(DeploymentJdbcRepository.DeploymentProjection entity);
+        @Mapping(target = "deploymentCampaignRef", expression = "java(mapDeploymentCampaignRef(source))")
+        @Mapping(target = "recoveryCampaignRef", expression = "java(mapRecoveryCampaignRef(source))")
+        Deployment map(DeploymentJdbcRepository.DeploymentProjection source);
+
+        default ProjectCampaignItem mapDeploymentCampaignRef(DeploymentJdbcRepository.DeploymentProjection source) {
+            if (source.getDeploymentCampaignId() != null) {
+                return new ProjectCampaignItem(source.getDeploymentCampaignId(), source.getDeploymentCampaignName());
+            }
+            return null;
+        }
+
+        default ProjectCampaignItem mapRecoveryCampaignRef(DeploymentJdbcRepository.DeploymentProjection source) {
+            if (source.getRecoveryCampaignId() != null) {
+                return new ProjectCampaignItem(source.getRecoveryCampaignId(), source.getRecoveryCampaignName());
+            }
+            return null;
+        }
+
+        default ProjectCampaignItem mapDeploymentCampaignRef(DeploymentEntity source) {
+            if (source.getDeploymentCampaignId() != null) {
+                return new ProjectCampaignItem(source.getDeploymentCampaignId(), null);
+            }
+            return null;
+        }
+
+        default ProjectCampaignItem mapRecoveryCampaignRef(DeploymentEntity source) {
+            if (source.getRecoveryCampaignId() != null) {
+                return new ProjectCampaignItem(source.getRecoveryCampaignId(), null);
+            }
+            return null;
+        }
 
     }
 

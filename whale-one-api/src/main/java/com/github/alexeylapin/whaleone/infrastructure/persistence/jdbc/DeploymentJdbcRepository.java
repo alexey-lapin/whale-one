@@ -15,12 +15,16 @@ public interface DeploymentJdbcRepository extends ListCrudRepository<DeploymentE
                    u1.username created_by_name,
                    u2.username last_updated_by_name,
                    p.name project_name,
-                   ps.name project_site_name
+                   ps.name project_site_name,
+                   pcd.name deployment_campaign_name,
+                   pcr.name recovery_campaign_name
             FROM deployment d
                      JOIN tbl_user u1 on d.created_by_id = u1.id
                      JOIN tbl_user u2 on d.last_updated_by_id = u2.id
                      JOIN project p on d.project_id = p.id
                      JOIN project_site ps on d.project_site_id = ps.id
+                     LEFT JOIN project_campaign pcd on d.deployment_campaign_id = pcd.id
+                     LEFT JOIN project_campaign pcr on d.recovery_campaign_id = pcr.id
             WHERE d.id = :id""")
     Optional<DeploymentProjection> findOneById(long id);
 
@@ -29,12 +33,16 @@ public interface DeploymentJdbcRepository extends ListCrudRepository<DeploymentE
                    u1.username created_by_name,
                    u2.username last_updated_by_name,
                    p.name project_name,
-                   ps.name project_site_name
+                   ps.name project_site_name,
+                   pcd.name deployment_campaign_name,
+                   pcr.name recovery_campaign_name
             FROM deployment d
                      JOIN tbl_user u1 on d.created_by_id = u1.id
                      JOIN tbl_user u2 on d.last_updated_by_id = u2.id
                      JOIN project p on d.project_id = p.id
                      JOIN project_site ps on d.project_site_id = ps.id
+                     LEFT JOIN project_campaign pcd on d.deployment_campaign_id = pcd.id
+                     LEFT JOIN project_campaign pcr on d.recovery_campaign_id = pcr.id
             WHERE
                 1 = 1
                 AND (:name IS NULL OR d.name ILIKE '%' || :name || '%')
@@ -58,6 +66,8 @@ public interface DeploymentJdbcRepository extends ListCrudRepository<DeploymentE
         private String lastUpdatedByName;
         private String projectName;
         private String projectSiteName;
+        private String deploymentCampaignName;
+        private String recoveryCampaignName;
 
     }
 

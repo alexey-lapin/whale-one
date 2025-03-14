@@ -20,6 +20,18 @@ public record Deployment(
         DeploymentStatus status,
         String platform,
         String providerOrganisations,
-        String providerParticipants
+        String providerParticipants,
+
+        Double latitude,
+        Double longitude,
+        Double bathymetry,
+        ZonedDateTime deployedAt,
+        ProjectCampaignItem deploymentCampaignRef,
+        ZonedDateTime firstFileAt,
+        ZonedDateTime lastFileAt,
+
+        String recoveryStatus,
+        ZonedDateTime recoveredAt,
+        ProjectCampaignItem recoveryCampaignRef
 ) {
 }

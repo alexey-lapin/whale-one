@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -123,7 +124,7 @@ public class DeploymentApi {
     @DeleteMapping("/deployments/{deploymentId}/equipment/{equipmentId}")
     public void deploymentEquipmentDelete(@PathVariable long deploymentId,
                                           @PathVariable long equipmentId) {
-        deploymentEquipmentRepository.delete(new DeploymentEquipment(deploymentId, equipmentId));
+        deploymentEquipmentRepository.delete(new DeploymentEquipment(deploymentId, equipmentId, Set.of()));
         var equipment = equipmentRepository.findById(equipmentId).orElseThrow();
         if (equipment.deploymentId() != deploymentId) {
             throw new RuntimeException("Deployment Equipment mismatch");

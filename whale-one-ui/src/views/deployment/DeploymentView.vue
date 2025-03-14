@@ -4,7 +4,9 @@ import { onMounted, ref, type Ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
+import Menu from 'primevue/menu'
 import Panel from 'primevue/panel'
+import Tag from 'primevue/tag'
 import Timeline from 'primevue/timeline'
 
 import DeploymentPanel from '@/components/DeploymentPanel.vue'
@@ -13,7 +15,8 @@ import {
   invokeDeploymentEquipmentAdd,
   invokeDeploymentEquipmentListGet,
   invokeDeploymentGet,
-  invokeDeploymentStatusUpdate, invokeDeploymentUpdate
+  invokeDeploymentStatusUpdate,
+  invokeDeploymentUpdate,
 } from '@/client/deploymentClient.ts'
 import { invokeEquipmentTypeItemListGet } from '@/client/equipmentTypeClient.ts'
 import { invokeEquipmentItemListGet } from '@/client/equipmentClient.ts'
@@ -22,6 +25,10 @@ import type { BaseRefModel } from '@/model/BaseModel.ts'
 import type { DeploymentEquipmentItemModel, DeploymentModel } from '@/model/DeploymentModel.ts'
 import DeploymentEquipment from '@/components/DeploymentEquipment.vue'
 import DeploymentInfo from '@/components/DeploymentInfo.vue'
+import { invokeCampaignListGet } from '@/client/projectClient.ts'
+import type { ProjectCampaignModel } from '@/model/ProjectModel.ts'
+import DeploymentPanelDeploymentInfo from '@/components/DeploymentPanelDeploymentInfo.vue'
+import DeploymentPanelRecoveryInfo from '@/components/DeploymentPanelRecoveryInfo.vue'
 
 const props = defineProps<{
   id: number
@@ -60,6 +67,10 @@ const statuses = {
 }
 
 const editing = ref(false)
+const editingDeploymentInfo = ref(false)
+const editingRecoveryInfo = ref(false)
+
+const campaigns: Ref<ProjectCampaignModel[]> = ref([])
 
 const equipmentType: Ref<BaseRefModel | null> = ref(null)
 const equipmentTypes: Ref<BaseRefModel[]> = ref([])
@@ -106,16 +117,22 @@ const addEquipment = () => {
     .catch(() => {})
 }
 
-const updateDeployment = () => {
+const updateDeployment = (callback: () => void) => {
   invokeDeploymentUpdate(model.value)
     .then((data) => (model.value = data))
-    .then(() => (editing.value = false))
+    .then(() => callback())
     .catch(() => {})
 }
 
 const updateStatus = (status: DeploymentStatus) => {
   invokeDeploymentStatusUpdate(props.id, status)
     .then((data) => (model.value = data))
+    .catch(() => {})
+}
+
+const getCampaigns = () => {
+  invokeCampaignListGet(props.id)
+    .then((data) => (campaigns.value = data))
     .catch(() => {})
 }
 
@@ -129,6 +146,39 @@ const hasStatusOf = (status: DeploymentStatus) => {
   return model.value.status === status
 }
 
+const menu = ref()
+const items = ref([
+  {
+    label: 'Go to Status',
+    items: [
+      {
+        label: 'NEW',
+        command: () => updateStatus('NEW'),
+      },
+      {
+        label: 'ASSIGN',
+        command: () => updateStatus('ASSIGN'),
+      },
+      {
+        label: 'DEPLOYED',
+        command: () => updateStatus('DEPLOYED'),
+      },
+      {
+        label: 'RECOVERED',
+        command: () => updateStatus('RECOVERED'),
+      },
+      {
+        label: 'ANALYZED',
+        command: () => updateStatus('ANALYZED'),
+      },
+    ],
+  },
+])
+
+const toggle = (event: Event) => {
+  menu.value.toggle(event)
+}
+
 onMounted(() => {
   getDeployment()
   getDeploymentEquipment()
@@ -137,13 +187,31 @@ onMounted(() => {
 
 <template>
   <div class="mt-5">
-    <div class="flex flex-col gap-5 my-4">
+    <div class="flex flex-col my-4">
       <EntityHeader
         :header="`Deployment #${model.id}`"
         :model="model"
       />
 
       <Timeline />
+      <div class="mt-3 flex gap-1">
+        <Tag
+          :value="model.status"
+          severity="primary"
+        />
+        <Button
+          icon="pi pi-cog"
+          size="small"
+          severity="secondary"
+          text
+          @click="toggle"
+        />
+        <Menu
+          ref="menu"
+          :model="items"
+          :popup="true"
+        />
+      </div>
 
       <div class="p-timeline p-timeline-vertical">
         <DeploymentPanel
@@ -170,7 +238,7 @@ onMounted(() => {
                   <DeploymentInfo
                     :editing="editing"
                     v-model="model"
-                    @save-clicked="updateDeployment()"
+                    @save-clicked="updateDeployment(() => (editing = false))"
                   />
                 </div>
               </template>
@@ -204,7 +272,10 @@ onMounted(() => {
                   </template>
                 </div>
 
-                <div v-if="hasStatusOf('ASSIGN')" class="mt-3 flex flex-wrap gap-3">
+                <div
+                  v-if="hasStatusOf('ASSIGN')"
+                  class="mt-3 flex flex-wrap gap-3"
+                >
                   <FloatLabel variant="on">
                     <AutoComplete
                       v-model="equipmentType"
@@ -255,7 +326,21 @@ onMounted(() => {
               class="mt-3"
               toggleable
             >
-              <template #default>deployment info</template>
+              <template #icons>
+                <Button
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  variant="text"
+                  @click="editingDeploymentInfo = !editingDeploymentInfo"
+                />
+              </template>
+              <template #default>
+                <DeploymentPanelDeploymentInfo
+                  v-model="model"
+                  :editing="editingDeploymentInfo"
+                  @save-clicked="updateDeployment(() => (editingDeploymentInfo = false))"
+                />
+              </template>
             </Panel>
             <Button
               v-if="hasStatusOf('DEPLOYED')"
@@ -276,7 +361,21 @@ onMounted(() => {
               class="mt-3"
               toggleable
             >
-              <template #default>recovery info</template>
+              <template #icons>
+                <Button
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  variant="text"
+                  @click="editingRecoveryInfo = !editingRecoveryInfo"
+                />
+              </template>
+              <template #default>
+                <DeploymentPanelRecoveryInfo
+                  v-model="model"
+                  :editing="editingRecoveryInfo"
+                  @save-clicked="updateDeployment(() => (editingRecoveryInfo = false))"
+                />
+              </template>
             </Panel>
             <Button
               v-if="hasStatusOf('RECOVERED')"

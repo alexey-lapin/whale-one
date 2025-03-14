@@ -16,6 +16,18 @@ export interface DeploymentModel extends EntityHeaderModel {
   platform: string | null
   providerOrganisations: string | null
   providerParticipants: string | null
+
+  latitude?: number | null
+  longitude?: number | null
+  bathymetry?: number | null
+  deployedAt?: string | null
+  deploymentCampaignRef?: BaseRefModel | null
+  firstFileAt?: string | null
+  lastFileAt?: string | null
+
+  recoveryStatus?: string | null
+  recoveredAt?: string | null
+  recoveryCampaignRef?: BaseRefModel | null
 }
 
 export interface DeploymentEquipmentModel {
