@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
-import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import { useConfirm } from 'primevue/useconfirm'
 
@@ -22,6 +21,15 @@ const { editable = false } = defineProps<{
 const emits = defineEmits(['campaign-updated', 'campaign-deleted'])
 
 const editableState = ref(editable)
+const idVisible = ref(false)
+
+const header = computed(() => {
+  const base = 'Campaign'
+  if (model.value.id < 1) {
+    return `New ${base}`
+  }
+  return idVisible.value ? `#${model.value.id} ${base}` : base
+})
 
 const createOrUpdateCampaign = () => {
   invokeCampaignCreateOrUpdate(model.value)
@@ -46,7 +54,9 @@ const confirmDelete = () => {
     return
   }
   confirm.require(
-    deleteConfirm(`Delete campaign #${model.value.id} ${model.value.name}?`, () => deleteCampaign()),
+    deleteConfirm(`Delete campaign #${model.value.id} ${model.value.name}?`, () =>
+      deleteCampaign(),
+    ),
   )
 }
 </script>
@@ -55,14 +65,18 @@ const confirmDelete = () => {
   <Card class="border hover:border-surface-500">
     <template #subtitle>
       <div class="flex items-center">
-        <p class="flex-grow">{{ model.id > 0 ? `#${model.id}` : 'New' }} Campaign</p>
+        <span
+          class="flex-grow"
+          @click="idVisible = !idVisible"
+          >{{ header }}</span
+        >
         <Button
           variant="text"
           size="small"
           severity="secondary"
           icon="pi pi-pencil"
           @click="editableState = !editableState"
-        ></Button>
+        />
         <Button
           variant="text"
           size="small"
@@ -70,7 +84,7 @@ const confirmDelete = () => {
           icon="pi pi-trash"
           class="hover:!text-red-600"
           @click="confirmDelete()"
-        ></Button>
+        />
       </div>
     </template>
     <template #content>
@@ -84,32 +98,32 @@ const confirmDelete = () => {
             />
             <label for="name">Name</label>
           </FloatLabel>
-<!--          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">-->
-<!--            <FloatLabel variant="on">-->
-<!--              <InputNumber-->
-<!--                id="longitude"-->
-<!--                v-model="model.longitude"-->
-<!--                :disabled="!editableState"-->
-<!--              />-->
-<!--              <label for="longitude">Longitude</label>-->
-<!--            </FloatLabel>-->
-<!--            <FloatLabel variant="on">-->
-<!--              <InputNumber-->
-<!--                id="latitude"-->
-<!--                v-model="model.latitude"-->
-<!--                :disabled="!editableState"-->
-<!--              />-->
-<!--              <label for="latitude">Latitude</label>-->
-<!--            </FloatLabel>-->
-<!--            <FloatLabel variant="on">-->
-<!--              <InputNumber-->
-<!--                id="depth"-->
-<!--                v-model="model.depth"-->
-<!--                :disabled="!editableState"-->
-<!--              />-->
-<!--              <label for="depth">Depth</label>-->
-<!--            </FloatLabel>-->
-<!--          </div>-->
+          <!--          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">-->
+          <!--            <FloatLabel variant="on">-->
+          <!--              <InputNumber-->
+          <!--                id="longitude"-->
+          <!--                v-model="model.longitude"-->
+          <!--                :disabled="!editableState"-->
+          <!--              />-->
+          <!--              <label for="longitude">Longitude</label>-->
+          <!--            </FloatLabel>-->
+          <!--            <FloatLabel variant="on">-->
+          <!--              <InputNumber-->
+          <!--                id="latitude"-->
+          <!--                v-model="model.latitude"-->
+          <!--                :disabled="!editableState"-->
+          <!--              />-->
+          <!--              <label for="latitude">Latitude</label>-->
+          <!--            </FloatLabel>-->
+          <!--            <FloatLabel variant="on">-->
+          <!--              <InputNumber-->
+          <!--                id="depth"-->
+          <!--                v-model="model.depth"-->
+          <!--                :disabled="!editableState"-->
+          <!--              />-->
+          <!--              <label for="depth">Depth</label>-->
+          <!--            </FloatLabel>-->
+          <!--          </div>-->
         </div>
       </Fluid>
       <Button

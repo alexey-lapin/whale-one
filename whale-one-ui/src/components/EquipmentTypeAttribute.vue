@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
@@ -14,7 +14,7 @@ import { useConfirm } from 'primevue/useconfirm'
 import {
   type AttributeEntity,
   invokeAttributeCreateOrUpdate,
-  invokeAttributeDelete
+  invokeAttributeDelete,
 } from '@/client/equipmentTypeAttributeClient.ts'
 import { deleteConfirm } from '@/utils/confirms'
 
@@ -30,6 +30,15 @@ const { attributeEntity, editable = false } = defineProps<{
 const emits = defineEmits(['attribute-updated', 'attribute-deleted'])
 
 const editableState = ref(editable)
+const idVisible = ref(false)
+
+const header = computed(() => {
+  const base = 'Attribute'
+  if (model.value.id < 1) {
+    return `New ${base}`
+  }
+  return idVisible.value ? `#${model.value.id} ${base}` : base
+})
 
 const attributeTypes = [
   { label: 'number', value: 'number' },
@@ -79,22 +88,26 @@ const onTypeChange = () => {
   <Card class="border hover:border-surface-500">
     <template #subtitle>
       <div class="flex items-center gap-2">
-        <p class="flex-grow">{{ model.id > 0 ? `#${model.id}` : 'New' }} Attribute</p>
+        <span
+          class="flex-grow"
+          @click="idVisible = !idVisible"
+          >{{ header }}</span
+        >
         <Button
-          variant1="text"
+          variant="text"
           size="small"
           severity="secondary"
           icon="pi pi-pencil"
           @click="editableState = !editableState"
-        ></Button>
+        />
         <Button
-          variant1="text"
+          variant="text"
           size="small"
           severity="secondary"
           icon="pi pi-trash"
           class="hover:!text-red-600"
           @click="confirmDelete()"
-        ></Button>
+        />
       </div>
     </template>
     <template #content>

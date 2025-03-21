@@ -125,7 +125,7 @@ onMounted(() => {
   <div class="mt-5">
     <div class="flex flex-col gap-5 my-4">
       <EntityHeader
-        :header="`Equipment Type #${model.id}`"
+        header="Equipment Type"
         :model="model"
       />
 

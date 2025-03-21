@@ -8,10 +8,11 @@ import { createPinia } from 'pinia'
 
 import Aura from '@primevue/themes/aura'
 import { definePreset } from '@primevue/themes'
+import ConfirmationService from 'primevue/confirmationservice'
 import PrimeVue from 'primevue/config'
 import Ripple from 'primevue/ripple'
 import ToastService from 'primevue/toastservice'
-import ConfirmationService from 'primevue/confirmationservice'
+import Tooltip from 'primevue/tooltip'
 
 import App from './App.vue'
 import router from './router'
@@ -82,6 +83,7 @@ app.use(PrimeVue, {
   },
 })
 app.directive('ripple', Ripple)
+app.directive('tooltip', Tooltip);
 app.use(ToastService)
 app.use(ConfirmationService)
 

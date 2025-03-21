@@ -98,9 +98,9 @@ export const invokeSiteUpdate = (site: ProjectSiteModel) => {
     })
 }
 
-export const invokeSiteListGet = (id: number) => {
+export const invokeSiteListGet = (projectId: number) => {
   return apiClient
-    .get<ProjectSiteModel[]>(`/api/projects/${id}/sites`)
+    .get<ProjectSiteModel[]>(`/api/projects/${projectId}/sites`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))
@@ -175,9 +175,9 @@ export const invokeCampaignUpdate = (campaign: ProjectCampaignModel) => {
     })
 }
 
-export const invokeCampaignListGet = (id: number) => {
+export const invokeCampaignListGet = (projectId: number) => {
   return apiClient
-    .get<ProjectCampaignModel[]>(`/api/projects/${id}/campaigns`)
+    .get<ProjectCampaignModel[]>(`/api/projects/${projectId}/campaigns`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))

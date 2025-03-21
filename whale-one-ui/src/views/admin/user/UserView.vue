@@ -80,7 +80,7 @@ onMounted(() => {
   >
     <div class="flex flex-col gap-5 my-4">
       <EntityHeader
-        :header="`User #${model.id}`"
+        header="User"
         :model="model"
       />
 
@@ -88,14 +88,16 @@ onMounted(() => {
         <template #icons>
           <div class="flex gap-2">
             <Button
-              severity="secondary"
+              variant="text"
               size="small"
+              severity="secondary"
               icon="pi pi-key"
               @click="passwordDialogVisible = !passwordDialogVisible"
             />
             <Button
-              severity="secondary"
+              variant="text"
               size="small"
+              severity="secondary"
               icon="pi pi-pencil"
               @click="editing = !editing"
             />

@@ -22,7 +22,7 @@ const emits = defineEmits(['save-clicked'])
 const campaigns: Ref<ProjectCampaignModel[]> = ref([])
 
 const getCampaigns = () => {
-  invokeCampaignListGet(model.value.id)
+  invokeCampaignListGet(model.value.projectRef.id)
     .then((data) => (campaigns.value = data))
     .catch(() => {})
 }

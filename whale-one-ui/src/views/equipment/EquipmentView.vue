@@ -89,7 +89,7 @@ onMounted(() => {
   <div class="mt-5">
     <div class="flex flex-col gap-5 my-4">
       <EntityHeader
-        :header="`Equipment #${model.id}`"
+        header="Equipment"
         :model="model"
       />
 
@@ -106,8 +106,9 @@ onMounted(() => {
               size="small"
             />
             <Button
-              severity="secondary"
+              variant="text"
               size="small"
+              severity="secondary"
               icon="pi pi-pencil"
               @click="editing = !editing"
             />

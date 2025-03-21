@@ -15,7 +15,7 @@ import {
   invokeCampaignListGet,
   invokeProjectGet,
   invokeProjectUpdate,
-  invokeSiteListGet
+  invokeSiteListGet,
 } from '@/client/projectClient.ts'
 import EntityHeader from '@/components/EntityHeader.vue'
 import ProjectCampaign from '@/components/ProjectCampaign.vue'
@@ -126,7 +126,7 @@ onMounted(() => {
   <div class="mt-5">
     <div class="flex flex-col gap-5 my-4">
       <EntityHeader
-        :header="`Project #${project.id}`"
+        header="Project"
         :model="project"
       />
       <Panel header="Info">

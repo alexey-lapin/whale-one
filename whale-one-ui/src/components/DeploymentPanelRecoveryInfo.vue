@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import Select from 'primevue/select'
+import { computed, ref, type Ref } from 'vue'
+
 import AutoComplete from 'primevue/autocomplete'
+import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import DatePicker from 'primevue/datepicker'
 import FloatLabel from 'primevue/floatlabel'
-import type { DeploymentModel } from '@/model/DeploymentModel.ts'
-import { computed, ref, type Ref } from 'vue'
-import type { ProjectCampaignModel } from '@/model/ProjectModel.ts'
+import Select from 'primevue/select'
+
 import { invokeCampaignListGet } from '@/client/projectClient.ts'
-import Button from 'primevue/button'
+
+import type { DeploymentModel } from '@/model/DeploymentModel.ts'
+import type { ProjectCampaignModel } from '@/model/ProjectModel.ts'
 
 const model = defineModel<DeploymentModel>({ required: true })
 defineProps<{
@@ -19,7 +22,7 @@ const emits = defineEmits(['save-clicked'])
 const campaigns: Ref<ProjectCampaignModel[]> = ref([])
 
 const getCampaigns = () => {
-  invokeCampaignListGet(model.value.id)
+  invokeCampaignListGet(model.value.projectRef.id)
     .then((data) => (campaigns.value = data))
     .catch(() => {})
 }

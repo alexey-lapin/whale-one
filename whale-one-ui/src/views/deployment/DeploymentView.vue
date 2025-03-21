@@ -189,7 +189,7 @@ onMounted(() => {
   <div class="mt-5">
     <div class="flex flex-col my-4">
       <EntityHeader
-        :header="`Deployment #${model.id}`"
+        header="Deployment"
         :model="model"
       />
 
