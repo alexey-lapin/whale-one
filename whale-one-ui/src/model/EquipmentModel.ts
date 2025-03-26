@@ -3,11 +3,15 @@ import type { BaseRefModel, EntityHeaderModel } from '@/model/BaseModel.ts'
 export interface EquipmentElementModel extends EntityHeaderModel {
   name: string
   type: BaseRefModel
+  manufacturer: string
+  model: string
 }
 
 export interface EquipmentNewModel {
   name: string | null
   type: BaseRefModel | null
+  manufacturer?: string | null
+  model?: string | null
 }
 
 export interface EquipmentModel extends EquipmentNewModel {
@@ -18,6 +22,8 @@ export interface EquipmentModel extends EquipmentNewModel {
   active: boolean
   name: string
   type: BaseRefModel
+  manufacturer: string
+  model: string
   attributes: EquipmentAttributeModel[]
 }
 

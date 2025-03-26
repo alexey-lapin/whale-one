@@ -7,7 +7,7 @@ import DataTable from 'primevue/datatable'
 
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 import type { PageModel } from '@/model/BaseModel.ts'
-import { invokeEquipmentListGet } from '@/client/equipmentTypeClient.ts'
+import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
 
@@ -18,7 +18,7 @@ const pageSize = ref(10)
 
 const loadPage = (page: number, size: number) => {
   loading.value = true
-  invokeEquipmentListGet(page, size)
+  invokeEquipmentTypeListGet(page, size)
     .then((data) => (list.value = data))
     .catch(() => {})
     .finally(() => (loading.value = false))

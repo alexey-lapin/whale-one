@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, type Ref, ref } from 'vue'
+import { onMounted, type Ref, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
@@ -7,18 +7,18 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import Textarea from 'primevue/textarea'
 
-import EquipmentTypeAttribute from '@/components/EquipmentTypeAttribute.vue'
-
-import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
-import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
-import {
-  invokeEquipmentTypeGet,
-  invokeEquipmentTypeUpdate,
-} from '@/client/equipmentTypeClient.ts'
 import EntityHeader from '@/components/EntityHeader.vue'
-import {
-  invokeAttributeListGet
-} from '@/client/equipmentTypeAttributeClient.ts'
+import EquipmentTypeAttribute from '@/components/EquipmentTypeAttribute.vue'
+import EquipmentTypeManufacturer from '@/components/EquipmentTypeManufacturer.vue'
+
+import { invokeEquipmentTypeGet, invokeEquipmentTypeUpdate } from '@/client/equipmentTypeClient.ts'
+import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
+
+import type {
+  EquipmentTypeManufacturerModel,
+  EquipmentTypeModel,
+} from '@/model/EquipmentTypeModel.ts'
+import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 
 const props = defineProps<{
   id: number
@@ -61,7 +61,8 @@ const newDeploymentAttribute: Ref<EquipmentTypeAttributeModel> = ref({
 })
 
 const loading = ref(false)
-const editing = ref(false)
+const editingInfo = ref(false)
+const editingManufacturers = ref(false)
 const addingNewEquipmentAttribute = ref(false)
 const addingNewDeploymentAttribute = ref(false)
 
@@ -84,11 +85,15 @@ const getDeploymentAttributes = () => {
 }
 
 const updateEquipmentType = () => {
+  if (editingManufacturers.value) {
+    updateManufacturersInModel()
+  }
   loading.value = true
   invokeEquipmentTypeUpdate(model.value)
     .then((data) => {
       model.value = data
-      editing.value = false
+      editingInfo.value = false
+      editingManufacturers.value = false
     })
     .catch(() => {})
     .finally(() => {
@@ -119,6 +124,52 @@ onMounted(() => {
   getEquipmentAttributes()
   getDeploymentAttributes()
 })
+
+const manufacturers = ref<EquipmentTypeManufacturerModel[]>([])
+
+const ensureMetadata = () => {
+  if (!model.value.metadata) {
+    model.value.metadata = {}
+  }
+  if (!model.value.metadata.manufacturers) {
+    model.value.metadata.manufacturers = []
+  }
+  return model.value.metadata.manufacturers as EquipmentTypeManufacturerModel[]
+}
+
+watch(
+  () => model.value,
+  () => {
+    manufacturers.value = ensureMetadata()
+  },
+  { immediate: true, deep: true },
+)
+
+const updateManufacturersInModel = () => {
+  ensureMetadata()
+  model.value.metadata!.manufacturers = cleanAndSortManufacturers([...manufacturers.value])
+}
+
+const cleanAndSortManufacturers = (manufacturers: EquipmentTypeManufacturerModel[]) => {
+  const cleaned = manufacturers.filter((m) => m.name?.trim())
+
+  cleaned.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+
+  cleaned.forEach((manufacturer) => {
+    manufacturer.models = (manufacturer.models || [])
+      .filter((model) => model?.trim())
+      .sort((a, b) => (a || '').localeCompare(b || ''))
+  })
+
+  return cleaned
+}
+
+const addManufacturer = () => {
+  manufacturers.value.push({
+    name: '',
+    models: [],
+  })
+}
 </script>
 
 <template>
@@ -136,7 +187,7 @@ onMounted(() => {
               severity="secondary"
               size="small"
               icon="pi pi-pencil"
-              @click="editing = !editing"
+              @click="editingInfo = !editingInfo"
             />
           </div>
         </template>
@@ -150,7 +201,7 @@ onMounted(() => {
                 id="name"
                 class="w-full"
                 v-model="model.name"
-                :disabled="!editing"
+                :disabled="!editingInfo"
               />
               <label for="name">Name</label>
             </FloatLabel>
@@ -161,19 +212,60 @@ onMounted(() => {
             >
               <Textarea
                 class="w-full"
-                :disabled="!editing"
+                v-model="model.description"
+                :disabled="!editingInfo"
               />
               <label for="1name">Description</label>
             </FloatLabel>
           </div>
           <Button
-            v-if="editing"
+            v-if="editingInfo"
             label="Save"
             icon="pi pi-save"
             class="mt-4"
             :loading="loading"
             @click="updateEquipmentType()"
           />
+        </template>
+      </Panel>
+
+      <Panel header="Manufacturers">
+        <template #icons>
+          <div class="flex gap-2">
+            <Button
+              severity="secondary"
+              size="small"
+              icon="pi pi-pencil"
+              @click="editingManufacturers = !editingManufacturers"
+            />
+          </div>
+        </template>
+        <template #default>
+          <div class="mt-1 flex flex-col gap-3">
+            <EquipmentTypeManufacturer
+              v-for="(manufacturer, index) in manufacturers"
+              v-model="manufacturers[index]"
+              :editable="editingManufacturers"
+              @manufacturer-deleted="manufacturers.splice(index, 1)"
+            />
+          </div>
+          <div class="flex gap-2">
+            <Button
+              v-if="editingManufacturers"
+              label="Save"
+              icon="pi pi-save"
+              class="mt-3"
+              @click="updateEquipmentType()"
+            />
+            <Button
+              v-if="editingManufacturers"
+              label="New"
+              icon="pi pi-plus"
+              severity="secondary"
+              class="mt-3"
+              @click="addManufacturer()"
+            />
+          </div>
         </template>
       </Panel>
 

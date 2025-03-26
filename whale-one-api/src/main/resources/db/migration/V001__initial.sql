@@ -94,7 +94,9 @@ create table whale_one.equipment_type
     last_updated_by_id integer                  not null
         constraint equipment_type_last_updated_by_id_fk
             references whale_one.tbl_user,
-    name               text                     not null
+    name               text                     not null,
+    description        text,
+    metadata           jsonb
 );
 
 -- TBL equipment_type_equipment_attribute
@@ -195,6 +197,8 @@ create table whale_one.equipment
     type_id            integer                  not null
         constraint equipment_type_id_fk
             references whale_one.equipment_type,
+    manufacturer       text                     not null,
+    model              text                     not null,
     deployment_id      integer
         constraint equipment_deployment_id_fk
             references whale_one.deployment,

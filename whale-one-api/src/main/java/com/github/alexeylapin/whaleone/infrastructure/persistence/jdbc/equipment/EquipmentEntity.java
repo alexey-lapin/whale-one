@@ -30,6 +30,8 @@ public class EquipmentEntity {
     private boolean active;
     private String name;
     private long typeId;
+    private String manufacturer;
+    private String model;
     private Long deploymentId;
 
     @MappedCollection(idColumn = "equipment_id")

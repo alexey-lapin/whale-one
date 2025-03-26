@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel'
+import Fluid from 'primevue/fluid'
 import Panel from 'primevue/panel'
+import Select from 'primevue/select'
 import ToggleButton from 'primevue/togglebutton'
 
 import EntityHeader from '@/components/EntityHeader.vue'
@@ -15,6 +17,11 @@ import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts
 
 import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
+import type {
+  EquipmentTypeManufacturerModel,
+  EquipmentTypeModel,
+} from '@/model/EquipmentTypeModel.ts'
+import { invokeEquipmentTypeGet } from '@/client/equipmentTypeClient.ts'
 
 const props = defineProps<{
   id: number
@@ -30,7 +37,8 @@ const model: Ref<EquipmentModel> = ref({
   },
   active: false,
   name: '',
-  typeId: -1,
+  manufacturer: '',
+  model: '',
   type: {
     id: 0,
     name: '',
@@ -38,8 +46,11 @@ const model: Ref<EquipmentModel> = ref({
   attributes: [],
 })
 
+const equipmentType: Ref<EquipmentTypeModel | null> = ref(null)
 const equipmentTypeAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
 const attributes: Ref<EquipmentAttributeModel[]> = ref([])
+// const manufacturers: Ref<EquipmentTypeManufacturerModel[]> = ref([])
+// const manufacturer: Ref<EquipmentTypeManufacturerModel | null> = ref(null)
 
 const loading = ref(false)
 const editing = ref(false)
@@ -47,6 +58,12 @@ const editing = ref(false)
 const getEquipment = () => {
   return invokeEquipmentGet(props.id)
     .then((data) => (model.value = data))
+    .catch(() => {})
+}
+
+const getEquipmentType = () => {
+  invokeEquipmentTypeGet(model.value.type.id)
+    .then((data) => (equipmentType.value = data))
     .catch(() => {})
 }
 
@@ -80,20 +97,41 @@ const updateEquipment = () => {
     .finally(() => (loading.value = false))
 }
 
+const manufacturers = computed(() => {
+  return (
+    (equipmentType.value?.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []
+  ).map((m) => m.name)
+})
+
+const models = computed(() => {
+  return (
+    ((equipmentType.value?.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []).find(
+      (m) => m.name === model.value.manufacturer,
+    )?.models || []
+  )
+})
+
+const onManufacturerChange = (newValue: string | null) => {
+  model.value.model = ''
+}
+
 onMounted(() => {
-  getEquipment().then(() => getEquipmentTypeAttributes())
+  getEquipment().then(() => {
+    getEquipmentType()
+    getEquipmentTypeAttributes()
+  })
 })
 </script>
 
 <template>
   <div class="mt-5">
-    <div class="flex flex-col gap-5 my-4">
+    <div class="flex flex-col gap-4 my-4">
       <EntityHeader
         header="Equipment"
         :model="model"
       />
 
-      <Panel header="Info">
+      <Panel>
         <template #header>
           <EquipmentTypeTag :name="model.type.name" />
         </template>
@@ -115,35 +153,47 @@ onMounted(() => {
           </div>
         </template>
         <template #default>
-          <div class="mt-1 flex flex-col gap-4">
-            <FloatLabel
-              variant="on"
-              class="w-full"
-            >
-              <InputText
-                id="name"
-                class="w-full"
-                v-model="model.name"
-                :disabled="!editing"
-              />
-              <label for="name">Name</label>
-            </FloatLabel>
-
-            <!--          <FloatLabel variant="on" class="w-full">-->
-            <!--            <Textarea class="w-full" v-model="project.description" />-->
-            <!--            <label for="1name">Description</label>-->
-            <!--          </FloatLabel>-->
-
-            <template v-if="attributes.length > 0">
-              <template v-for="(attribute, index) in equipmentTypeAttributes">
-                <EquipmentAttribute
-                  v-model="attributes[index].value"
-                  :equipment-type-attribute="attribute"
-                  :editing="editing"
+          <Fluid>
+            <div class="mt-1 flex flex-col gap-4">
+              <FloatLabel variant="on">
+                <InputText
+                  id="name"
+                  v-model="model.name"
+                  :disabled="!editing"
                 />
+                <label for="name">Name</label>
+              </FloatLabel>
+
+              <FloatLabel variant="on">
+                <Select
+                  v-model="model.manufacturer"
+                  :options="manufacturers"
+                  :disabled="!editing"
+                  @change="onManufacturerChange($event.value)"
+                />
+                <label>Manufacturer</label>
+              </FloatLabel>
+
+              <FloatLabel variant="on">
+                <Select
+                  v-model="model.model"
+                  :options="models"
+                  :disabled="!editing"
+                />
+                <label>Model</label>
+              </FloatLabel>
+
+              <template v-if="attributes.length > 0">
+                <template v-for="(attribute, index) in equipmentTypeAttributes">
+                  <EquipmentAttribute
+                    v-model="attributes[index].value"
+                    :equipment-type-attribute="attribute"
+                    :editing="editing"
+                  />
+                </template>
               </template>
-            </template>
-          </div>
+            </div>
+          </Fluid>
           <Button
             v-if="editing"
             label="Save"

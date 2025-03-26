@@ -5,7 +5,6 @@ import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeAttributeReposit
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
-import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Pageable;
@@ -50,17 +49,6 @@ public class EquipmentTypeEquipmentAttributeJdbcRepositoryAdapter implements Equ
         EquipmentTypeAttribute map(EquipmentTypeEquipmentAttributeEntity source);
 
         EquipmentTypeEquipmentAttributeEntity map(EquipmentTypeAttribute source);
-
-        default String map(JsonValue source) {
-            if (source == null) {
-                return null;
-            }
-            return source.getValue();
-        }
-
-        default JsonValue map(String source) {
-            return new JsonValue(source);
-        }
 
     }
 

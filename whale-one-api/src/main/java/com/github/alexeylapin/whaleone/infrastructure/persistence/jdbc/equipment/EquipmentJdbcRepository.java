@@ -45,10 +45,17 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                 1 = 1
                 AND (:name IS NULL OR e.name ILIKE '%' || :name || '%')
                 AND (:typeId IS NULL OR e.type_id = :typeId)
+                AND (:manufacturer IS NULL OR e.manufacturer ILIKE '%' || :manufacturer || '%')
+                AND (:model IS NULL OR e.model ILIKE '%' || :model || '%')
             ORDER BY e.id DESC
             LIMIT :size OFFSET :offset""",
             rowMapperClass = EquipmentListElementRowMapper.class)
-    List<EquipmentListElement> findAllElements(long size, long offset, String name, Long typeId);
+    List<EquipmentListElement> findAllElements(long size,
+                                               long offset,
+                                               String name,
+                                               Long typeId,
+                                               String manufacturer,
+                                               String model);
 
     List<EquipmentEntity> findAllByDeploymentId(long id);
 
@@ -85,6 +92,8 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .active(rs.getBoolean("active"))
                     .name(rs.getString("name"))
                     .type(new EquipmentTypeRef(rs.getLong("type_id"), rs.getString("type_name")))
+                    .manufacturer(rs.getString("manufacturer"))
+                    .model(rs.getString("model"))
                     .deploymentId(deploymentId)
                     .build();
         }

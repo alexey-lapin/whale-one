@@ -15,6 +15,8 @@ public record EquipmentType(
         ZonedDateTime lastUpdatedAt,
         UserRef lastUpdatedBy,
 
-        String name
+        String name,
+        String description,
+        String metadata
 ) {
 }

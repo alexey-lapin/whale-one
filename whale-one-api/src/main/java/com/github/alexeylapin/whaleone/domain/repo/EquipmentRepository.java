@@ -13,7 +13,12 @@ public interface EquipmentRepository {
 
     Optional<Equipment> findById(long id);
 
-    Page<EquipmentListElement> findAllElements(int page, int size, String name, Long typeId);
+    Page<EquipmentListElement> findAllElements(int page,
+                                               int size,
+                                               String name,
+                                               Long typeId,
+                                               String manufacturer,
+                                               String model);
 
     List<EquipmentItem> findAllItems(long typeId, String name, boolean includeAllocated);
 

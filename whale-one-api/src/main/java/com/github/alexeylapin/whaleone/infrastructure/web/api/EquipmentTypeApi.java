@@ -38,14 +38,15 @@ public class EquipmentTypeApi {
     private final EquipmentTypeRepository equipmentTypeRepository;
     private final EquipmentTypeAttributeRepository equipmentTypeAttributeRepository;
     private final EquipmentTypeDeploymentAttributeRepository equipmentTypeDeploymentAttributeRepository;
-    private final EquipmentTypeAttributeMapper mapper;
+    private final EquipmentTypeMapper equipmentTypeMapper;
+    private final EquipmentTypeAttributeMapper attributeMapper;
 
     @PostMapping("/equipment/types")
-    public EquipmentType create(@RequestBody EquipmentType equipmentType,
-                                @AuthenticationPrincipal IdUser user) {
+    public EquipmentTypeDto create(@RequestBody EquipmentTypeDto equipmentTypeDto,
+                                   @AuthenticationPrincipal IdUser user) {
         var now = ZonedDateTime.now();
         var userRef = new UserRef(user.getId(), user.getName());
-        equipmentType = equipmentType.toBuilder()
+        EquipmentType equipmentType = equipmentTypeMapper.fromDto(equipmentTypeDto).toBuilder()
                 .id(0)
                 .version(0)
                 .createdAt(now)
@@ -53,30 +54,33 @@ public class EquipmentTypeApi {
                 .lastUpdatedAt(now)
                 .lastUpdatedBy(userRef)
                 .build();
-        return equipmentTypeRepository.save(equipmentType);
+        EquipmentType savedEquipmentType = equipmentTypeRepository.save(equipmentType);
+        return equipmentTypeMapper.toDto(savedEquipmentType);
     }
 
     @PutMapping("/equipment/types/{id}")
-    public EquipmentType update(@PathVariable long id,
-                                @RequestBody EquipmentType equipmentType,
-                                @AuthenticationPrincipal IdUser user) {
+    public EquipmentTypeDto update(@PathVariable long id,
+                                   @RequestBody EquipmentTypeDto equipmentTypeDto,
+                                   @AuthenticationPrincipal IdUser user) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing equipmentType expected");
-        Assert.isTrue(equipmentType.version() > 0,
+        Assert.isTrue(equipmentTypeDto.version() > 0,
                 "equipmentType.version must be greater than 0 - existing equipmentType expected");
-        Assert.isTrue(id == equipmentType.id(),
+        Assert.isTrue(id == equipmentTypeDto.id(),
                 "id must match");
-        equipmentType = equipmentType.toBuilder()
+        EquipmentType equipmentType = equipmentTypeMapper.fromDto(equipmentTypeDto).toBuilder()
                 .id(id)
                 .lastUpdatedAt(ZonedDateTime.now())
                 .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
                 .build();
-        return equipmentTypeRepository.save(equipmentType);
+        EquipmentType savedEquipmentType = equipmentTypeRepository.save(equipmentType);
+        return equipmentTypeMapper.toDto(savedEquipmentType);
     }
 
     @GetMapping("/equipment/types/{id}")
-    public EquipmentType get(@PathVariable long id) {
-        return equipmentTypeRepository.findById(id).orElseThrow();
+    public EquipmentTypeDto get(@PathVariable long id) {
+        EquipmentType equipmentType = equipmentTypeRepository.findById(id).orElseThrow();
+        return equipmentTypeMapper.toDto(equipmentType);
     }
 
     @GetMapping("/equipment/types")
@@ -93,48 +97,43 @@ public class EquipmentTypeApi {
     // Equipment Attributes
 
     @PostMapping("/equipment/types/{id}/attributes/equipment")
-    public EquipmentTypeAttributeDto createSite(@PathVariable long id,
-                                                @RequestBody EquipmentTypeAttributeDto attributeDto) {
-        var attribute = mapper.fromDto(attributeDto).toBuilder()
+    public EquipmentTypeAttributeDto createEquipmentAttribute(@PathVariable long id,
+                                                              @RequestBody EquipmentTypeAttributeDto attributeDto) {
+        var attribute = attributeMapper.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
         var savedAttribute = equipmentTypeAttributeRepository.save(attribute);
-        return mapper.toDto(savedAttribute);
+        return attributeMapper.toDto(savedAttribute);
     }
-
-    @GetMapping("/equipment/types/{id}/attributes/equipment")
-    public List<EquipmentTypeAttributeDto> getAllSites(@PathVariable long id) {
-        return equipmentTypeAttributeRepository.findAll(id)
-                .map(mapper::toDto)
-                .getContent();
-    }
-
-//    @GetMapping("/equipment/types/{id}/attributes/items")
-//    public List<ProjectSiteItem> getAllSiteItems(@PathVariable long id, @RequestParam Optional<String> q) {
-//        return equipmentTypeAttributeRepository.findAllItems(id, q.orElse(""));
-//    }
 
     @PutMapping("/equipment/types/{id}/attributes/equipment/{attributeId}")
-    public EquipmentTypeAttributeDto updateAttribute(@PathVariable long id,
-                                                     @PathVariable long attributeId,
-                                                     @RequestBody EquipmentTypeAttributeDto attributeDto) {
+    public EquipmentTypeAttributeDto updateEquipmentAttribute(@PathVariable long id,
+                                                              @PathVariable long attributeId,
+                                                              @RequestBody EquipmentTypeAttributeDto attributeDto) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing project expected");
         Assert.isTrue(attributeId > 0,
                 "project must be greater than 0 - existing attribute expected");
         Assert.isTrue(attributeId == attributeDto.id(),
                 "project must match");
-        var attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = attributeMapper.fromDto(attributeDto).toBuilder()
                 .id(attributeId)
                 .equipmentTypeId(id)
                 .build();
         var savedAttribute = equipmentTypeAttributeRepository.save(attribute);
-        return mapper.toDto(savedAttribute);
+        return attributeMapper.toDto(savedAttribute);
+    }
+
+    @GetMapping("/equipment/types/{id}/attributes/equipment")
+    public List<EquipmentTypeAttributeDto> getAllEquipmentAttributes(@PathVariable long id) {
+        return equipmentTypeAttributeRepository.findAll(id)
+                .map(attributeMapper::toDto)
+                .getContent();
     }
 
     @DeleteMapping("/equipment/types/{id}/attributes/equipment/{attributeId}")
-    public void deleteSite(@PathVariable long id, @PathVariable long attributeId) {
+    public void deleteEquipmentAttribute(@PathVariable long id, @PathVariable long attributeId) {
         equipmentTypeAttributeRepository.deleteById(attributeId);
     }
 
@@ -143,19 +142,12 @@ public class EquipmentTypeApi {
     @PostMapping("/equipment/types/{id}/attributes/deployment")
     public EquipmentTypeAttributeDto createDeploymentAttribute(@PathVariable long id,
                                                                @RequestBody EquipmentTypeAttributeDto attributeDto) {
-        var attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = attributeMapper.fromDto(attributeDto).toBuilder()
                 .id(0)
                 .equipmentTypeId(id)
                 .build();
         var savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
-        return mapper.toDto(savedAttribute);
-    }
-
-    @GetMapping("/equipment/types/{id}/attributes/deployment")
-    public List<EquipmentTypeAttributeDto> getAllDeploymentAttributes(@PathVariable long id) {
-        return equipmentTypeDeploymentAttributeRepository.findAll(id)
-                .map(mapper::toDto)
-                .getContent();
+        return attributeMapper.toDto(savedAttribute);
     }
 
     @PutMapping("/equipment/types/{id}/attributes/deployment/{attributeId}")
@@ -168,12 +160,19 @@ public class EquipmentTypeApi {
                 "project must be greater than 0 - existing attribute expected");
         Assert.isTrue(attributeId == attributeDto.id(),
                 "project must match");
-        var attribute = mapper.fromDto(attributeDto).toBuilder()
+        var attribute = attributeMapper.fromDto(attributeDto).toBuilder()
                 .id(attributeId)
                 .equipmentTypeId(id)
                 .build();
         var savedAttribute = equipmentTypeDeploymentAttributeRepository.save(attribute);
-        return mapper.toDto(savedAttribute);
+        return attributeMapper.toDto(savedAttribute);
+    }
+
+    @GetMapping("/equipment/types/{id}/attributes/deployment")
+    public List<EquipmentTypeAttributeDto> getAllDeploymentAttributes(@PathVariable long id) {
+        return equipmentTypeDeploymentAttributeRepository.findAll(id)
+                .map(attributeMapper::toDto)
+                .getContent();
     }
 
     @DeleteMapping("/equipment/types/{id}/attributes/deployment/{attributeId}")
@@ -195,12 +194,37 @@ public class EquipmentTypeApi {
     ) {
     }
 
+    public record EquipmentTypeDto(
+            long id,
+            int version,
+            ZonedDateTime createdAt,
+            UserRef createdBy,
+            ZonedDateTime lastUpdatedAt,
+            UserRef lastUpdatedBy,
+
+            String name,
+            String description,
+            @JsonRawValue
+            @JsonDeserialize(using = RawJsonDeserializer.class)
+            String metadata
+    ) {
+    }
+
     @Mapper(config = MappingConfig.class)
     interface EquipmentTypeAttributeMapper {
 
-        EquipmentTypeAttribute fromDto(EquipmentTypeAttributeDto attribute);
+        EquipmentTypeAttribute fromDto(EquipmentTypeAttributeDto source);
 
-        EquipmentTypeAttributeDto toDto(EquipmentTypeAttribute attribute);
+        EquipmentTypeAttributeDto toDto(EquipmentTypeAttribute source);
+
+    }
+
+    @Mapper(config = MappingConfig.class)
+    interface EquipmentTypeMapper {
+
+        EquipmentType fromDto(EquipmentTypeDto source);
+
+        EquipmentTypeDto toDto(EquipmentType source);
 
     }
 

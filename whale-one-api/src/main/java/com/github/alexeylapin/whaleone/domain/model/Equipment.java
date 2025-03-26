@@ -17,6 +17,8 @@ public record Equipment(
         boolean active,
         String name,
         EquipmentTypeRef type,
+        String manufacturer,
+        String model,
         Long deploymentId,
         Set<EquipmentAttribute> attributes
 ) {

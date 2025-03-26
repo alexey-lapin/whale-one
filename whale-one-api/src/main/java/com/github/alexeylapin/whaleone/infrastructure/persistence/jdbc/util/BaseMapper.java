@@ -24,4 +24,15 @@ public interface BaseMapper {
         return source.toInstant();
     }
 
+    default String map(JsonValue source) {
+        if (source == null) {
+            return null;
+        }
+        return source.getValue();
+    }
+
+    default JsonValue map(String source) {
+        return new JsonValue(source);
+    }
+
 }

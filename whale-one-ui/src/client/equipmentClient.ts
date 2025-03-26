@@ -52,12 +52,15 @@ export const invokeEquipmentGet = (id: number) => {
 export const invokeEquipmentListGet = (
   page: number,
   size: number,
-  typeId? : number | null,
+  typeId?: number | null,
   name?: string | null,
+  manufacturerId?: number | null,
+  model?: string | null,
 ) => {
   return apiClient
     .get<PageModel<EquipmentElementModel>>(
-      `/api/equipment?page=${page}&size=${size}&typeId=${typeId ?? ''}&name=${name ?? ''}`,
+      `/api/equipment?page=${page}&size=${size}&typeId=${typeId ?? ''}&name=${name ?? ''}` +
+        `&manufacturer=${manufacturerId ?? ''}&model=${model ?? ''}`,
     )
     .then((response) => response.data)
     .catch((error) => {

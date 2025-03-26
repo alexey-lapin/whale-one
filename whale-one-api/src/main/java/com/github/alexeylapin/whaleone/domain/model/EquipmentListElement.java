@@ -16,6 +16,8 @@ public record EquipmentListElement(
         boolean active,
         String name,
         EquipmentTypeRef type,
+        String manufacturer,
+        String model,
         Long deploymentId
 ) {
 }

@@ -38,7 +38,7 @@ export const invokeEquipmentTypeUpdate = (equipmentType: EquipmentTypeModel) => 
 
 export const invokeEquipmentTypeGet = (id: number) => {
   return apiClient
-    .get<EquipmentModel>(`/api/equipment/types/${id}`)
+    .get<EquipmentTypeModel>(`/api/equipment/types/${id}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))
@@ -46,7 +46,7 @@ export const invokeEquipmentTypeGet = (id: number) => {
     })
 }
 
-export const invokeEquipmentListGet = (page: number, size: number) => {
+export const invokeEquipmentTypeListGet = (page: number, size: number) => {
   return apiClient
     .get<PageModel<EquipmentElementModel>>(`/api/equipment/types?page=${page}&size=${size}`)
     .then((response) => response.data)

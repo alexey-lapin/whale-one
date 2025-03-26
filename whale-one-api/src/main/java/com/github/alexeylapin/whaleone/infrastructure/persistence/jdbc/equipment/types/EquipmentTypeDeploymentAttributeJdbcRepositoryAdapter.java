@@ -51,17 +51,6 @@ public class EquipmentTypeDeploymentAttributeJdbcRepositoryAdapter implements Eq
 
         EquipmentTypeDeploymentAttributeEntity map(EquipmentTypeAttribute source);
 
-        default String map(JsonValue source) {
-            if (source == null) {
-                return null;
-            }
-            return source.getValue();
-        }
-
-        default JsonValue map(String source) {
-            return new JsonValue(source);
-        }
-
     }
 
 }

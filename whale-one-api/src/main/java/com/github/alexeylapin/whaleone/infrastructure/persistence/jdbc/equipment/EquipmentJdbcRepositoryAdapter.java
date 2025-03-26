@@ -52,9 +52,19 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     }
 
     @Override
-    public Page<EquipmentListElement> findAllElements(int page, int size, String name, Long typeId) {
+    public Page<EquipmentListElement> findAllElements(int page,
+                                                      int size,
+                                                      String name,
+                                                      Long typeId,
+                                                      String manufacturer,
+                                                      String model) {
         var pageable = PageRequest.of(page, size);
-        var items = repository.findAllElements(pageable.getPageSize(), pageable.getOffset(), name, typeId);
+        var items = repository.findAllElements(pageable.getPageSize(),
+                pageable.getOffset(),
+                name,
+                typeId,
+                manufacturer,
+                model);
         var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
         return new DefaultPage<>(aPage);
     }
@@ -78,7 +88,7 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         throw new UnsupportedOperationException();
     }
 
-    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class)
     interface EquipmentMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")

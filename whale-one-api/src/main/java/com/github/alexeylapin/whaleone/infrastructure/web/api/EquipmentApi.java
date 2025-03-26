@@ -72,8 +72,15 @@ public class EquipmentApi {
     public PageDto<EquipmentListElement> getAll(@RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size,
                                                 @RequestParam Optional<String> name,
-                                                @RequestParam Optional<Long> typeId) {
-        var aPage = equipmentRepository.findAllElements(page, size, name.orElse(null), typeId.orElse(null));
+                                                @RequestParam Optional<Long> typeId,
+                                                @RequestParam Optional<String> manufacturer,
+                                                @RequestParam Optional<String> model) {
+        var aPage = equipmentRepository.findAllElements(page,
+                size,
+                name.orElse(null),
+                typeId.orElse(null),
+                manufacturer.orElse(null),
+                model.orElse(null));
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
     }
 

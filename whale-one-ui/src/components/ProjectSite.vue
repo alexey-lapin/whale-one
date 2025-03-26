@@ -30,7 +30,7 @@ const header = computed(() => {
   if (model.value.id < 1) {
     return `New ${base}`
   }
-  return idVisible.value ? `#${model.value.id} ${base}` : base
+  return idVisible.value ? `${base} #${model.value.id} ` : base
 })
 
 const createOrUpdateSite = () => {
@@ -64,27 +64,25 @@ const confirmDelete = () => {
 <template>
   <Card class="border hover:border-surface-500">
     <template #subtitle>
-      <div class="flex items-center">
-        <span
-          class="flex-grow"
-          @click="idVisible = !idVisible"
-          >{{ header }}</span
-        >
-        <Button
-          variant="text"
-          size="small"
-          severity="secondary"
-          icon="pi pi-pencil"
-          @click="editableState = !editableState"
-        />
-        <Button
-          variant="text"
-          size="small"
-          severity="secondary"
-          icon="pi pi-trash"
-          class="hover:!text-red-600"
-          @click="confirmDelete()"
-        />
+      <div class="flex items-center justify-between gap-2">
+        <span @click="idVisible = !idVisible">{{ header }}</span>
+        <div>
+          <Button
+            variant="text"
+            size="small"
+            severity="secondary"
+            icon="pi pi-pencil"
+            @click="editableState = !editableState"
+          />
+          <Button
+            variant="text"
+            size="small"
+            severity="secondary"
+            icon="pi pi-trash"
+            class="hover:!text-red-600"
+            @click="confirmDelete()"
+          />
+        </div>
       </div>
     </template>
     <template #content>

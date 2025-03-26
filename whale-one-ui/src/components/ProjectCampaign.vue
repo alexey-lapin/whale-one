@@ -28,7 +28,7 @@ const header = computed(() => {
   if (model.value.id < 1) {
     return `New ${base}`
   }
-  return idVisible.value ? `#${model.value.id} ${base}` : base
+  return idVisible.value ? `${base} #${model.value.id} ` : base
 })
 
 const createOrUpdateCampaign = () => {
@@ -64,27 +64,25 @@ const confirmDelete = () => {
 <template>
   <Card class="border hover:border-surface-500">
     <template #subtitle>
-      <div class="flex items-center">
-        <span
-          class="flex-grow"
-          @click="idVisible = !idVisible"
-          >{{ header }}</span
-        >
-        <Button
-          variant="text"
-          size="small"
-          severity="secondary"
-          icon="pi pi-pencil"
-          @click="editableState = !editableState"
-        />
-        <Button
-          variant="text"
-          size="small"
-          severity="secondary"
-          icon="pi pi-trash"
-          class="hover:!text-red-600"
-          @click="confirmDelete()"
-        />
+      <div class="flex items-center justify-between gap-2">
+        <span @click="idVisible = !idVisible">{{ header }}</span>
+        <div>
+          <Button
+            variant="text"
+            size="small"
+            severity="secondary"
+            icon="pi pi-pencil"
+            @click="editableState = !editableState"
+          />
+          <Button
+            variant="text"
+            size="small"
+            severity="secondary"
+            icon="pi pi-trash"
+            class="hover:!text-red-600"
+            @click="confirmDelete()"
+          />
+        </div>
       </div>
     </template>
     <template #content>
@@ -98,32 +96,6 @@ const confirmDelete = () => {
             />
             <label for="name">Name</label>
           </FloatLabel>
-          <!--          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">-->
-          <!--            <FloatLabel variant="on">-->
-          <!--              <InputNumber-->
-          <!--                id="longitude"-->
-          <!--                v-model="model.longitude"-->
-          <!--                :disabled="!editableState"-->
-          <!--              />-->
-          <!--              <label for="longitude">Longitude</label>-->
-          <!--            </FloatLabel>-->
-          <!--            <FloatLabel variant="on">-->
-          <!--              <InputNumber-->
-          <!--                id="latitude"-->
-          <!--                v-model="model.latitude"-->
-          <!--                :disabled="!editableState"-->
-          <!--              />-->
-          <!--              <label for="latitude">Latitude</label>-->
-          <!--            </FloatLabel>-->
-          <!--            <FloatLabel variant="on">-->
-          <!--              <InputNumber-->
-          <!--                id="depth"-->
-          <!--                v-model="model.depth"-->
-          <!--                :disabled="!editableState"-->
-          <!--              />-->
-          <!--              <label for="depth">Depth</label>-->
-          <!--            </FloatLabel>-->
-          <!--          </div>-->
         </div>
       </Fluid>
       <Button
