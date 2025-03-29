@@ -108,6 +108,22 @@ const router = createRouter({
       name: 'administration',
       children: [
         {
+          path: 'analysis/types',
+          name: 'analysis-type-list',
+          component: () => import('@/views/admin/analysis/AnalysisTypeListView.vue'),
+        },
+        {
+          path: 'analysis/types/new',
+          name: 'analysis-type-new',
+          component: () => import('@/views/admin/analysis/AnalysisTypeNewView.vue'),
+        },
+        {
+          path: 'analysis/types/:id',
+          name: 'analysis-type-detail',
+          component: () => import('@/views/admin/analysis/AnalysisTypeView.vue'),
+          props: (route) => ({ id: parseInt(route.params.id as string) }),
+        },
+        {
           path: 'equipment/types',
           name: 'equipment-type-list',
           component: () => import('@/views/admin/equipment/EquipmentTypeListView.vue'),

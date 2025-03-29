@@ -31,6 +31,10 @@ const items: MenuItem[] = [
     visible: auth.hasAuthority('ADMIN'),
     items: [
       {
+        label: 'Analysis Types',
+        route: '/administration/analysis/types',
+      },
+      {
         label: 'Equipment Types',
         route: '/administration/equipment/types',
       },
