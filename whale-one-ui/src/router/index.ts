@@ -53,6 +53,12 @@ const router = createRouter({
           props: (route) => ({ id: parseInt(route.params.id as string) }),
         },
         {
+          path: 'tabs/:id',
+          name: 'deployment2-detail',
+          component: () => import('@/views/deployment/Deployment2View.vue'),
+          props: (route) => ({ id: parseInt(route.params.id as string) }),
+        },
+        {
           path: 'map',
           name: 'deployment-map',
           component: () => import('@/views/deployment/DeploymentMapView.vue'),
