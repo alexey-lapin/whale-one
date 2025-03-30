@@ -6,6 +6,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import DatePicker from 'primevue/datepicker'
 import FloatLabel from 'primevue/floatlabel'
+import Fluid from 'primevue/fluid'
 import Select from 'primevue/select'
 
 import { invokeCampaignListGet } from '@/client/projectClient.ts'
@@ -34,50 +35,53 @@ const recoveredAt = computed({
 </script>
 
 <template>
-  <div class="flex flex-wrap gap-2">
-    <FloatLabel variant="on">
-      <Select
-        v-model="model.recoveryStatus"
-        :options="['OK', 'Lost', 'Damaged']"
-        class="w-60"
-        :disabled="!editing"
-      />
-      <label for="name">Recovery Status</label>
-    </FloatLabel>
-  </div>
-  <div class="mt-2 flex flex-wrap gap-2">
-    <FloatLabel variant="on">
-      <DatePicker
-        v-model="recoveredAt"
-        date-format="yy-mm-dd"
-        show-time
-        hour-format="24"
-        :disabled="!editing"
-      />
-      <label for="name">Recovery Date</label>
-    </FloatLabel>
-    <FloatLabel variant="on">
-      <InputText :disabled="!editing" />
-      <label for="name">Recovery Vessel</label>
-    </FloatLabel>
-    <FloatLabel variant="on">
-      <AutoComplete
-        v-if="editing"
-        v-model="model.recoveryCampaignRef"
-        dropdown
-        :suggestions="campaigns"
-        option-label="name"
-        force-selection
-        @complete="getCampaigns()"
-      />
-      <InputText
-        v-else
-        :model-value="model.recoveryCampaignRef?.name"
-        disabled
-      />
-      <label for="name">Campaign</label>
-    </FloatLabel>
-  </div>
+  <Fluid>
+    <div class="grid grid-cols-3 gap-2">
+      <FloatLabel variant="on">
+        <Select
+          v-model="model.recoveryStatus"
+          :options="['OK', 'Lost', 'Damaged']"
+          class="w-60"
+          :disabled="!editing"
+        />
+        <label for="name">Recovery Status</label>
+      </FloatLabel>
+    </div>
+    <div class="mt-2 grid grid-cols-3 gap-2">
+      <FloatLabel variant="on">
+        <DatePicker
+          v-model="recoveredAt"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          :disabled="!editing"
+        />
+        <label for="name">Recovery Date</label>
+      </FloatLabel>
+      <FloatLabel variant="on">
+        <InputText :disabled="!editing" />
+        <label for="name">Recovery Vessel</label>
+      </FloatLabel>
+      <FloatLabel variant="on">
+        <AutoComplete
+          v-if="editing"
+          v-model="model.recoveryCampaignRef"
+          dropdown
+          :suggestions="campaigns"
+          option-label="name"
+          force-selection
+          @complete="getCampaigns()"
+        />
+        <InputText
+          v-else
+          :model-value="model.recoveryCampaignRef?.name"
+          disabled
+        />
+        <label for="name">Campaign</label>
+      </FloatLabel>
+    </div>
+  </Fluid>
+
   <Button
     v-if="editing"
     label="Save"

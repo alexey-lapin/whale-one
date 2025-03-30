@@ -234,7 +234,7 @@ onMounted(() => {
                 />
               </template>
               <template #default>
-                <div class="w-1/2">
+                <div class="w-full">
                   <DeploymentInfo
                     :editing="editing"
                     v-model="model"
@@ -335,11 +335,13 @@ onMounted(() => {
                 />
               </template>
               <template #default>
+                <div class="w-full">
                 <DeploymentPanelDeploymentInfo
                   v-model="model"
                   :editing="editingDeploymentInfo"
                   @save-clicked="updateDeployment(() => (editingDeploymentInfo = false))"
                 />
+                </div>
               </template>
             </Panel>
             <Button
