@@ -6,6 +6,7 @@ import lombok.Builder;
 public record ProjectCampaign(
         long id,
         long projectId,
-        String name
+        String name,
+        String vessel
 ) {
 }

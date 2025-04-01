@@ -61,7 +61,8 @@ create table whale_one.project_campaign
     project_id integer not null
         constraint project_campaign_project_id_fk
             references whale_one.project,
-    name       text    not null
+    name       text    not null,
+    vessel     text
 );
 
 -- TBL project_site

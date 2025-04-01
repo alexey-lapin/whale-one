@@ -49,7 +49,7 @@ public class UserJdbcRepositoryAdapter implements UserRepository {
         return new DefaultPage<>(aPage);
     }
 
-    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class)
     interface UserMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")

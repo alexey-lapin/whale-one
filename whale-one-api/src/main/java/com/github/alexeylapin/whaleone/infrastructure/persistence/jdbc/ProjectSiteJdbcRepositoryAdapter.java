@@ -53,7 +53,7 @@ public class ProjectSiteJdbcRepositoryAdapter implements ProjectSiteRepository {
         repository.deleteById(id);
     }
 
-    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class)
     interface ProjectSiteMapper {
 
         ProjectSiteEntity map(ProjectSite source);

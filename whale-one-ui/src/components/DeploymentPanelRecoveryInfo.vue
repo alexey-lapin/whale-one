@@ -59,10 +59,6 @@ const recoveredAt = computed({
         <label for="name">Recovery Date</label>
       </FloatLabel>
       <FloatLabel variant="on">
-        <InputText :disabled="!editing" />
-        <label for="name">Recovery Vessel</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
         <AutoComplete
           v-if="editing"
           v-model="model.recoveryCampaignRef"

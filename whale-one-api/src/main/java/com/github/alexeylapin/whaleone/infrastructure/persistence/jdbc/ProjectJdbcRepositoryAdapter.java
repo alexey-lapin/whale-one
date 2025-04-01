@@ -55,7 +55,7 @@ public class ProjectJdbcRepositoryAdapter implements ProjectRepository {
         return repository.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
     }
 
-    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class)
     interface ProjectMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")

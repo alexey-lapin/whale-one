@@ -56,7 +56,7 @@ public class DeploymentJdbcRepositoryAdapter implements DeploymentRepository {
         return new DefaultPage<>(aPage.map(mapper::map));
     }
 
-    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class)
     public interface DeploymentMapper {
 
         @Mapping(source = "createdBy.id", target = "createdById")

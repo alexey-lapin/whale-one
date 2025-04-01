@@ -14,5 +14,6 @@ public class ProjectCampaignEntity {
     private long id;
     private long projectId;
     private String name;
+    private String vessel;
 
 }

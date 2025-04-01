@@ -90,11 +90,18 @@ const confirmDelete = () => {
         <div class="flex flex-col gap-4">
           <FloatLabel variant="on">
             <InputText
-              id="name"
               v-model="model.name"
               :disabled="!editableState"
             />
-            <label for="name">Name</label>
+            <label>Name</label>
+          </FloatLabel>
+
+          <FloatLabel variant="on">
+            <InputText
+              v-model="model.vessel"
+              :disabled="!editableState"
+            />
+            <label>Vessel</label>
           </FloatLabel>
         </div>
       </Fluid>

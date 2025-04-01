@@ -23,4 +23,5 @@ export interface ProjectCampaignModel {
   id: number
   projectId: number
   name: string
+  vessel?: string | null
 }

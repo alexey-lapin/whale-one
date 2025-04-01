@@ -100,10 +100,6 @@ const lastFileAt = computed({
         <label for="name">Deployment Date</label>
       </FloatLabel>
       <FloatLabel variant="on">
-        <InputText :disabled="!editing" />
-        <label for="name">Deployment Vessel</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
         <AutoComplete
           v-if="editing"
           v-model="model.deploymentCampaignRef"

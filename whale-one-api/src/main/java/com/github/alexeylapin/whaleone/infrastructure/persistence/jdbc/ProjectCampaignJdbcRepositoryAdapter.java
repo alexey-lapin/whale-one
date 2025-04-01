@@ -53,7 +53,7 @@ public class ProjectCampaignJdbcRepositoryAdapter implements ProjectCampaignRepo
         repository.deleteById(id);
     }
 
-    @Mapper(config = MappingConfig.class, uses = BaseMapper.class)
+    @Mapper(config = MappingConfig.class)
     interface ProjectCampaignMapper {
 
         ProjectCampaignEntity map(ProjectCampaign source);
