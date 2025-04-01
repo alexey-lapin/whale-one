@@ -3,14 +3,16 @@ import { computed, onMounted, ref, type Ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import Button from 'primevue/button'
+import Checkbox from 'primevue/checkbox'
 import Column from 'primevue/column'
-import DataTable, { type DataTableFilterMetaData } from 'primevue/datatable'
+import DataTable from 'primevue/datatable'
 import InputText from 'primevue/inputtext'
+import Popover from 'primevue/popover'
 import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
 import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
-import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, Filter, PageModel } from '@/model/BaseModel.ts'
 import { invokeEquipmentListGet } from '@/client/equipmentClient.ts'
 import {
   invokeEquipmentTypeGet,
@@ -55,10 +57,6 @@ const getEquipmentType = (id: number) => {
   return invokeEquipmentTypeGet(id)
     .then((data) => (equipmentType.value = data))
     .catch(() => {})
-}
-
-interface Filter {
-  [key: string]: DataTableFilterMetaData
 }
 
 const filters: Ref<Filter> = ref({})
@@ -106,6 +104,14 @@ const models = computed(() => {
   )
 })
 
+const settingsPopover = ref()
+
+const toggleSettingsPopover = (event: Event) => {
+  settingsPopover.value.toggle(event)
+}
+
+const isIdVisible = ref(false)
+
 onMounted(() => {
   loadPage(0, pageSize.value)
   getEquipmentTypeItems(null)
@@ -113,6 +119,18 @@ onMounted(() => {
 </script>
 
 <template>
+  <Popover ref="settingsPopover">
+    <div class="flex flex-col gap-4 w-40">
+      <div class="flex items-center gap-2">
+        <Checkbox
+          v-model="isIdVisible"
+          binary
+        />
+        <label>Show Id</label>
+      </div>
+    </div>
+  </Popover>
+
   <DataTable
     :value="list?.items"
     :total-records="list?.totalElements"
@@ -137,6 +155,11 @@ onMounted(() => {
           severity="secondary"
           @click="resetFilters()"
         />
+        <Button
+          icon="pi pi-cog"
+          severity="secondary"
+          @click="toggleSettingsPopover"
+        />
         <router-link
           v-slot="{ href, navigate }"
           to="/equipment/new"
@@ -153,12 +176,14 @@ onMounted(() => {
         </router-link>
       </div>
     </template>
+
     <Column
+      v-if="isIdVisible"
       field="id"
       header="Id"
       class="w-1/12"
-    >
-    </Column>
+    />
+
     <Column
       field="name"
       header="Name"
@@ -174,6 +199,7 @@ onMounted(() => {
         />
       </template>
     </Column>
+
     <Column
       field="type.name"
       header="Type"
@@ -195,6 +221,7 @@ onMounted(() => {
         <EquipmentTypeTag :name="slotProps.data.type.name" />
       </template>
     </Column>
+
     <Column
       field="manufacturer"
       header="Manufacturer"
@@ -211,6 +238,7 @@ onMounted(() => {
         />
       </template>
     </Column>
+
     <Column
       field="model"
       header="Model"
@@ -227,6 +255,7 @@ onMounted(() => {
         />
       </template>
     </Column>
+
     <Column
       field="deploymentId"
       header="Deployed"
@@ -254,6 +283,7 @@ onMounted(() => {
         </router-link>
       </template>
     </Column>
+
     <Column
       field="active"
       header="Active"
@@ -270,6 +300,7 @@ onMounted(() => {
         ></span>
       </template>
     </Column>
+
     <Column
       header="Actions"
       class="w-1/12"

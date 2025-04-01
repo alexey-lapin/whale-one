@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue'
-import EntityHeader from '@/components/EntityHeader.vue'
+import EntityHeaderPanel from '@/components/EntityHeaderPanel.vue'
 import {
   invokeDeploymentEquipmentAdd,
   invokeDeploymentEquipmentListGet,
@@ -165,7 +165,7 @@ onMounted(() => {
     class="mt-5"
   >
     <div class="flex flex-col my-4">
-      <EntityHeader
+      <EntityHeaderPanel
         header="Deployment"
         :model="model"
       />

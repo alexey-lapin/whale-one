@@ -10,11 +10,10 @@ import Panel from 'primevue/panel'
 import Password from 'primevue/password'
 import ToggleSwitch from 'primevue/toggleswitch'
 
-import EntityHeader from '@/components/EntityHeader.vue'
-
 import { invokeUserGet, invokeUserPasswordUpdate, invokeUserUpdate } from '@/client/userClient.ts'
 
 import type { UserModel } from '@/model/UserModel.ts'
+import EntityHeaderDialog from '@/components/EntityHeaderDialog.vue'
 
 const props = defineProps<{
   id: number
@@ -79,12 +78,20 @@ onMounted(() => {
     class="mt-5"
   >
     <div class="flex flex-col gap-5 my-4">
-      <EntityHeader
-        header="User"
-        :model="model"
-      />
-
-      <Panel header="Info">
+      <Panel>
+        <template #header>
+          <EntityHeaderDialog
+            :model="model"
+            v-slot="{ toggle }"
+          >
+            <span
+              class="p-panel-title cursor-pointer"
+              @click="toggle()"
+            >
+              User
+            </span>
+          </EntityHeaderDialog>
+        </template>
         <template #icons>
           <div class="flex gap-2">
             <Button

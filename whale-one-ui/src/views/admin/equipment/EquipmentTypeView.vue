@@ -2,12 +2,13 @@
 import { onMounted, type Ref, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
+import Checkbox from 'primevue/checkbox'
 import FloatLabel from 'primevue/floatlabel'
+import Fluid from 'primevue/fluid'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import Textarea from 'primevue/textarea'
 
-import EntityHeader from '@/components/EntityHeader.vue'
 import EquipmentTypeAttribute from '@/components/EquipmentTypeAttribute.vue'
 import EquipmentTypeManufacturer from '@/components/EquipmentTypeManufacturer.vue'
 
@@ -19,21 +20,13 @@ import type {
   EquipmentTypeModel,
 } from '@/model/EquipmentTypeModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
+import EntityHeaderDialog from '@/components/EntityHeaderDialog.vue'
 
 const props = defineProps<{
   id: number
 }>()
 
-const model: Ref<EquipmentTypeModel> = ref({
-  id: 0,
-  version: 0,
-  createdAt: '',
-  createdBy: {
-    id: 0,
-    name: '',
-  },
-  name: '',
-})
+const model: Ref<EquipmentTypeModel | null> = ref(null)
 
 const equipmentAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
 const deploymentAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
@@ -85,6 +78,9 @@ const getDeploymentAttributes = () => {
 }
 
 const updateEquipmentType = () => {
+  if (!model.value) {
+    return
+  }
   if (editingManufacturers.value) {
     updateManufacturersInModel()
   }
@@ -128,6 +124,9 @@ onMounted(() => {
 const manufacturers = ref<EquipmentTypeManufacturerModel[]>([])
 
 const ensureMetadata = () => {
+  if (model.value == null) {
+    return []
+  }
   if (!model.value.metadata) {
     model.value.metadata = {}
   }
@@ -146,6 +145,9 @@ watch(
 )
 
 const updateManufacturersInModel = () => {
+  if (!model.value) {
+    return
+  }
   ensureMetadata()
   model.value.metadata!.manufacturers = cleanAndSortManufacturers([...manufacturers.value])
 }
@@ -173,165 +175,178 @@ const addManufacturer = () => {
 </script>
 
 <template>
-  <div class="mt-5">
-    <div class="flex flex-col gap-5 my-4">
-      <EntityHeader
-        header="Equipment Type"
-        :model="model"
-      />
-
-      <Panel header="Info">
-        <template #icons>
-          <div class="flex gap-2">
-            <Button
-              severity="secondary"
-              size="small"
-              icon="pi pi-pencil"
-              @click="editingInfo = !editingInfo"
-            />
-          </div>
-        </template>
-        <template #default>
+  <div
+    v-if="model"
+    class="my-4 flex flex-col gap-4"
+  >
+    <Panel>
+      <template #header>
+        <EntityHeaderDialog
+          :model="model"
+          v-slot="{ toggle }"
+        >
+          <span
+            class="p-panel-title cursor-pointer"
+            @click="toggle()"
+          >
+            Equipment Type
+          </span>
+        </EntityHeaderDialog>
+      </template>
+      <template #icons>
+        <div class="flex gap-2">
+          <Button
+            icon="pi pi-pencil"
+            severity="secondary"
+            size="small"
+            variant="text"
+            @click="editingInfo = !editingInfo"
+          />
+        </div>
+      </template>
+      <template #default>
+        <Fluid>
           <div class="mt-1 flex flex-col gap-3">
-            <FloatLabel
-              variant="on"
-              class="w-full"
-            >
+            <FloatLabel variant="on">
               <InputText
                 id="name"
-                class="w-full"
                 v-model="model.name"
                 :disabled="!editingInfo"
               />
               <label for="name">Name</label>
             </FloatLabel>
 
-            <FloatLabel
-              variant="on"
-              class="w-full"
-            >
+            <FloatLabel variant="on">
               <Textarea
-                class="w-full"
                 v-model="model.description"
                 :disabled="!editingInfo"
               />
               <label for="1name">Description</label>
             </FloatLabel>
+
+            <div class="flex items-center gap-2">
+              <Checkbox
+                binary
+                input-id="assembly"
+              />
+              <label for="assembly">Assembly</label>
+            </div>
           </div>
+        </Fluid>
+        <Button
+          v-if="editingInfo"
+          label="Save"
+          icon="pi pi-save"
+          class="mt-4"
+          :loading="loading"
+          @click="updateEquipmentType()"
+        />
+      </template>
+    </Panel>
+
+    <Panel header="Manufacturers">
+      <template #icons>
+        <div class="flex gap-2">
           <Button
-            v-if="editingInfo"
+            icon="pi pi-pencil"
+            severity="secondary"
+            size="small"
+            variant="text"
+            @click="editingManufacturers = !editingManufacturers"
+          />
+        </div>
+      </template>
+      <template #default>
+        <div class="mt-1 flex flex-col gap-3">
+          <EquipmentTypeManufacturer
+            v-for="(manufacturer, index) in manufacturers"
+            v-model="manufacturers[index]"
+            :editable="editingManufacturers"
+            @manufacturer-deleted="manufacturers.splice(index, 1)"
+          />
+        </div>
+        <div class="flex gap-2">
+          <Button
+            v-if="editingManufacturers"
             label="Save"
             icon="pi pi-save"
-            class="mt-4"
-            :loading="loading"
+            class="mt-3"
             @click="updateEquipmentType()"
           />
-        </template>
-      </Panel>
-
-      <Panel header="Manufacturers">
-        <template #icons>
-          <div class="flex gap-2">
-            <Button
-              severity="secondary"
-              size="small"
-              icon="pi pi-pencil"
-              @click="editingManufacturers = !editingManufacturers"
-            />
-          </div>
-        </template>
-        <template #default>
-          <div class="mt-1 flex flex-col gap-3">
-            <EquipmentTypeManufacturer
-              v-for="(manufacturer, index) in manufacturers"
-              v-model="manufacturers[index]"
-              :editable="editingManufacturers"
-              @manufacturer-deleted="manufacturers.splice(index, 1)"
-            />
-          </div>
-          <div class="flex gap-2">
-            <Button
-              v-if="editingManufacturers"
-              label="Save"
-              icon="pi pi-save"
-              class="mt-3"
-              @click="updateEquipmentType()"
-            />
-            <Button
-              v-if="editingManufacturers"
-              label="New"
-              icon="pi pi-plus"
-              severity="secondary"
-              class="mt-3"
-              @click="addManufacturer()"
-            />
-          </div>
-        </template>
-      </Panel>
-
-      <Panel
-        header="Equipment Attributes"
-        toggleable
-      >
-        <div class="mt-1 flex flex-col gap-3">
-          <EquipmentTypeAttribute
-            v-for="(attribute, index) in equipmentAttributes"
-            attribute-entity="equipment"
-            :key="attribute.id"
-            :modelValue="attribute"
-            @attribute-deleted="getEquipmentAttributes()"
-          />
-
-          <EquipmentTypeAttribute
-            v-if="addingNewEquipmentAttribute"
-            v-model="newEquipmentAttribute"
-            attribute-entity="equipment"
-            :editable="true"
-            @attribute-updated="onEquipmentAttributeUpdated()"
-            @attribute-deleted="onEquipmentAttributeDeleted()"
+          <Button
+            v-if="editingManufacturers"
+            label="New"
+            icon="pi pi-plus"
+            severity="secondary"
+            class="mt-3"
+            @click="addManufacturer()"
           />
         </div>
-        <Button
-          v-if="!addingNewEquipmentAttribute"
-          class="mt-3"
-          label="New"
-          severity="secondary"
-          icon="pi pi-plus"
-          @click="addingNewEquipmentAttribute = true"
-        />
-      </Panel>
+      </template>
+    </Panel>
 
-      <Panel
-        header="Deployment Attributes"
-        toggleable
-      >
-        <div class="mt-1 flex flex-col gap-3">
-          <EquipmentTypeAttribute
-            v-for="(attribute, index) in deploymentAttributes"
-            attribute-entity="deployment"
-            :key="attribute.id"
-            :modelValue="attribute"
-            @attribute-deleted="getDeploymentAttributes()"
-          />
-
-          <EquipmentTypeAttribute
-            v-if="addingNewDeploymentAttribute"
-            v-model="newDeploymentAttribute"
-            attribute-entity="deployment"
-            :editable="true"
-            @attribute-updated="onDeploymentAttributeUpdated()"
-            @attribute-deleted="onDeploymentAttributeDeleted()"
-          />
-        </div>
-        <Button
-          v-if="!addingNewDeploymentAttribute"
-          class="mt-3"
-          label="New"
-          severity="secondary"
-          icon="pi pi-plus"
-          @click="addingNewDeploymentAttribute = true"
+    <Panel
+      header="Equipment Attributes"
+      toggleable
+    >
+      <div class="mt-1 flex flex-col gap-3">
+        <EquipmentTypeAttribute
+          v-for="(attribute, index) in equipmentAttributes"
+          attribute-entity="equipment"
+          :key="attribute.id"
+          :modelValue="attribute"
+          @attribute-deleted="getEquipmentAttributes()"
         />
-      </Panel>
-    </div>
+
+        <EquipmentTypeAttribute
+          v-if="addingNewEquipmentAttribute"
+          v-model="newEquipmentAttribute"
+          attribute-entity="equipment"
+          :editable="true"
+          @attribute-updated="onEquipmentAttributeUpdated()"
+          @attribute-deleted="onEquipmentAttributeDeleted()"
+        />
+      </div>
+      <Button
+        v-if="!addingNewEquipmentAttribute"
+        class="mt-3"
+        label="New"
+        severity="secondary"
+        icon="pi pi-plus"
+        @click="addingNewEquipmentAttribute = true"
+      />
+    </Panel>
+
+    <Panel
+      header="Deployment Attributes"
+      toggleable
+    >
+      <div class="mt-1 flex flex-col gap-3">
+        <EquipmentTypeAttribute
+          v-for="(attribute, index) in deploymentAttributes"
+          attribute-entity="deployment"
+          :key="attribute.id"
+          :modelValue="attribute"
+          @attribute-deleted="getDeploymentAttributes()"
+        />
+
+        <EquipmentTypeAttribute
+          v-if="addingNewDeploymentAttribute"
+          v-model="newDeploymentAttribute"
+          attribute-entity="deployment"
+          :editable="true"
+          @attribute-updated="onDeploymentAttributeUpdated()"
+          @attribute-deleted="onDeploymentAttributeDeleted()"
+        />
+      </div>
+      <Button
+        v-if="!addingNewDeploymentAttribute"
+        class="mt-3"
+        label="New"
+        severity="secondary"
+        icon="pi pi-plus"
+        @click="addingNewDeploymentAttribute = true"
+      />
+    </Panel>
   </div>
 </template>

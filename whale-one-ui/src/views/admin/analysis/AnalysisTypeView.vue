@@ -7,26 +7,17 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import Textarea from 'primevue/textarea'
 
-import EntityHeader from '@/components/EntityHeader.vue'
-
-import type { AnalysisTypeModel } from '@/model/AnalysisTypeModel.ts'
 import { invokeAnalysisTypeGet, invokeAnalysisTypeUpdate } from '@/client/analysisTypeClient.ts'
 import AnalysisTypeAttribute from '@/components/AnalysisTypeAttribute.vue'
+import EntityHeaderDialog from '@/components/EntityHeaderDialog.vue'
+
+import type { AnalysisTypeModel } from '@/model/AnalysisTypeModel.ts'
 
 const props = defineProps<{
   id: number
 }>()
 
-const model: Ref<AnalysisTypeModel> = ref({
-  id: 0,
-  version: 0,
-  createdAt: '',
-  createdBy: {
-    id: 0,
-    name: '',
-  },
-  name: '',
-})
+const model: Ref<AnalysisTypeModel | null> = ref(null)
 
 const loading = ref(false)
 const editingInfo = ref(false)
@@ -39,6 +30,9 @@ const getAnalysisType = () => {
 }
 
 const updateAnalysisType = () => {
+  if (!model.value) {
+    return
+  }
   if (editingAttributes.value) {
     // updateManufacturersInModel()
   }
@@ -56,7 +50,7 @@ const updateAnalysisType = () => {
 }
 
 const addAttribute = () => {
-  model.value.metadata?.attributes.push({
+  model.value?.metadata?.attributes.push({
     name: '',
     type: '',
     metadata: {},
@@ -64,11 +58,14 @@ const addAttribute = () => {
 }
 
 const deleteAttribute = (index: number) => {
-  model.value.metadata?.attributes.splice(index, 1)
+  model.value?.metadata?.attributes.splice(index, 1)
 }
 
 onMounted(() => {
   getAnalysisType().then(() => {
+    if (!model.value) {
+      return
+    }
     if (!model.value.metadata) {
       model.value.metadata = {
         attributes: [],
@@ -82,105 +79,116 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mt-5">
-    <div class="flex flex-col gap-5 my-4">
-      <EntityHeader
-        header="Analysis Type"
-        :model="model"
-      />
-
-      <Panel header="Info">
-        <template #icons>
-          <div class="flex gap-2">
-            <Button
-              v-if="!editingInfo"
-              severity="secondary"
-              size="small"
-              icon="pi pi-pencil"
-              @click="editingInfo = !editingInfo"
+  <div
+    v-if="model"
+    class="my-4 flex flex-col gap-4"
+  >
+    <Panel>
+      <template #header>
+        <EntityHeaderDialog
+          :model="model"
+          v-slot="{ toggle }"
+        >
+          <span
+            class="p-panel-title cursor-pointer"
+            @click="toggle()"
+          >
+            Analysis Type
+          </span>
+        </EntityHeaderDialog>
+      </template>
+      <template #icons>
+        <div class="flex gap-2">
+          <Button
+            v-if="!editingInfo"
+            icon="pi pi-pencil"
+            severity="secondary"
+            size="small"
+            variant="text"
+            @click="editingInfo = !editingInfo"
+          />
+        </div>
+      </template>
+      <template #default>
+        <div class="mt-1 flex flex-col gap-3">
+          <FloatLabel
+            variant="on"
+            class="w-full"
+          >
+            <InputText
+              id="name"
+              class="w-full"
+              v-model="model.name"
+              :disabled="!editingInfo"
             />
+            <label for="name">Name</label>
+          </FloatLabel>
+
+          <FloatLabel
+            variant="on"
+            class="w-full"
+          >
+            <Textarea
+              class="w-full"
+              v-model="model.description"
+              :disabled="!editingInfo"
+            />
+            <label for="1name">Description</label>
+          </FloatLabel>
+        </div>
+        <Button
+          v-if="editingInfo"
+          label="Save"
+          icon="pi pi-save"
+          class="mt-4"
+          :loading="loading"
+          @click="updateAnalysisType()"
+        />
+      </template>
+    </Panel>
+
+    <Panel header="Attributes">
+      <template #icons>
+        <div class="flex gap-2">
+          <Button
+            icon="pi pi-pencil"
+            severity="secondary"
+            size="small"
+            variant="text"
+            @click="editingAttributes = !editingAttributes"
+          />
+        </div>
+      </template>
+      <template #default>
+        <template v-if="model.metadata && model.metadata.attributes">
+          <div class="flex flex-col gap-3">
+            <template v-for="(attribute, index) in model.metadata.attributes">
+              <AnalysisTypeAttribute
+                v-model="model.metadata.attributes[index]"
+                :editable="editingAttributes"
+                @attribute-deleted="deleteAttribute(index)"
+              />
+            </template>
           </div>
         </template>
-        <template #default>
-          <div class="mt-1 flex flex-col gap-3">
-            <FloatLabel
-              variant="on"
-              class="w-full"
-            >
-              <InputText
-                id="name"
-                class="w-full"
-                v-model="model.name"
-                :disabled="!editingInfo"
-              />
-              <label for="name">Name</label>
-            </FloatLabel>
-
-            <FloatLabel
-              variant="on"
-              class="w-full"
-            >
-              <Textarea
-                class="w-full"
-                v-model="model.description"
-                :disabled="!editingInfo"
-              />
-              <label for="1name">Description</label>
-            </FloatLabel>
-          </div>
+        <div class="flex gap-2">
           <Button
-            v-if="editingInfo"
+            v-if="editingAttributes"
             label="Save"
             icon="pi pi-save"
-            class="mt-4"
-            :loading="loading"
+            class="mt-3"
             @click="updateAnalysisType()"
           />
-        </template>
-      </Panel>
-
-      <Panel header="Attributes">
-        <template #icons>
-          <div class="flex gap-2">
-            <Button
-              severity="secondary"
-              size="small"
-              icon="pi pi-pencil"
-              @click="editingAttributes = !editingAttributes"
-            />
-          </div>
-        </template>
-        <template #default>
-          <template v-if="model.metadata && model.metadata.attributes">
-            <div class="flex flex-col gap-3">
-              <template v-for="(attribute, index) in model.metadata.attributes">
-                <AnalysisTypeAttribute
-                  v-model="model.metadata.attributes[index]"
-                  :editable="editingAttributes"
-                  @attribute-deleted="deleteAttribute(index)"
-                />
-              </template>
-            </div>
-          </template>
-          <div class="flex gap-2">
-            <Button
-              v-if="editingAttributes"
-              label="Save"
-              icon="pi pi-save"
-              class="mt-3"
-              @click="updateAnalysisType()"
-            />
-            <Button
-              v-if="editingAttributes"
-              label="New"
-              icon="pi pi-plus"
-              severity="secondary"
-              class="mt-3"
-              @click="addAttribute()"
-            />
-          </div>
-        </template>
-      </Panel>
-    </div>
+          <Button
+            v-if="editingAttributes"
+            label="New"
+            icon="pi pi-plus"
+            severity="secondary"
+            class="mt-3"
+            @click="addAttribute()"
+          />
+        </div>
+      </template>
+    </Panel>
   </div>
 </template>

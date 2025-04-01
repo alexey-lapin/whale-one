@@ -3,17 +3,19 @@ import { onMounted, ref, type Ref } from 'vue'
 
 import Button from 'primevue/button'
 import Column from 'primevue/column'
-import DataTable, { type DataTableFilterMetaData } from 'primevue/datatable'
+import DataTable from 'primevue/datatable'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
 import { invokeDeploymentListGet } from '@/client/deploymentClient.ts'
 
-import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, Filter, PageModel } from '@/model/BaseModel.ts'
 import type { DeploymentModel } from '@/model/DeploymentModel.ts'
 import { invokeProjectItemListGet, invokeSiteItemListGet } from '@/client/projectClient.ts'
 import AutoComplete from 'primevue/autocomplete'
+import Checkbox from 'primevue/checkbox'
+import Popover from 'primevue/popover'
 
 const list: Ref<PageModel<DeploymentModel> | null> = ref(null)
 
@@ -38,12 +40,23 @@ const loadPage = (page: number, size: number) => {
     .finally(() => (loading.value = false))
 }
 
-const filters: Ref<{ [key: string]: DataTableFilterMetaData }> = ref({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  projectId: { value: null, matchMode: FilterMatchMode.EQUALS },
-  projectSiteId: { value: null, matchMode: FilterMatchMode.EQUALS },
-  status: { value: null, matchMode: FilterMatchMode.IN },
-})
+const filters: Ref<Filter> = ref({})
+
+const initFilters = () => {
+  filters.value = {
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    projectId: { value: null, matchMode: FilterMatchMode.EQUALS },
+    projectSiteId: { value: null, matchMode: FilterMatchMode.EQUALS },
+    status: { value: null, matchMode: FilterMatchMode.IN },
+  }
+}
+
+initFilters()
+
+const resetFilters = () => {
+  initFilters()
+  loadPage(0, pageSize.value)
+}
 
 const projectItems = (q: string) => {
   invokeProjectItemListGet(q)
@@ -60,12 +73,32 @@ const siteItems = (projectId: number | null, q: string | null) => {
     .catch(() => {})
 }
 
+const settingsPopover = ref()
+
+const toggleSettingsPopover = (event: Event) => {
+  settingsPopover.value.toggle(event)
+}
+
+const isIdVisible = ref(false)
+
 onMounted(() => {
   loadPage(0, pageSize.value)
 })
 </script>
 
 <template>
+  <Popover ref="settingsPopover">
+    <div class="flex flex-col gap-4 w-40">
+      <div class="flex items-center gap-2">
+        <Checkbox
+          v-model="isIdVisible"
+          binary
+        />
+        <label>Show Id</label>
+      </div>
+    </div>
+  </Popover>
+
   <DataTable
     :value="list?.items"
     v-model:rows="pageSize"
@@ -86,8 +119,14 @@ onMounted(() => {
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-xl font-bold flex-grow">Deployments</span>
         <Button
-          icon="pi pi-refresh"
+          icon="pi pi-filter-slash"
           severity="secondary"
+          @click="resetFilters()"
+        />
+        <Button
+          icon="pi pi-cog"
+          severity="secondary"
+          @click="toggleSettingsPopover"
         />
         <router-link
           v-slot="{ href, navigate }"
@@ -107,6 +146,7 @@ onMounted(() => {
     </template>
 
     <Column
+      v-if="isIdVisible"
       field="id"
       header="Id"
       class="w-1/12"

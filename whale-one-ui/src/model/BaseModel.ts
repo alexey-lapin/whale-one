@@ -1,3 +1,5 @@
+import type { DataTableFilterMetaData } from 'primevue/datatable'
+
 export interface PageModel<T> {
   items: T[]
   number: number
@@ -17,4 +19,8 @@ export interface EntityHeaderModel {
   createdBy: BaseRefModel
   lastUpdatedAt?: string | null
   lastUpdatedBy?: BaseRefModel | null
+}
+
+export interface Filter {
+  [key: string]: DataTableFilterMetaData
 }
