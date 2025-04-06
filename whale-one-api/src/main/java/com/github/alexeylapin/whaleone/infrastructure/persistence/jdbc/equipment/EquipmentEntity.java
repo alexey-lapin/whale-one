@@ -1,5 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
+import com.github.alexeylapin.whaleone.domain.model.EquipmentAssemblyPart;
+import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,6 +35,11 @@ public class EquipmentEntity {
     private String manufacturer;
     private String model;
     private Long deploymentId;
+    private Long assemblyId;
+    private JsonValue metadata;
+
+    @MappedCollection(idColumn = "assembly_id")
+    private Set<EquipmentAssemblyPart> assemblyParts;
 
     @MappedCollection(idColumn = "equipment_id")
     private Set<EquipmentAttributeEntity> attributes;

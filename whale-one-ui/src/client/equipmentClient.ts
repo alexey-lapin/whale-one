@@ -1,6 +1,7 @@
 import { apiClient, apiClientContext } from '@/client/baseClient.ts'
-import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
+
+import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
 import type {
   EquipmentElementModel,
   EquipmentModel,
@@ -39,6 +40,22 @@ export const invokeEquipmentUpdate = (equipment: EquipmentModel) => {
     })
 }
 
+export const invokeEquipmentToggleActive = (id: number) => {
+  return apiClient
+    .put<EquipmentModel>(`/api/equipment/${id}/active`)
+    .then((response) => {
+      const data = response.data
+      apiClientContext.toast?.add(
+        successToast(`Equipment #${data.id} ${data.name} has been ${data.active ? 'activated' : 'deactivated'}`),
+      )
+      return data
+    })
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
+      throw error
+    })
+}
+
 export const invokeEquipmentGet = (id: number) => {
   return apiClient
     .get<EquipmentModel>(`/api/equipment/${id}`)
@@ -57,11 +74,33 @@ export const invokeEquipmentListGet = (
   manufacturerId?: number | null,
   model?: string | null,
 ) => {
+  let params = ''
+  if (typeId) {
+    params += `&typeId=${typeId}`
+  }
+  if (name) {
+    params += `&name=${name}`
+  }
+  if (manufacturerId) {
+    params += `&manufacturer=${manufacturerId}`
+  }
+  if (model) {
+    params += `&model=${model}`
+  }
   return apiClient
     .get<PageModel<EquipmentElementModel>>(
-      `/api/equipment?page=${page}&size=${size}&typeId=${typeId ?? ''}&name=${name ?? ''}` +
-        `&manufacturer=${manufacturerId ?? ''}&model=${model ?? ''}`,
+      `/api/equipment?page=${page}&size=${size}${params}`,
     )
+    .then((response) => response.data)
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error.message))
+      throw error
+    })
+}
+
+export const invokeEquipmentItemGet = (id: number) => {
+  return apiClient
+    .get<BaseRefModel>(`/api/equipment/items/${id}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))

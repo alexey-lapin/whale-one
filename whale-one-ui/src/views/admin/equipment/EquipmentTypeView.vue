@@ -21,6 +21,8 @@ import type {
 } from '@/model/EquipmentTypeModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 import EntityHeaderDialog from '@/components/EntityHeaderDialog.vue'
+import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
+import type { BaseRefModel } from '@/model/BaseModel.ts'
 
 const props = defineProps<{
   id: number
@@ -193,6 +195,7 @@ const addManufacturer = () => {
           </span>
         </EntityHeaderDialog>
       </template>
+
       <template #icons>
         <div class="flex gap-2">
           <Button
@@ -204,9 +207,19 @@ const addManufacturer = () => {
           />
         </div>
       </template>
+
       <template #default>
         <Fluid>
           <div class="mt-1 flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <Checkbox
+                v-model="model.isAssembly"
+                binary
+                disabled
+              />
+              <label for="assembly">Assembly</label>
+            </div>
+
             <FloatLabel variant="on">
               <InputText
                 id="name"
@@ -223,14 +236,6 @@ const addManufacturer = () => {
               />
               <label for="1name">Description</label>
             </FloatLabel>
-
-            <div class="flex items-center gap-2">
-              <Checkbox
-                binary
-                input-id="assembly"
-              />
-              <label for="assembly">Assembly</label>
-            </div>
           </div>
         </Fluid>
         <Button
@@ -244,7 +249,25 @@ const addManufacturer = () => {
       </template>
     </Panel>
 
-    <Panel header="Manufacturers">
+    <Panel
+      v-if="model.isAssembly"
+      header="Assembly Parts"
+    >
+      <template #default>
+        <div class="flex flex-col gap-2">
+          <template v-for="part in model.metadata?.assemblyParts as BaseRefModel[]">
+            <div>
+              <EquipmentTypeTag :name="part.name" />
+            </div>
+          </template>
+        </div>
+      </template>
+    </Panel>
+
+    <Panel
+      v-else
+      header="Manufacturers"
+    >
       <template #icons>
         <div class="flex gap-2">
           <Button

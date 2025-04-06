@@ -257,6 +257,34 @@ onMounted(() => {
     </Column>
 
     <Column
+      field="assemblyId"
+      header="Assembly"
+      class="w-1/12"
+    >
+      <template #body="slotProps">
+        <router-link
+          v-if="slotProps.data.assemblyId"
+          v-slot="{ href, navigate }"
+          :to="`/equipment/${slotProps.data.assemblyId}`"
+        >
+          <a
+            :href="href"
+            @click="navigate"
+          >
+            <Button
+              icon="pi pi-external-link"
+              icon-pos="right"
+              :label="`${slotProps.data.assemblyId}`"
+              size="small"
+              variant="outlined"
+              severity="secondary"
+            />
+          </a>
+        </router-link>
+      </template>
+    </Column>
+
+    <Column
       field="deploymentId"
       header="Deployed"
       class="w-1/12"

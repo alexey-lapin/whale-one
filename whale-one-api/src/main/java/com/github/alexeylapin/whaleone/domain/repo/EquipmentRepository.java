@@ -20,6 +20,8 @@ public interface EquipmentRepository {
                                                String manufacturer,
                                                String model);
 
+    Optional<EquipmentItem> findItemById(long id);
+
     List<EquipmentItem> findAllItems(long typeId, String name, boolean includeAllocated);
 
     List<Equipment> findAllByDeploymentId(long id);

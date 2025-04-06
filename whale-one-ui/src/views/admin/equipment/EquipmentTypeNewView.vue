@@ -1,29 +1,47 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { type Ref, ref } from 'vue'
 
 import Button from 'primevue/button'
+import Checkbox from 'primevue/checkbox'
 import FloatLabel from 'primevue/floatlabel'
+import Fluid from 'primevue/fluid'
 import InputText from 'primevue/inputtext'
+import Panel from 'primevue/panel'
 import Textarea from 'primevue/textarea'
+import { useToast } from 'primevue/usetoast'
 
 import router from '@/router'
+import EquipmentTypeParts from '@/components/EquipmentTypeParts.vue'
 import { invokeEquipmentTypeCreate } from '@/client/equipmentTypeClient.ts'
 
-const model = ref({
-  id: 0,
-  version: 0,
-  createdAt: '',
-  createdBy: {
-    id: 0,
-    name: '',
-  },
+import type { EquipmentTypeNewModel } from '@/model/EquipmentTypeModel.ts'
+import type { BaseRefModel } from '@/model/BaseModel.ts'
+import { errorToast } from '@/utils/toasts.ts'
+
+const toast = useToast()
+
+const model: Ref<EquipmentTypeNewModel> = ref({
   name: '',
   description: null,
+  isAssembly: false,
 })
+
+const partEquipmentTypes: Ref<BaseRefModel[]> = ref([])
 
 const loading = ref(false)
 
 const create = () => {
+  if (model.value.isAssembly) {
+    if (partEquipmentTypes.value.length < 2) {
+      toast.add(errorToast("At least 2 parts are required for assembly"))
+      return
+    }
+    model.value.metadata = {}
+    model.value.metadata.assemblyParts = partEquipmentTypes.value.map((part) => ({
+      id: part.id,
+      name: part.name,
+    }))
+  }
   loading.value = true
   invokeEquipmentTypeCreate(model.value)
     .then((data) => {
@@ -37,37 +55,45 @@ const create = () => {
 </script>
 
 <template>
-  <div class="mt-5">
-    <h1 class="text-xl">Create New Equipment Type</h1>
-    <div class="flex flex-col gap-5 my-4">
-      <FloatLabel
-        variant="on"
-        class="w-full"
-      >
+  <Fluid>
+    <div class="flex flex-col gap-3 my-4">
+      <h1 class="text-xl">Create New Equipment Type</h1>
+
+      <div class="flex items-center gap-2">
+        <Checkbox
+          v-model="model.isAssembly"
+          input-id="assembly"
+          binary
+        />
+        <label for="assembly">Assembly</label>
+      </div>
+
+      <FloatLabel variant="on">
         <InputText
           id="name"
-          class="w-full"
           v-model="model.name"
         />
         <label for="name">Name</label>
       </FloatLabel>
 
-      <FloatLabel
-        variant="on"
-        class="w-full"
-      >
-        <Textarea
-          class="w-full"
-          v-model="model.description"
-        />
+      <FloatLabel variant="on">
+        <Textarea v-model="model.description" />
         <label for="1name">Description</label>
       </FloatLabel>
+
+      <Panel
+        v-if="model.isAssembly"
+        header="Assembly Parts"
+      >
+        <EquipmentTypeParts v-model="partEquipmentTypes" />
+      </Panel>
     </div>
-    <Button
-      label="Create"
-      icon="pi pi-plus"
-      :loading="loading"
-      @click="create()"
-    ></Button>
-  </div>
+  </Fluid>
+
+  <Button
+    label="Create"
+    icon="pi pi-plus"
+    :loading="loading"
+    @click="create()"
+  />
 </template>

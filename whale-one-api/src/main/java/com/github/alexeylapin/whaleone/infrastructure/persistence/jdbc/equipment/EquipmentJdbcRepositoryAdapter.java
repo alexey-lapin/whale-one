@@ -70,6 +70,11 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     }
 
     @Override
+    public Optional<EquipmentItem> findItemById(long id) {
+        return repository.findItemById(id);
+    }
+
+    @Override
     public List<EquipmentItem> findAllItems(long typeId, String nameQuery, boolean includeAllocated) {
         var pageable = PageRequest.of(0, 50);
         return repository.findAllItems(

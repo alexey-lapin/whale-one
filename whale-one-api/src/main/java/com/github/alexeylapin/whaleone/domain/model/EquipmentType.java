@@ -17,6 +17,7 @@ public record EquipmentType(
 
         String name,
         String description,
+        boolean isAssembly,
         String metadata
 ) {
 }

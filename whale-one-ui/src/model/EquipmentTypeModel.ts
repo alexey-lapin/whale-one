@@ -1,10 +1,17 @@
-import type { EntityHeaderModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, EntityHeaderModel } from '@/model/BaseModel.ts'
 
-export interface EquipmentTypeModel extends EntityHeaderModel {
+export interface EquipmentTypeNewModel {
   name: string
   description?: string | null
-  metadata?: Record<string, unknown>
+  isAssembly: boolean
+  metadata?:
+    | (Record<string, unknown> & {
+        assemblyParts?: BaseRefModel[]
+      })
+    | null
 }
+
+export interface EquipmentTypeModel extends EntityHeaderModel, EquipmentTypeNewModel {}
 
 export interface EquipmentTypeItemModel {
   id: number
@@ -12,6 +19,6 @@ export interface EquipmentTypeItemModel {
 }
 
 export interface EquipmentTypeManufacturerModel {
-  name: string,
+  name: string
   models: string[]
 }
