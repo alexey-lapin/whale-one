@@ -35,38 +35,73 @@ const preset = definePreset(Aura, {
   },
   components: {
     inputtext: {
-      extend: {
-        disabled: {
-          background: '{surface.100}',
+      colorScheme: {
+        light: {
+          disabled: {
+            background: '{surface.100}',
+          },
         },
+        dark: {
+          disabled: {
+            background: '{surface.800}',
+          },
+        }
       },
     },
     autocomplete: {
-      extend: {
-        disabled: {
-          background: '{surface.100}',
+      colorScheme: {
+        light: {
+          disabled: {
+            background: '{surface.100}',
+          },
         },
+        dark: {
+          disabled: {
+            background: '{surface.800}',
+          },
+        }
       },
     },
     pcinputtext: {
-      extend: {
-        disabled: {
-          background: '{surface.100}',
+      colorScheme: {
+        light: {
+          disabled: {
+            background: '{surface.100}',
+          },
         },
+        dark: {
+          disabled: {
+            background: '{surface.800}',
+          },
+        }
       },
     },
     select: {
-      extend: {
-        disabled: {
-          background: '{surface.100}',
+      colorScheme: {
+        light: {
+          disabled: {
+            background: '{surface.100}',
+          },
         },
+        dark: {
+          disabled: {
+            background: '{surface.800}',
+          },
+        }
       },
     },
     textarea: {
-      extend: {
-        disabled: {
-          background: '{surface.100}',
+      colorScheme: {
+        light: {
+          disabled: {
+            background: '{surface.100}',
+          },
         },
+        dark: {
+          disabled: {
+            background: '{surface.800}',
+          },
+        }
       },
     },
   },
@@ -80,10 +115,13 @@ app.use(PrimeVue, {
   ripple: true,
   theme: {
     preset: preset,
+    options: {
+      darkModeSelector: '.dark',
+    },
   },
 })
 app.directive('ripple', Ripple)
-app.directive('tooltip', Tooltip);
+app.directive('tooltip', Tooltip)
 app.use(ToastService)
 app.use(ConfirmationService)
 

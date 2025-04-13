@@ -109,9 +109,3 @@ onMounted(() => {
     </Column>
   </DataTable>
 </template>
-
-<style scoped>
-:deep(.p-datatable-header-cell:hover) {
-  background-color: var(--p-surface-50);
-}
-</style>

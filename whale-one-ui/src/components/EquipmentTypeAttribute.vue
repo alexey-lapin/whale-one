@@ -85,7 +85,7 @@ const onTypeChange = () => {
 </script>
 
 <template>
-  <Card class="border hover:border-surface-500">
+  <Card class="border hover:border-surface-500 dark:border-surface-700">
     <template #subtitle>
       <div class="flex items-center justify-between gap-2">
         <span @click="idVisible = !idVisible">{{ header }}</span>

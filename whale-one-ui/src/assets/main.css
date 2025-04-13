@@ -38,3 +38,7 @@
 .p-panel-toggle-button {
   border-radius: var(--p-button-border-radius) !important;
 }
+
+.p-datatable-header-cell:hover {
+  background-color: var(--p-datatable-row-hover-background);
+}

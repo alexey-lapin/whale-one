@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { type Ref, ref } from 'vue'
+import { computed, type Ref, ref, watchEffect } from 'vue'
 
 import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
 import TieredMenu from 'primevue/tieredmenu'
 
-import type { MenuItem } from 'primevue/menuitem'
-import { useAuthStore } from '@/stores/auth.ts'
+import { useColorMode, useCycleList } from '@vueuse/core'
+
 import router from '@/router'
+import { useAuthStore } from '@/stores/auth.ts'
+
+import type { MenuItem } from 'primevue/menuitem'
 
 let auth = useAuthStore()
 
@@ -58,6 +61,27 @@ const userMenuItems = ref([
     command: () => auth.logout(),
   },
 ])
+
+const mode = useColorMode({
+  emitAuto: true,
+})
+
+const { state, next } = useCycleList(['dark', 'light', 'auto'] as const, {
+  initialValue: mode,
+})
+
+watchEffect(() => (mode.value = state.value))
+
+const modeIcon = computed(() => {
+  if (state.value === 'auto') {
+    return 'pi pi-desktop'
+  } else if (state.value === 'light') {
+    return 'pi pi-sun'
+  } else if (state.value === 'dark') {
+    return 'pi pi-moon'
+  }
+  return ''
+})
 
 const menu: Ref<any> = ref(null)
 
@@ -115,20 +139,22 @@ const toggleMenu = (event: any) => {
       </router-link>
     </template>
     <template #end>
-      <!--      <div class="flex items-center gap-2">-->
-      <!--        <Avatar image="/images/avatar/amyelsner.png" shape="circle" />-->
-      <!--      </div>-->
-      <!--      <Button-->
-      <!--        label="Logout"-->
-      <!--        severity="secondary"-->
-      <!--        @click="auth.logout()"-->
-      <!--      />-->
-      <Avatar
-        :label="auth.username?.charAt(0).toUpperCase()"
-        shape="circle"
-        class="cursor-pointer"
-        @click="toggleMenu"
-      />
+      <div class="flex items-central gap-1">
+        <Button
+          :icon="modeIcon"
+          size="small"
+          variant="text"
+          severity="secondary"
+          class="!p-0"
+          @click="next()"
+        />
+        <Avatar
+          :label="auth.username?.charAt(0).toUpperCase()"
+          shape="circle"
+          class="cursor-pointer"
+          @click="toggleMenu"
+        />
+      </div>
       <TieredMenu
         ref="menu"
         :model="userMenuItems"

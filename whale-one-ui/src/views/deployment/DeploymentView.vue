@@ -121,7 +121,7 @@ const getCampaigns = () => {
 type DeploymentStatus = keyof typeof statuses
 
 const hasStatusOfAtLeast = (status: DeploymentStatus) => {
-  return model.value && statuses[model.value.status as DeploymentStatus] >= statuses[status]
+  return model.value !== null && statuses[model.value.status as DeploymentStatus] >= statuses[status]
 }
 
 const hasStatusOf = (status: DeploymentStatus) => {
@@ -196,7 +196,7 @@ onMounted(() => {
       <DeploymentPanel
         :start="false"
         icon="pi pi-plus"
-        :icon-classes="`mt-5 ${hasStatusOfAtLeast('NEW') ? 'bg-cyan-100 hover:bg-cyan-300' : ''}`"
+        :highlighted="hasStatusOfAtLeast('NEW')"
       >
         <template #default>
           <Panel
@@ -246,7 +246,7 @@ onMounted(() => {
 
       <DeploymentPanel
         icon="pi pi-wrench"
-        :icon-classes="`${hasStatusOfAtLeast('ASSIGN') ? 'bg-cyan-100 hover:bg-cyan-300' : ''}`"
+        :highlighted="hasStatusOfAtLeast('ASSIGN')"
       >
         <template #default>
           <Panel
@@ -310,7 +310,7 @@ onMounted(() => {
 
       <DeploymentPanel
         icon="pi pi-download"
-        :icon-classes="`${hasStatusOfAtLeast('DEPLOYED') ? 'bg-cyan-100 hover:bg-cyan-300' : ''}`"
+        :highlighted="hasStatusOfAtLeast('DEPLOYED')"
       >
         <template #default>
           <Panel
@@ -347,7 +347,7 @@ onMounted(() => {
 
       <DeploymentPanel
         icon="pi pi-upload"
-        :icon-classes="`${hasStatusOfAtLeast('RECOVERED') ? 'bg-cyan-100 hover:bg-cyan-300' : ''}`"
+        :highlighted="hasStatusOfAtLeast('RECOVERED')"
       >
         <template #default>
           <Panel
@@ -383,7 +383,7 @@ onMounted(() => {
       <DeploymentPanel
         :end="false"
         icon="pi pi-wave-pulse"
-        :icon-classes="`${hasStatusOfAtLeast('ANALYZED') ? 'bg-cyan-100 hover:bg-cyan-300' : ''}`"
+        :highlighted="hasStatusOfAtLeast('ANALYZED')"
       >
         <template #default>
           <Panel

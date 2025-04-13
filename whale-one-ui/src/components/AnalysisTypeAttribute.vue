@@ -45,7 +45,7 @@ const confirmDelete = () => {
 </script>
 
 <template>
-  <Card class="border hover:border-surface-500">
+  <Card class="border hover:border-surface-500 dark:border-surface-700">
     <template #content>
       <Fluid>
         <div class="flex gap-2">
