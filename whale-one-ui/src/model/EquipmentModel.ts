@@ -12,6 +12,8 @@ export interface EquipmentNewModel {
   type: BaseRefModel | null
   manufacturer?: string | null
   model?: string | null
+  metadata?: Record<string, any> | null
+  assemblyParts?: EquipmentAssemblyPartModel[] | null
 }
 
 export interface EquipmentModel extends EquipmentNewModel {
@@ -25,6 +27,11 @@ export interface EquipmentModel extends EquipmentNewModel {
   manufacturer: string
   model: string
   attributes: EquipmentAttributeModel[]
+}
+
+export interface EquipmentAssemblyPartModel {
+  typeId: number
+  equipmentId: number
 }
 
 export interface EquipmentAttributeModel {

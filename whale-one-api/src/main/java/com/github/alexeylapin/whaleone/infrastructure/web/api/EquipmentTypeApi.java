@@ -12,8 +12,11 @@ import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import com.github.alexeylapin.whaleone.infrastructure.web.api.serde.RawJsonDeserializer;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,11 +45,11 @@ public class EquipmentTypeApi {
     private final EquipmentTypeAttributeMapper attributeMapper;
 
     @PostMapping("/equipment/types")
-    public EquipmentTypeDto create(@RequestBody EquipmentTypeDto equipmentTypeDto,
+    public EquipmentTypeDto create(@RequestBody EquipmentTypeNewDto source,
                                    @AuthenticationPrincipal IdUser user) {
         var now = ZonedDateTime.now();
         var userRef = new UserRef(user.getId(), user.getName());
-        EquipmentType equipmentType = equipmentTypeMapper.fromDto(equipmentTypeDto).toBuilder()
+        var equipmentType = equipmentTypeMapper.fromDto(source).toBuilder()
                 .id(0)
                 .version(0)
                 .createdAt(now)
@@ -54,38 +57,40 @@ public class EquipmentTypeApi {
                 .lastUpdatedAt(now)
                 .lastUpdatedBy(userRef)
                 .build();
-        EquipmentType savedEquipmentType = equipmentTypeRepository.save(equipmentType);
+        var savedEquipmentType = equipmentTypeRepository.save(equipmentType);
         return equipmentTypeMapper.toDto(savedEquipmentType);
     }
 
     @PutMapping("/equipment/types/{id}")
     public EquipmentTypeDto update(@PathVariable long id,
-                                   @RequestBody EquipmentTypeDto equipmentTypeDto,
+                                   @RequestBody EquipmentTypeDto source,
                                    @AuthenticationPrincipal IdUser user) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing equipmentType expected");
-        Assert.isTrue(equipmentTypeDto.version() > 0,
+        Assert.isTrue(source.version() > 0,
                 "equipmentType.version must be greater than 0 - existing equipmentType expected");
-        Assert.isTrue(id == equipmentTypeDto.id(),
+        Assert.isTrue(id == source.id(),
                 "id must match");
-        EquipmentType equipmentType = equipmentTypeMapper.fromDto(equipmentTypeDto).toBuilder()
+        var destination = equipmentTypeRepository.findById(id).orElseThrow();
+        var equipmentType = equipmentTypeMapper.fromDto(source).toBuilder()
                 .id(id)
                 .lastUpdatedAt(ZonedDateTime.now())
                 .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
+                .isAssembly(destination.isAssembly())
                 .build();
-        EquipmentType savedEquipmentType = equipmentTypeRepository.save(equipmentType);
+        var savedEquipmentType = equipmentTypeRepository.save(equipmentType);
         return equipmentTypeMapper.toDto(savedEquipmentType);
     }
 
     @GetMapping("/equipment/types/{id}")
     public EquipmentTypeDto get(@PathVariable long id) {
-        EquipmentType equipmentType = equipmentTypeRepository.findById(id).orElseThrow();
+        var equipmentType = equipmentTypeRepository.findById(id).orElseThrow();
         return equipmentTypeMapper.toDto(equipmentType);
     }
 
     @GetMapping("/equipment/types")
-    public PageDto<EquipmentType> getAll(@RequestParam int page, @RequestParam int size) {
-        var aPage = equipmentTypeRepository.findAll(page, size);
+    public PageDto<EquipmentTypeDto> getAll(@RequestParam int page, @RequestParam int size) {
+        var aPage = equipmentTypeRepository.findAll(page, size).map(equipmentTypeMapper::toDto);
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
     }
 
@@ -180,14 +185,12 @@ public class EquipmentTypeApi {
         equipmentTypeDeploymentAttributeRepository.deleteById(attributeId);
     }
 
-    public record EquipmentTypeAttributeDto(
-            long id,
-            int version,
-            long equipmentTypeId,
+    public record EquipmentTypeNewDto(
+            @NotBlank
             String name,
             String description,
-            int order,
-            String type,
+            @NotNull
+            Boolean isAssembly,
             @JsonRawValue
             @JsonDeserialize(using = RawJsonDeserializer.class)
             String metadata
@@ -202,12 +205,40 @@ public class EquipmentTypeApi {
             ZonedDateTime lastUpdatedAt,
             UserRef lastUpdatedBy,
 
+            @NotBlank
             String name,
             String description,
+            @NotNull
+            Boolean isAssembly,
             @JsonRawValue
             @JsonDeserialize(using = RawJsonDeserializer.class)
             String metadata
     ) {
+    }
+
+    public record EquipmentTypeAttributeDto(
+            long id,
+            int version,
+            long equipmentTypeId,
+            String name,
+            String description,
+            int order,
+            String type,
+            @JsonRawValue
+            @JsonDeserialize(using = RawJsonDeserializer.class)
+            String metadata
+    ) {
+    }
+
+    @Mapper(config = MappingConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+    interface EquipmentTypeMapper {
+
+        EquipmentType fromDto(EquipmentTypeNewDto source);
+
+        EquipmentType fromDto(EquipmentTypeDto source);
+
+        EquipmentTypeDto toDto(EquipmentType source);
+
     }
 
     @Mapper(config = MappingConfig.class)
@@ -216,15 +247,6 @@ public class EquipmentTypeApi {
         EquipmentTypeAttribute fromDto(EquipmentTypeAttributeDto source);
 
         EquipmentTypeAttributeDto toDto(EquipmentTypeAttribute source);
-
-    }
-
-    @Mapper(config = MappingConfig.class)
-    interface EquipmentTypeMapper {
-
-        EquipmentType fromDto(EquipmentTypeDto source);
-
-        EquipmentTypeDto toDto(EquipmentType source);
 
     }
 

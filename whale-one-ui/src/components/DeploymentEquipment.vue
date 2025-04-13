@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { onMounted, type Ref, ref } from 'vue'
 import Button from 'primevue/button'
 import Panel from 'primevue/panel'
 
-import type { DeploymentEquipmentItemModel } from '@/model/DeploymentModel.ts'
-import { invokeDeploymentEquipmentDelete } from '@/client/deploymentClient.ts'
+import EquipmentAttribute from '@/components/EquipmentAttribute.vue'
 import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
 import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
-import { onMounted, type Ref, ref } from 'vue'
+import { invokeDeploymentEquipmentDelete } from '@/client/deploymentClient.ts'
+
+import type { DeploymentEquipmentItemModel } from '@/model/DeploymentModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
-import EquipmentAttribute from '@/components/EquipmentAttribute.vue'
 import type { EquipmentAttributeModel } from '@/model/EquipmentModel.ts'
 
 const props = defineProps<{

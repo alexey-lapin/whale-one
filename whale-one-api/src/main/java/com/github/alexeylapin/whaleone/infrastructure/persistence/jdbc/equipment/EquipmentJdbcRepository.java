@@ -6,7 +6,6 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.aot.hint.annotation.RegisterReflection;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -62,10 +61,18 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
     @Query("""
             SELECT e.id, e.name
             FROM equipment e
+            WHERE e.id = :id
+            """)
+    Optional<EquipmentItem> findItemById(long id);
+
+    @Query("""
+            SELECT e.id, e.name
+            FROM equipment e
             WHERE
                 1 = 1
                 AND e.type_id = :typeId
                 AND e.active = TRUE
+                AND e.assembly_id IS NULL
                 AND (:name IS NULL OR e.name ILIKE '%' || :name || '%')
                 AND (:includeAllocated = TRUE OR e.deployment_id IS NULL)
             """)
@@ -82,6 +89,10 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
             if (rs.wasNull()) {
                 deploymentId = null;
             }
+            Long assemblyId = rs.getLong("assembly_id");
+            if (rs.wasNull()) {
+                assemblyId = null;
+            }
             return EquipmentListElement.builder()
                     .id(rs.getLong("id"))
                     .version(rs.getInt("version"))
@@ -94,6 +105,7 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .type(new EquipmentTypeRef(rs.getLong("type_id"), rs.getString("type_name")))
                     .manufacturer(rs.getString("manufacturer"))
                     .model(rs.getString("model"))
+                    .assemblyId(assemblyId)
                     .deploymentId(deploymentId)
                     .build();
         }

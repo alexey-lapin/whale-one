@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { type Ref, ref, watch } from 'vue'
+import { onMounted, type Ref, ref, watch } from 'vue'
 
-import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
@@ -9,25 +8,21 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 
 import router from '@/router'
-import {
-  invokeEquipmentTypeGet,
-  invokeEquipmentTypeItemListGet,
-} from '@/client/equipmentTypeClient.ts'
+import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { invokeEquipmentCreate } from '@/client/equipmentClient.ts'
-
-import type { BaseRefModel } from '@/model/BaseModel.ts'
 import type { EquipmentNewModel } from '@/model/EquipmentModel.ts'
 import type {
   EquipmentTypeManufacturerModel,
   EquipmentTypeModel,
 } from '@/model/EquipmentTypeModel.ts'
+import EquipmentItemDropdown from '@/components/EquipmentItemDropdown.vue'
 
 const model: Ref<EquipmentNewModel> = ref({
   name: null,
   type: null,
 })
 
-const equipmentTypes: Ref<BaseRefModel[]> = ref([])
+const equipmentTypes: Ref<EquipmentTypeModel[]> = ref([])
 const equipmentType: Ref<EquipmentTypeModel | null> = ref(null)
 const manufacturers: Ref<EquipmentTypeManufacturerModel[]> = ref([])
 const manufacturer: Ref<EquipmentTypeManufacturerModel | null> = ref(null)
@@ -42,26 +37,31 @@ const create = () => {
     .finally(() => (loading.value = false))
 }
 
-const equipmentTypeItems = (q: string | null) => {
-  invokeEquipmentTypeItemListGet(q)
-    .then((data) => (equipmentTypes.value = data))
-    .catch(() => {})
-}
-
 watch(
-  () => model.value.type,
+  () => equipmentType.value,
   async (newValue, oldValue) => {
     let reset = false
     if (!newValue) {
-      equipmentType.value = null
+      model.value.type = null
       manufacturers.value = []
       reset = true
     } else if (newValue.id !== oldValue?.id) {
-      await invokeEquipmentTypeGet(newValue.id).then((data) => {
-        equipmentType.value = data
-        manufacturers.value =
-          (data.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []
-      })
+      model.value.type = {
+        id: newValue.id,
+        name: newValue.name,
+      }
+      if (newValue.isAssembly && newValue.metadata?.assemblyParts) {
+        model.value.assemblyParts = newValue.metadata.assemblyParts.map((p) => {
+          return {
+            typeId: p.id,
+            equipmentId: -1,
+          }
+        })
+      } else {
+        model.value.assemblyParts = null
+      }
+      manufacturers.value =
+        (newValue.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []
       reset = true
     }
     if (reset) {
@@ -80,6 +80,12 @@ const onManufacturerChange = (newValue: EquipmentTypeManufacturerModel | null) =
     model.value.model = null
   }
 }
+
+onMounted(() => {
+  invokeEquipmentTypeListGet(0, 50)
+    .then((data) => (equipmentTypes.value = data.items))
+    .catch(() => {})
+})
 </script>
 
 <template>
@@ -88,14 +94,22 @@ const onManufacturerChange = (newValue: EquipmentTypeManufacturerModel | null) =
     <Fluid>
       <div class="flex flex-col gap-3 my-3">
         <FloatLabel variant="on">
-          <AutoComplete
-            v-model="model.type"
-            dropdown
-            :suggestions="equipmentTypes"
+          <Select
+            v-model="equipmentType"
+            :options="equipmentTypes"
             option-label="name"
-            force-selection
-            @complete="equipmentTypeItems($event.query)"
-          />
+          >
+            <template #option="{ option }">
+              <div class="flex items-center gap-2">
+                <span>{{ option.name }}</span>
+                <span
+                  v-if="option.isAssembly"
+                  class="assembly"
+                  >assembly</span
+                >
+              </div>
+            </template>
+          </Select>
           <label>Type</label>
         </FloatLabel>
 
@@ -107,7 +121,10 @@ const onManufacturerChange = (newValue: EquipmentTypeManufacturerModel | null) =
           <label>Name</label>
         </FloatLabel>
 
-        <FloatLabel variant="on">
+        <FloatLabel
+          v-if="equipmentType?.isAssembly === false"
+          variant="on"
+        >
           <Select
             v-model="manufacturer"
             :options="manufacturers"
@@ -117,13 +134,34 @@ const onManufacturerChange = (newValue: EquipmentTypeManufacturerModel | null) =
           <label>Manufacturer</label>
         </FloatLabel>
 
-        <FloatLabel variant="on">
+        <FloatLabel
+          v-if="equipmentType?.isAssembly === false"
+          variant="on"
+        >
           <Select
             v-model="model.model"
             :options="manufacturer?.models"
           />
           <label>Model</label>
         </FloatLabel>
+
+        <div
+          v-if="equipmentType?.isAssembly"
+          class="flex flex-col gap-3"
+        >
+          <template
+            v-if="model.assemblyParts"
+            v-for="(part, index) in equipmentType?.metadata?.assemblyParts"
+          >
+            <FloatLabel variant="on">
+              <EquipmentItemDropdown
+                v-model="model.assemblyParts[index]"
+                :type="part"
+              />
+              <label>{{ part.name }}</label>
+            </FloatLabel>
+          </template>
+        </div>
       </div>
     </Fluid>
     <Button
@@ -134,3 +172,10 @@ const onManufacturerChange = (newValue: EquipmentTypeManufacturerModel | null) =
     />
   </div>
 </template>
+
+<style scoped>
+.assembly {
+  @apply text-xs text-gray-500 px-2 rounded font-mono;
+  background-color: var(--p-primary-50);
+}
+</style>

@@ -5,7 +5,6 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
-import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
@@ -26,7 +25,7 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
 
     @Override
     public EquipmentType save(EquipmentType equipmentType) {
-        EquipmentTypeEntity entity = mapper.map(equipmentType);
+        var entity = mapper.map(equipmentType);
         entity = delegate.save(entity);
         return mapper.map(entity).toBuilder()
                 .createdBy(equipmentType.createdBy())
@@ -54,21 +53,24 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
         return delegate.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
     }
 
-    @Mapper(config = MappingConfig.class, uses = {BaseMapper.class})
+    @Mapper(config = MappingConfig.class)
     interface EquipmentTypeMapper {
 
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
+        @Mapping(source = "assembly", target = "isAssembly")
         EquipmentType map(EquipmentTypeEntity source);
 
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "createdByName", target = "createdBy.name")
         @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
         @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
+        @Mapping(source = "assembly", target = "isAssembly")
         EquipmentType map(EquipmentTypeJdbcRepository.EquipmentTypeProjection source);
 
         @Mapping(source = "createdBy.id", target = "createdById")
         @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
+        @Mapping(source = "isAssembly", target = "assembly")
         EquipmentTypeEntity map(EquipmentType source);
 
     }

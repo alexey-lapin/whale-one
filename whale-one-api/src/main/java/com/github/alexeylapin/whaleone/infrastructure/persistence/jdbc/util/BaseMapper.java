@@ -1,13 +1,12 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util;
 
-import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import org.mapstruct.Mapper;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-@Mapper(config = MappingConfig.class)
+@Mapper(componentModel = "spring")
 public interface BaseMapper {
 
     default ZonedDateTime map(Instant source) {

@@ -97,6 +97,7 @@ create table whale_one.equipment_type
             references whale_one.tbl_user,
     name               text                     not null,
     description        text,
+    is_assembly        boolean                  not null,
     metadata           jsonb
 );
 
@@ -198,13 +199,34 @@ create table whale_one.equipment
     type_id            integer                  not null
         constraint equipment_type_id_fk
             references whale_one.equipment_type,
-    manufacturer       text                     not null,
-    model              text                     not null,
+    manufacturer       text,
+    model              text,
     deployment_id      integer
         constraint equipment_deployment_id_fk
             references whale_one.deployment,
-    active             boolean                  not null
+    assembly_id        integer
+        constraint equipment_assembly_id_fk
+            references whale_one.equipment,
+    active             boolean                  not null,
+    metadata           jsonb
 );
+
+-- TBL equipment_assembly_part
+create table whale_one.equipment_assembly_part
+(
+    assembly_id  integer not null
+        constraint equipment_assembly_part_assembly_id_fk
+            references whale_one.equipment,
+    type_id      integer not null
+        constraint equipment_assembly_part_type_id_fk
+            references whale_one.equipment_type,
+    equipment_id integer not null
+        constraint equipment_assembly_part_equipment_id_fk
+            references whale_one.equipment
+);
+
+create unique index equipment_assembly_part_assembly_id_type_id_equipment_id_key
+    on whale_one.equipment_assembly_part (assembly_id, type_id, equipment_id);
 
 -- TBL equipment_attribute
 create table whale_one.equipment_attribute
