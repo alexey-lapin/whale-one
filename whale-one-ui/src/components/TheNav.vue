@@ -110,17 +110,25 @@ const toggleMenu = (event: any) => {
         :to="item.route"
         custom
       >
-        <!--        <a :href="href" v-bind="props.action" @click="navigate">-->
-        <!--          <span :class="item.icon"/>-->
-        <!--          <span>{{ item.label }}</span>-->
-        <Button
-          :label="item.label as string"
-          size="small"
-          variant="text"
-          :class="`${isActive ? 'active' : ''}`"
+        <a
+          :href="href"
+          v-bind="props.action"
+          class="!p-0"
           @click="navigate"
-        />
-        <!--        </a>-->
+        >
+<!--          <span-->
+<!--            v-if="item.icon"-->
+<!--            :class="item.icon"-->
+<!--          />-->
+<!--          <span >{{ item.label }}</span>-->
+          <Button
+            :label="item.label as string"
+            :icon="item.icon"
+            :class="{ active: isActive }"
+            size="small"
+            variant="text"
+          />
+        </a>
       </router-link>
       <router-link
         v-else-if="item.routeRoot"
@@ -130,11 +138,11 @@ const toggleMenu = (event: any) => {
       >
         <Button
           :label="item.label as string"
-          icon-pos="right"
           icon="pi pi-angle-down"
+          icon-pos="right"
+          :class="{ active: isActive }"
           size="small"
           variant="text"
-          :class="`${isActive ? 'active' : ''}`"
         />
       </router-link>
     </template>
