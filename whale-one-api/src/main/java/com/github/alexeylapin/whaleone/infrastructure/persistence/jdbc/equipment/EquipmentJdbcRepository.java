@@ -46,7 +46,7 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                 AND (:typeId IS NULL OR e.type_id = :typeId)
                 AND (:manufacturer IS NULL OR e.manufacturer ILIKE '%' || :manufacturer || '%')
                 AND (:model IS NULL OR e.model ILIKE '%' || :model || '%')
-            ORDER BY e.id DESC
+            ORDER BY et.name, e.manufacturer, e.model, e.name
             LIMIT :size OFFSET :offset""",
             rowMapperClass = EquipmentListElementRowMapper.class)
     List<EquipmentListElement> findAllElements(long size,

@@ -25,13 +25,13 @@ public interface EquipmentTypeJdbcRepository extends ListCrudRepository<Equipmen
     Optional<EquipmentTypeProjection> findOneById(long id);
 
     @Query("""
-            SELECT e.*,
+            SELECT et.*,
                    u1.username created_by_name,
                    u2.username last_updated_by_name
-            FROM equipment_type e
-                     JOIN tbl_user u1 on e.created_by_id = u1.id
-                     JOIN tbl_user u2 on e.last_updated_by_id = u2.id
-            ORDER BY e.id DESC
+            FROM equipment_type et
+                     JOIN tbl_user u1 on et.created_by_id = u1.id
+                     JOIN tbl_user u2 on et.last_updated_by_id = u2.id
+            ORDER BY et.name
             LIMIT :size OFFSET :offset""")
     List<EquipmentTypeProjection> findAll(long size, long offset);
 
