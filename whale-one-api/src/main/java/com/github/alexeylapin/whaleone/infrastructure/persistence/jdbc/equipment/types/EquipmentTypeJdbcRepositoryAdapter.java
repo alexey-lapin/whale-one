@@ -3,7 +3,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipmen
 import com.github.alexeylapin.whaleone.domain.model.EquipmentType;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
-import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;

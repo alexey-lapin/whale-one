@@ -11,18 +11,23 @@ import Popover from 'primevue/popover'
 import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
-import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
-import type { BaseRefModel, Filter, PageModel } from '@/model/BaseModel.ts'
+import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
+
 import { invokeEquipmentListGet } from '@/client/equipmentClient.ts'
 import {
   invokeEquipmentTypeGet,
   invokeEquipmentTypeItemListGet,
 } from '@/client/equipmentTypeClient.ts'
-import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
+
+import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
+import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type {
   EquipmentTypeManufacturerModel,
   EquipmentTypeModel,
 } from '@/model/EquipmentTypeModel.ts'
+import { useListViewStore } from '@/stores/listView.ts'
+
+const listViewStore = useListViewStore()
 
 const list: Ref<PageModel<EquipmentElementModel> | null> = ref(null)
 
@@ -30,19 +35,14 @@ const equipmentTypeItems: Ref<BaseRefModel[]> = ref([])
 const equipmentType: Ref<EquipmentTypeModel | null> = ref(null)
 
 const loading = ref(false)
-const pageSize = ref(10)
+// const pageSize = ref(listViewStore.state.equipment.pageSize)
+const firstRef = ref(0)
 
-const loadPage = (page: number, size: number) => {
+const loadPage = (first: number, page: number, size: number) => {
   loading.value = true
-  invokeEquipmentListGet(
-    page,
-    size,
-    filters.value['typeId'].value,
-    filters.value['name'].value,
-    filters.value['manufacturer'].value,
-    filters.value['model'].value,
-  )
+  invokeEquipmentListGet(page, size, filters.value)
     .then((data) => (list.value = data))
+    .then(() => (firstRef.value = first))
     .catch(() => {})
     .finally(() => (loading.value = false))
 }
@@ -59,7 +59,7 @@ const getEquipmentType = (id: number) => {
     .catch(() => {})
 }
 
-const filters: Ref<Filter> = ref({})
+const filters: Ref<FilterConditions> = ref({})
 
 const initFilters = () => {
   filters.value = {
@@ -74,7 +74,8 @@ initFilters()
 
 const resetFilters = () => {
   initFilters()
-  loadPage(0, pageSize.value)
+  firstRef.value = 0
+  loadPage(0, 0, listViewStore.state.equipment.pageSize)
 }
 
 const debouncedFilterCallback = useDebounceFn((callback) => callback(), 500)
@@ -113,7 +114,7 @@ const toggleSettingsPopover = (event: Event) => {
 const isIdVisible = ref(false)
 
 onMounted(() => {
-  loadPage(0, pageSize.value)
+  loadPage(0, 0, listViewStore.state.equipment.pageSize)
   getEquipmentTypeItems(null)
 })
 </script>
@@ -134,28 +135,29 @@ onMounted(() => {
   <DataTable
     :value="list?.items"
     :total-records="list?.totalElements"
-    v-model:rows="pageSize"
+    v-model:rows="listViewStore.state.equipment.pageSize"
+    v-model:first="firstRef"
+    v-model:filters="filters"
     :loading="loading"
     size="small"
     filter-display="menu"
-    v-model:filters="filters"
     paginator
-    :rows-per-page-options="[1, 5, 10, 20, 50]"
-    paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
     row-hover
     lazy
-    @page="loadPage($event.page, $event.rows)"
-    @filter="loadPage(0, $event.rows)"
+    @page="loadPage($event.first, $event.page, $event.rows)"
+    @filter="loadPage(0, 0, $event.rows)"
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-xl font-bold flex-grow">Equipment</span>
         <Button
+          title="Reset Filters"
           icon="pi pi-filter-slash"
           severity="secondary"
           @click="resetFilters()"
         />
         <Button
+          title="Settings"
           icon="pi pi-cog"
           severity="secondary"
           @click="toggleSettingsPopover"
@@ -169,6 +171,7 @@ onMounted(() => {
             @click="navigate"
           >
             <Button
+              title="Create New"
               icon="pi pi-plus"
               severity="primary"
             />
@@ -190,12 +193,12 @@ onMounted(() => {
       class="w-2/12"
       filterField="name"
       :show-filter-match-modes="false"
-      :show-apply-button="false"
+      :show1-apply-button="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
-          @change="filterCallback()"
+          @change1="filterCallback()"
         />
       </template>
     </Column>
@@ -352,31 +355,16 @@ onMounted(() => {
         </router-link>
       </template>
     </Column>
-    <!--        <template #paginatorstart></template>-->
-    <!--        <template #paginatorend>-->
-    <!--          <div class="flex gap-2 items-center">-->
-    <!--            <span>Total: {{ list?.totalElements }}</span>-->
-    <!--            <Select-->
-    <!--              v-model="pageSize"-->
-    <!--              :options="[1, 5, 10, 20, 50]"-->
-    <!--              @change="loadPage(0, $event.value)"-->
-    <!--            />-->
-    <!--          </div>-->
-    <!--        </template>-->
-    <!--        <template #paginatorcontainer="slotProps: any">-->
-    <!--          <Paginator-->
-    <!--            :first="slotProps.first"-->
-    <!--            :last="slotProps.last"-->
-    <!--            :rows="slotProps.rows"-->
-    <!--            :page="slotProps.page"-->
-    <!--            :pageCount="slotProps.pageCount"-->
-    <!--            :totalRecords="slotProps.totalRecords"-->
-    <!--            :firstPageCallback="slotProps.firstPageCallback"-->
-    <!--            :lastPageCallback="slotProps.lastPageCallback"-->
-    <!--            :prevPageCallback="slotProps.prevPageCallback"-->
-    <!--            :nextPageCallback="slotProps.nextPageCallback"-->
-    <!--            :rowChangeCallback="slotProps.rowChangeCallback"-->
-    <!--          />-->
-    <!--        </template>-->
+    <template #paginatorstart></template>
+    <template #paginatorend>
+      <div class="flex items-center gap-2">
+        <span>count: {{ list?.totalElements }}</span>
+        <Select
+          v-model="listViewStore.state.equipment.pageSize"
+          :options="[10, 20, 50, 100]"
+          @change="loadPage(0, 0, $event.value)"
+        />
+      </div>
+    </template>
   </DataTable>
 </template>

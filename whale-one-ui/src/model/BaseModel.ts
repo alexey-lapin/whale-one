@@ -21,6 +21,6 @@ export interface EntityHeaderModel {
   lastUpdatedBy?: BaseRefModel | null
 }
 
-export interface Filter {
+export interface FilterConditions {
   [key: string]: DataTableFilterMetaData
 }

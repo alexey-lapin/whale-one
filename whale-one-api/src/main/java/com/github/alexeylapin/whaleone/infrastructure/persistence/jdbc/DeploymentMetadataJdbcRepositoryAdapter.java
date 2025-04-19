@@ -2,7 +2,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.DeploymentMetadata;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentMetadataRepository;
-import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

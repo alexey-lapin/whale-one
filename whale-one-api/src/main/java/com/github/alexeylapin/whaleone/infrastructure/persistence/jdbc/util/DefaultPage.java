@@ -1,6 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util;
 
-import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.domain.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 

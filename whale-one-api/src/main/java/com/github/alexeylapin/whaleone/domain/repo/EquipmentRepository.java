@@ -1,5 +1,7 @@
 package com.github.alexeylapin.whaleone.domain.repo;
 
+import com.github.alexeylapin.whaleone.domain.Page;
+import com.github.alexeylapin.whaleone.domain.QuerySpec;
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
@@ -13,12 +15,9 @@ public interface EquipmentRepository {
 
     Optional<Equipment> findById(long id);
 
-    Page<EquipmentListElement> findAllElements(int page,
-                                               int size,
-                                               String name,
-                                               Long typeId,
-                                               String manufacturer,
-                                               String model);
+    Page<EquipmentListElement> list(int page, int size, QuerySpec querySpec);
+
+    long count(QuerySpec querySpec);
 
     Optional<EquipmentItem> findItemById(long id);
 

@@ -10,7 +10,7 @@ import { FilterMatchMode } from '@primevue/core/api'
 
 import { invokeDeploymentListGet } from '@/client/deploymentClient.ts'
 
-import type { BaseRefModel, Filter, PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type { DeploymentModel } from '@/model/DeploymentModel.ts'
 import { invokeProjectItemListGet, invokeSiteItemListGet } from '@/client/projectClient.ts'
 import AutoComplete from 'primevue/autocomplete'
@@ -40,7 +40,7 @@ const loadPage = (page: number, size: number) => {
     .finally(() => (loading.value = false))
 }
 
-const filters: Ref<Filter> = ref({})
+const filters: Ref<FilterConditions> = ref({})
 
 const initFilters = () => {
   filters.value = {

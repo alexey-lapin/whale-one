@@ -2,10 +2,9 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipmen
 
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeDeploymentAttributeRepository;
-import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
-import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Pageable;

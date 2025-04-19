@@ -1,12 +1,12 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
+import com.github.alexeylapin.whaleone.domain.Page;
+import com.github.alexeylapin.whaleone.domain.QuerySpec;
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
-import com.github.alexeylapin.whaleone.domain.repo.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
-import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.BaseMapper;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
@@ -15,6 +15,7 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.annotation.RegisterReflection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,12 +32,16 @@ import java.util.Optional;
 )
 public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
 
+    private static final EquipmentJdbcRepository.EquipmentListElementRowMapper rowMapper =
+            new EquipmentJdbcRepository.EquipmentListElementRowMapper();
+
+    private final JdbcClient jdbcClient;
     private final EquipmentJdbcRepository repository;
     private final EquipmentMapper mapper;
 
     @Override
     public Equipment save(Equipment equipment) {
-        EquipmentEntity entity = mapper.map(equipment);
+        var entity = mapper.map(equipment);
         entity = repository.save(entity);
         return mapper.map(entity).toBuilder()
                 .createdBy(equipment.createdBy())
@@ -47,26 +52,43 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
 
     @Override
     public Optional<Equipment> findById(long id) {
-        return repository.findOneById(id)
-                .map(mapper::map);
+        return repository.findOneById(id).map(mapper::map);
     }
 
     @Override
-    public Page<EquipmentListElement> findAllElements(int page,
-                                                      int size,
-                                                      String name,
-                                                      Long typeId,
-                                                      String manufacturer,
-                                                      String model) {
+    public Page<EquipmentListElement> list(int page, int size, QuerySpec querySpec) {
+        var sql = """
+                SELECT e.*,
+                       et.name     type_name,
+                       u1.username created_by_name,
+                       u2.username last_updated_by_name
+                FROM equipment e
+                         JOIN equipment_type et on e.type_id = et.id
+                         JOIN tbl_user u1 on e.created_by_id = u1.id
+                         JOIN tbl_user u2 on e.last_updated_by_id = u2.id
+                %s
+                ORDER BY et.name, e.manufacturer, e.model, e.name
+                LIMIT ? OFFSET ?"""
+                .formatted(querySpec.spec())
+                .replace(System.lineSeparator(), " ");
         var pageable = PageRequest.of(page, size);
-        var items = repository.findAllElements(pageable.getPageSize(),
-                pageable.getOffset(),
-                name,
-                typeId,
-                manufacturer,
-                model);
-        var aPage = PageableExecutionUtils.getPage(items, pageable, repository::count);
-        return new DefaultPage<>(aPage);
+        var items = jdbcClient.sql(sql)
+                .params(querySpec.params())
+                .param(pageable.getPageSize())
+                .param(pageable.getOffset())
+                .query(rowMapper)
+                .list();
+        var dataPage = PageableExecutionUtils.getPage(items, pageable, () -> count(querySpec));
+        return new DefaultPage<>(dataPage);
+    }
+
+    @Override
+    public long count(QuerySpec querySpec) {
+        var sql = "SELECT count(*) FROM equipment e %s".formatted(querySpec.spec());
+        return jdbcClient.sql(sql)
+                .params(querySpec.params())
+                .query(Long.class)
+                .single();
     }
 
     @Override

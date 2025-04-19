@@ -11,7 +11,7 @@ import { FilterMatchMode } from '@primevue/core/api'
 
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 
-import type { Filter, PageModel } from '@/model/BaseModel.ts'
+import type { FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 
 const list: Ref<PageModel<EquipmentTypeModel> | null> = ref(null)
@@ -27,7 +27,7 @@ const loadPage = (page: number, size: number) => {
     .finally(() => (loading.value = false))
 }
 
-const filters: Ref<Filter> = ref({})
+const filters: Ref<FilterConditions> = ref({})
 
 const initFilters = () => {
   filters.value = {

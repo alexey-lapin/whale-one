@@ -36,9 +36,12 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     implementation("org.postgresql:postgresql")
+    implementation("cz.jirutka.rsql:rsql-parser:2.1.0")
 
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core")
+    testImplementation("org.mockito:mockito-core")
 }
 
 tasks.test {
