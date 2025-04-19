@@ -7,7 +7,7 @@ import com.github.alexeylapin.whaleone.domain.model.ProjectItem;
 import com.github.alexeylapin.whaleone.domain.model.ProjectSite;
 import com.github.alexeylapin.whaleone.domain.model.ProjectSiteItem;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
-import com.github.alexeylapin.whaleone.domain.repo.Page;
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectCampaignRepository;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectRepository;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectSiteRepository;

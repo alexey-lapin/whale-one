@@ -1,5 +1,6 @@
 package com.github.alexeylapin.whaleone.domain.repo;
 
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 
 import java.util.Optional;

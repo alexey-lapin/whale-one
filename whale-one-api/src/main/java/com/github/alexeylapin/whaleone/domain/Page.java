@@ -1,4 +1,4 @@
-package com.github.alexeylapin.whaleone.domain.repo;
+package com.github.alexeylapin.whaleone.domain;
 
 
 import java.util.List;

@@ -1,7 +1,7 @@
-import { apiClient, apiClientContext } from '@/client/baseClient.ts'
+import { apiClient, apiClientContext, toFilterQuery } from '@/client/baseClient.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
 
-import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type {
   EquipmentElementModel,
   EquipmentModel,
@@ -46,7 +46,9 @@ export const invokeEquipmentToggleActive = (id: number) => {
     .then((response) => {
       const data = response.data
       apiClientContext.toast?.add(
-        successToast(`Equipment #${data.id} ${data.name} has been ${data.active ? 'activated' : 'deactivated'}`),
+        successToast(
+          `Equipment #${data.id} ${data.name} has been ${data.active ? 'activated' : 'deactivated'}`,
+        ),
       )
       return data
     })
@@ -66,30 +68,11 @@ export const invokeEquipmentGet = (id: number) => {
     })
 }
 
-export const invokeEquipmentListGet = (
-  page: number,
-  size: number,
-  typeId?: number | null,
-  name?: string | null,
-  manufacturerId?: number | null,
-  model?: string | null,
-) => {
-  let params = ''
-  if (typeId) {
-    params += `&typeId=${typeId}`
-  }
-  if (name) {
-    params += `&name=${name}`
-  }
-  if (manufacturerId) {
-    params += `&manufacturer=${manufacturerId}`
-  }
-  if (model) {
-    params += `&model=${model}`
-  }
+export const invokeEquipmentListGet = (page: number, size: number, filter: FilterConditions) => {
+  let filterQuery = toFilterQuery(filter)
   return apiClient
     .get<PageModel<EquipmentElementModel>>(
-      `/api/equipment?page=${page}&size=${size}${params}`,
+      `/api/equipment/search?page=${page}&size=${size}&filters=${filterQuery}`,
     )
     .then((response) => response.data)
     .catch((error) => {

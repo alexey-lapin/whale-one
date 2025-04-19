@@ -1,5 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
+import com.github.alexeylapin.whaleone.application.service.EquipmentService;
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
@@ -29,6 +30,7 @@ import java.util.Optional;
 public class EquipmentApi {
 
     private final EquipmentRepository equipmentRepository;
+    private final EquipmentService equipmentService;
 
     @PostMapping("/equipment")
     public Equipment create(@RequestBody Equipment equipment,
@@ -114,19 +116,11 @@ public class EquipmentApi {
         return equipmentRepository.findById(id).orElseThrow();
     }
 
-    @GetMapping("/equipment")
-    public PageDto<EquipmentListElement> getAll(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size,
-                                                @RequestParam Optional<String> name,
-                                                @RequestParam Optional<Long> typeId,
-                                                @RequestParam Optional<String> manufacturer,
-                                                @RequestParam Optional<String> model) {
-        var aPage = equipmentRepository.findAllElements(page,
-                size,
-                name.orElse(null),
-                typeId.orElse(null),
-                manufacturer.orElse(null),
-                model.orElse(null));
+    @GetMapping("/equipment/search")
+    public PageDto<EquipmentListElement> list(@RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "10") int size,
+                                              @RequestParam Optional<String> filters) {
+        var aPage = equipmentService.list(page, size, filters.orElse(null));
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
     }
 

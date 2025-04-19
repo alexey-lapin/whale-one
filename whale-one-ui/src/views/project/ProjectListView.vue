@@ -7,7 +7,7 @@ import DataTable from 'primevue/datatable'
 
 import { invokeProjectListGet } from '@/client/projectClient.ts'
 
-import type { Filter, PageModel } from '@/model/BaseModel.ts'
+import type { FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type { ProjectModel } from '@/model/ProjectModel.ts'
 import { FilterMatchMode } from '@primevue/core/api'
 import InputText from 'primevue/inputtext'
@@ -27,7 +27,7 @@ const loadPage = (page: number, size: number) => {
     .finally(() => (loading.value = false))
 }
 
-const filters: Ref<Filter> = ref({})
+const filters: Ref<FilterConditions> = ref({})
 
 const initFilters = () => {
   filters.value = {
