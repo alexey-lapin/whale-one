@@ -58,6 +58,19 @@ const toggleSettingsPopover = (event: Event) => {
 
 const isIdVisible = ref(false)
 
+const isFavorite = (id: number) => {
+  return listViewConfig.value.favorites.map((i) => i.id).includes(id)
+}
+
+const toggleFavorite = (id: number, name: string) => {
+  const index = listViewConfig.value.favorites.map((i) => i.id).indexOf(id)
+  if (index === -1) {
+    listViewConfig.value.favorites.push({ id, name })
+  } else {
+    listViewConfig.value.favorites.splice(index, 1)
+  }
+}
+
 onMounted(() => {
   loadPage(0, 0, listViewConfig.value.pageSize)
 })
@@ -173,22 +186,31 @@ onMounted(() => {
       class="w-1/12"
     >
       <template #body="slotProps">
-        <router-link
-          v-slot="{ href, navigate }"
-          :to="`/administration/equipment/types/${slotProps.data.id}`"
-        >
-          <a
-            :href="href"
-            @click="navigate"
+        <div class="flex gap-1">
+          <router-link
+            v-slot="{ href, navigate }"
+            :to="`/administration/equipment/types/${slotProps.data.id}`"
           >
-            <Button
-              label="Edit"
-              size="small"
-              variant="outlined"
-              severity="secondary"
-            />
-          </a>
-        </router-link>
+            <a
+              :href="href"
+              @click="navigate"
+            >
+              <Button
+                label="Edit"
+                size="small"
+                variant="outlined"
+                severity="secondary"
+              />
+            </a>
+          </router-link>
+          <Button
+            :icon="`pi ${isFavorite(slotProps.data.id) ? 'pi-star-fill' : 'pi-star'}`"
+            size="small"
+            variant="text"
+            severity="secondary"
+            @click="toggleFavorite(slotProps.data.id, slotProps.data.name)"
+          />
+        </div>
       </template>
     </Column>
 
@@ -205,3 +227,9 @@ onMounted(() => {
     </template>
   </DataTable>
 </template>
+
+<style scoped>
+tr:hover {
+  background-color: red !important;
+}
+</style>

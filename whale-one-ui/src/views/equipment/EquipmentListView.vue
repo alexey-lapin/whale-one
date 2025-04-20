@@ -64,7 +64,7 @@ const filters: Ref<FilterConditions> = ref({})
 const initFilters = () => {
   filters.value = {
     name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    typeId: { value: null, matchMode: FilterMatchMode.IN },
+    typeId: { value: [], matchMode: FilterMatchMode.IN },
     manufacturer: { value: null, matchMode: FilterMatchMode.CONTAINS },
     model: { value: null, matchMode: FilterMatchMode.CONTAINS },
     active: {
@@ -112,6 +112,14 @@ const toggleSettingsPopover = (event: Event) => {
 }
 
 const isIdVisible = ref(false)
+
+const isTypeFilterActive = (id: number) => {
+  const types = filters.value.typeId.value as number[] | null
+  if (types) {
+    return types.includes(id)
+  }
+  return false
+}
 
 const onTypeFilterClick = (id: number) => {
   const types = filters.value.typeId.value as number[] | null
@@ -169,7 +177,7 @@ onMounted(() => {
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
-        <div class="flex-grow flex items-center gap-2">
+        <div class="flex-grow flex items-center gap-1">
           <span class="text-xl font-bold">Equipment</span>
           <template
             v-for="type in equipmentTypeListViewConfig.favorites"
@@ -177,6 +185,8 @@ onMounted(() => {
           >
             <EquipmentTypeTag
               :name="type.name"
+              :active="isTypeFilterActive(type.id)"
+              class="cursor-pointer"
               @click="onTypeFilterClick(type.id)"
             />
           </template>
