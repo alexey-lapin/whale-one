@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth.ts'
 import type { ToastServiceMethods } from 'primevue'
 import type { FilterConditions } from '@/model/BaseModel.ts'
-import { FilterMatchMode, type FilterMatchModeOptions } from '@primevue/core/api'
+import { FilterMatchMode } from '@primevue/core/api'
 
 export const baseURL = import.meta.env.VITE_APP_API_BASE_URL
 
@@ -76,11 +76,13 @@ export const toFilterQuery = (filterConditions: FilterConditions) => {
         case FilterMatchMode.IN:
           const values = Array.isArray(filterCondition.value)
             ? filterCondition.value.map((i) => `'${i}'`).join(',')
-            : `'${filterCondition.value}'`
-          filters.push(`${field}=in=(${values})`)
+            : [`'${filterCondition.value}'`]
+          if (values.length > 0) {
+            filters.push(`${field}=in=(${values})`)
+          }
           break
       }
     }
   }
-  return filters.join(";")
+  return filters.join(';')
 }

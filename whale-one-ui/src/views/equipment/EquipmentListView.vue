@@ -25,7 +25,8 @@ import type {
 } from '@/model/EquipmentTypeModel.ts'
 
 const listViewStore = useListViewStore()
-const listViewConfig = toRef(() => listViewStore.state.equipment)
+const equipmentTypeListViewConfig = toRef(() => listViewStore.state.equipmentTypes)
+const equipmentListViewConfig = toRef(() => listViewStore.state.equipment)
 
 const list: Ref<PageModel<EquipmentElementModel> | null> = ref(null)
 const firstRef = ref(0)
@@ -42,6 +43,10 @@ const loadPage = (first: number, page: number, size: number) => {
     .then(() => (firstRef.value = first))
     .catch(() => {})
     .finally(() => (loading.value = false))
+}
+
+const reload = () => {
+  loadPage(0, 0, equipmentListViewConfig.value.pageSize)
 }
 
 const getEquipmentTypes = () => {
@@ -63,7 +68,7 @@ const initFilters = () => {
     manufacturer: { value: null, matchMode: FilterMatchMode.CONTAINS },
     model: { value: null, matchMode: FilterMatchMode.CONTAINS },
     active: {
-      value: listViewConfig.value.showActiveOnly === true ? true : null,
+      value: equipmentListViewConfig.value.showActiveOnly === true ? true : null,
       matchMode: FilterMatchMode.EQUALS,
     },
   }
@@ -74,7 +79,7 @@ initFilters()
 const resetFilters = () => {
   initFilters()
   firstRef.value = 0
-  loadPage(0, 0, listViewConfig.value.pageSize)
+  reload()
 }
 
 const debouncedFilterCallback = useDebounceFn((callback) => callback(), 500)
@@ -108,8 +113,20 @@ const toggleSettingsPopover = (event: Event) => {
 
 const isIdVisible = ref(false)
 
+const onTypeFilterClick = (id: number) => {
+  const types = filters.value.typeId.value as number[] | null
+  if (types) {
+    if (types.includes(id)) {
+      ;(filters.value.typeId.value as number[]).splice(types.indexOf(id), 1)
+    } else {
+      ;(filters.value.typeId.value as number[]).push(id)
+    }
+  }
+  reload()
+}
+
 onMounted(() => {
-  loadPage(0, 0, listViewConfig.value.pageSize)
+  reload()
   getEquipmentTypes()
 })
 </script>
@@ -126,7 +143,7 @@ onMounted(() => {
       </div>
       <div class="flex items-center gap-2">
         <Checkbox
-          v-model="listViewConfig.showActiveOnly"
+          v-model="equipmentListViewConfig.showActiveOnly"
           binary
           @change="resetFilters()"
         />
@@ -138,7 +155,7 @@ onMounted(() => {
   <DataTable
     :value="list?.items"
     :total-records="list?.totalElements"
-    v-model:rows="listViewConfig.pageSize"
+    v-model:rows="equipmentListViewConfig.pageSize"
     v-model:first="firstRef"
     v-model:filters="filters"
     :loading="loading"
@@ -152,7 +169,18 @@ onMounted(() => {
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xl font-bold flex-grow">Equipment</span>
+        <div class="flex-grow flex items-center gap-2">
+          <span class="text-xl font-bold">Equipment</span>
+          <template
+            v-for="type in equipmentTypeListViewConfig.favorites"
+            :key="type.id"
+          >
+            <EquipmentTypeTag
+              :name="type.name"
+              @click="onTypeFilterClick(type.id)"
+            />
+          </template>
+        </div>
         <Button
           title="Reset Filters"
           icon="pi pi-filter-slash"
@@ -327,7 +355,7 @@ onMounted(() => {
     </Column>
 
     <Column
-      v-if="!listViewConfig.showActiveOnly"
+      v-if="!equipmentListViewConfig.showActiveOnly"
       field="active"
       header="Active"
       class="w-1/12"
@@ -383,7 +411,7 @@ onMounted(() => {
 
     <template #paginatorend>
       <Select
-        v-model="listViewConfig.pageSize"
+        v-model="equipmentListViewConfig.pageSize"
         :options="[10, 20, 50, 100]"
         @change="loadPage(0, 0, $event.value)"
       />
