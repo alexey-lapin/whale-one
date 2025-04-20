@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/error", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/index.html", "/assets/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
+                                "/administration/**",
                                 "/login",
                                 "/deployments/**",
                                 "/equipment/**",
