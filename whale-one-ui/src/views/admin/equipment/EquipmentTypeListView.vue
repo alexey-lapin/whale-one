@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue'
+import { onMounted, ref, type Ref, toRef } from 'vue'
 
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
@@ -7,22 +7,28 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
+import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
+import { useListViewStore } from '@/stores/listView.ts'
 
 import type { FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
 
+const listViewStore = useListViewStore()
+const listViewConfig = toRef(() => listViewStore.state.equipmentTypes)
+
 const list: Ref<PageModel<EquipmentTypeModel> | null> = ref(null)
+const firstRef = ref(0)
 
 const loading = ref(false)
-const pageSize = ref(10)
 
-const loadPage = (page: number, size: number) => {
+const loadPage = (first: number, page: number, size: number) => {
   loading.value = true
-  invokeEquipmentTypeListGet(page, size)
+  invokeEquipmentTypeListGet(page, size, filters.value)
     .then((data) => (list.value = data))
+    .then(() => (firstRef.value = first))
     .catch(() => {})
     .finally(() => (loading.value = false))
 }
@@ -40,7 +46,8 @@ initFilters()
 
 const resetFilters = () => {
   initFilters()
-  loadPage(0, pageSize.value)
+  firstRef.value = 0
+  loadPage(0, 0, listViewConfig.value.pageSize)
 }
 
 const settingsPopover = ref()
@@ -52,7 +59,7 @@ const toggleSettingsPopover = (event: Event) => {
 const isIdVisible = ref(false)
 
 onMounted(() => {
-  loadPage(0, pageSize.value)
+  loadPage(0, 0, listViewConfig.value.pageSize)
 })
 </script>
 
@@ -70,20 +77,19 @@ onMounted(() => {
   </Popover>
 
   <DataTable
-    v-model:filters="filters"
     :value="list?.items"
     :total-records="list?.totalElements"
-    :rows="pageSize"
-    :rowsPerPageOptions="[5, 10, 20, 50]"
+    v-model:rows="listViewConfig.pageSize"
+    v-model:first="firstRef"
+    v-model:filters="filters"
     :loading="loading"
     size="small"
     filter-display="menu"
-    currentPageReportTemplate="{first} to {last} of {totalRecords}"
-    lazy
     paginator
     row-hover
-    @page="loadPage($event.page, $event.rows)"
-    @filter="loadPage(0, $event.rows)"
+    lazy
+    @page="loadPage($event.first, $event.page, $event.rows)"
+    @filter="loadPage(0, 0, $event.rows)"
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
@@ -155,7 +161,10 @@ onMounted(() => {
         />
       </template>
       <template #body="slotProps">
-        <i v-if="slotProps.data.isAssembly" class="pi pi-check"/>
+        <i
+          v-if="slotProps.data.isAssembly"
+          class="pi pi-check"
+        />
       </template>
     </Column>
 
@@ -182,5 +191,17 @@ onMounted(() => {
         </router-link>
       </template>
     </Column>
+
+    <template #paginatorstart>
+      <span class="font-semibold">Count: {{ list?.totalElements }}</span>
+    </template>
+
+    <template #paginatorend>
+      <Select
+        v-model="listViewConfig.pageSize"
+        :options="[10, 20, 50, 100]"
+        @change="loadPage(0, 0, $event.value)"
+      />
+    </template>
   </DataTable>
 </template>

@@ -62,7 +62,7 @@ apiClient.interceptors.response.use(
 export const toFilterQuery = (filterConditions: FilterConditions) => {
   const filters: string[] = []
   for (const [field, filterCondition] of Object.entries(filterConditions)) {
-    if (filterCondition.value) {
+    if (filterCondition.value !== null && filterCondition.value !== undefined) {
       switch (filterCondition.matchMode) {
         case FilterMatchMode.STARTS_WITH:
           filters.push(`${field}=startsWith='${filterCondition.value}'`)
@@ -77,7 +77,7 @@ export const toFilterQuery = (filterConditions: FilterConditions) => {
           const values = Array.isArray(filterCondition.value)
             ? filterCondition.value.map((i) => `'${i}'`).join(',')
             : `'${filterCondition.value}'`
-          filters.push(`${field}=in=${values}`)
+          filters.push(`${field}=in=(${values})`)
           break
       }
     }

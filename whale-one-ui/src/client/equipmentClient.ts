@@ -69,10 +69,9 @@ export const invokeEquipmentGet = (id: number) => {
 }
 
 export const invokeEquipmentListGet = (page: number, size: number, filter: FilterConditions) => {
-  let filterQuery = toFilterQuery(filter)
   return apiClient
     .get<PageModel<EquipmentElementModel>>(
-      `/api/equipment/search?page=${page}&size=${size}&filters=${filterQuery}`,
+      `/api/equipment/search?page=${page}&size=${size}&filters=${toFilterQuery(filter)}`,
     )
     .then((response) => response.data)
     .catch((error) => {

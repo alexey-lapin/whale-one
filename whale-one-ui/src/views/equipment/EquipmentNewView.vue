@@ -82,7 +82,7 @@ const onManufacturerChange = (newValue: EquipmentTypeManufacturerModel | null) =
 }
 
 onMounted(() => {
-  invokeEquipmentTypeListGet(0, 50)
+  invokeEquipmentTypeListGet(0, 50, {})
     .then((data) => (equipmentTypes.value = data.items))
     .catch(() => {})
 })

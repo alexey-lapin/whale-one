@@ -19,14 +19,15 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
 
     @Override
     protected List<?> userConverters() {
-        return List.of(new StringReadingConverter(),
+        return List.of(
+                new StringReadingConverter(),
                 new StringWritingConverter(),
                 new TimestampToZonedDateTimeConverter(),
-                new ZonedDateTimeToTimestampConverter());
+                new ZonedDateTimeToTimestampConverter()
+        );
     }
 
 
-//    @Component
     @WritingConverter
     static class StringWritingConverter implements Converter<JsonValue, PGobject> {
 
@@ -41,7 +42,6 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
 
     }
 
-//    @Component
     @ReadingConverter
     static class StringReadingConverter implements Converter<PGobject, JsonValue> {
 

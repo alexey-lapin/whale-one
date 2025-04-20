@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, type Ref, watch } from 'vue'
+import { computed, onMounted, ref, type Ref, toRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import Button from 'primevue/button'
@@ -14,10 +14,8 @@ import { FilterMatchMode } from '@primevue/core/api'
 import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
 
 import { invokeEquipmentListGet } from '@/client/equipmentClient.ts'
-import {
-  invokeEquipmentTypeGet,
-  invokeEquipmentTypeItemListGet,
-} from '@/client/equipmentTypeClient.ts'
+import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
+import { useListViewStore } from '@/stores/listView.ts'
 
 import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
 import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
@@ -25,18 +23,17 @@ import type {
   EquipmentTypeManufacturerModel,
   EquipmentTypeModel,
 } from '@/model/EquipmentTypeModel.ts'
-import { useListViewStore } from '@/stores/listView.ts'
 
 const listViewStore = useListViewStore()
+const listViewConfig = toRef(() => listViewStore.state.equipment)
 
 const list: Ref<PageModel<EquipmentElementModel> | null> = ref(null)
+const firstRef = ref(0)
 
 const equipmentTypeItems: Ref<BaseRefModel[]> = ref([])
-const equipmentType: Ref<EquipmentTypeModel | null> = ref(null)
+const equipmentTypes: Ref<EquipmentTypeModel[]> = ref([])
 
 const loading = ref(false)
-// const pageSize = ref(listViewStore.state.equipment.pageSize)
-const firstRef = ref(0)
 
 const loadPage = (first: number, page: number, size: number) => {
   loading.value = true
@@ -47,15 +44,13 @@ const loadPage = (first: number, page: number, size: number) => {
     .finally(() => (loading.value = false))
 }
 
-const getEquipmentTypeItems = (q: string | null) => {
-  invokeEquipmentTypeItemListGet(q)
-    .then((data) => (equipmentTypeItems.value = data))
-    .catch(() => {})
-}
-
-const getEquipmentType = (id: number) => {
-  return invokeEquipmentTypeGet(id)
-    .then((data) => (equipmentType.value = data))
+const getEquipmentTypes = () => {
+  invokeEquipmentTypeListGet(0, 100, {})
+    .then((data) => {
+      equipmentTypes.value = data.items
+      return data.items
+    })
+    .then((data) => (equipmentTypeItems.value = data.map((et) => ({ id: et.id, name: et.name }))))
     .catch(() => {})
 }
 
@@ -64,9 +59,13 @@ const filters: Ref<FilterConditions> = ref({})
 const initFilters = () => {
   filters.value = {
     name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    typeId: { value: null, matchMode: FilterMatchMode.EQUALS },
+    typeId: { value: null, matchMode: FilterMatchMode.IN },
     manufacturer: { value: null, matchMode: FilterMatchMode.CONTAINS },
     model: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    active: {
+      value: listViewConfig.value.showActiveOnly === true ? true : null,
+      matchMode: FilterMatchMode.EQUALS,
+    },
   }
 }
 
@@ -75,34 +74,30 @@ initFilters()
 const resetFilters = () => {
   initFilters()
   firstRef.value = 0
-  loadPage(0, 0, listViewStore.state.equipment.pageSize)
+  loadPage(0, 0, listViewConfig.value.pageSize)
 }
 
 const debouncedFilterCallback = useDebounceFn((callback) => callback(), 500)
 
-watch(
-  () => filters.value.typeId,
-  (newValue) => {
-    if (newValue.value) {
-      getEquipmentType(newValue.value)
-    } else {
-      equipmentType.value = null
-    }
-  },
-)
-
 const manufacturers = computed(() => {
-  return (
-    (equipmentType.value?.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []
-  ).map((m) => m.name)
+  return equipmentTypes.value
+    .filter((et) => !et.isAssembly)
+    .filter(
+      (et) =>
+        filters.value.typeId.value === null ||
+        (filters.value.typeId.value as number[]).length == 0 ||
+        (filters.value.typeId.value as number[]).includes(et.id),
+    )
+    .flatMap((et) => (et.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || [])
 })
 
 const models = computed(() => {
-  return (
-    ((equipmentType.value?.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []).find(
-      (m) => m.name === filters.value.manufacturer.value,
-    )?.models || []
-  )
+  return manufacturers.value
+    .filter(
+      (m) =>
+        filters.value.manufacturer.value === null || m.name === filters.value.manufacturer.value,
+    )
+    .flatMap((m) => m.models)
 })
 
 const settingsPopover = ref()
@@ -114,8 +109,8 @@ const toggleSettingsPopover = (event: Event) => {
 const isIdVisible = ref(false)
 
 onMounted(() => {
-  loadPage(0, 0, listViewStore.state.equipment.pageSize)
-  getEquipmentTypeItems(null)
+  loadPage(0, 0, listViewConfig.value.pageSize)
+  getEquipmentTypes()
 })
 </script>
 
@@ -129,13 +124,21 @@ onMounted(() => {
         />
         <label>Show Id</label>
       </div>
+      <div class="flex items-center gap-2">
+        <Checkbox
+          v-model="listViewConfig.showActiveOnly"
+          binary
+          @change="resetFilters()"
+        />
+        <label>Show Active only</label>
+      </div>
     </div>
   </Popover>
 
   <DataTable
     :value="list?.items"
     :total-records="list?.totalElements"
-    v-model:rows="listViewStore.state.equipment.pageSize"
+    v-model:rows="listViewConfig.pageSize"
     v-model:first="firstRef"
     v-model:filters="filters"
     :loading="loading"
@@ -193,12 +196,12 @@ onMounted(() => {
       class="w-2/12"
       filterField="name"
       :show-filter-match-modes="false"
-      :show1-apply-button="false"
+      :show-apply-button="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
-          @change1="filterCallback()"
+          @change="filterCallback()"
         />
       </template>
     </Column>
@@ -212,13 +215,19 @@ onMounted(() => {
       :show-apply-button="false"
     >
       <template #filter="{ filterModel, filterCallback }">
-        <Select
-          v-model="filterModel.value"
-          :options="equipmentTypeItems"
-          option-label="name"
-          option-value="id"
-          @change="filterCallback()"
-        />
+        <template
+          v-for="item in equipmentTypeItems"
+          :key="item.id"
+        >
+          <div class="flex items-center gap-2">
+            <Checkbox
+              v-model="filterModel.value"
+              :value="item.id"
+              @change="filterCallback()"
+            />
+            <EquipmentTypeTag :name="item.name" />
+          </div>
+        </template>
       </template>
       <template #body="slotProps">
         <EquipmentTypeTag :name="slotProps.data.type.name" />
@@ -236,6 +245,8 @@ onMounted(() => {
         <Select
           v-model="filterModel.value"
           :options="manufacturers"
+          option-label="name"
+          option-value="name"
           editable
           @change="debouncedFilterCallback(filterCallback)"
         />
@@ -316,19 +327,29 @@ onMounted(() => {
     </Column>
 
     <Column
+      v-if="!listViewConfig.showActiveOnly"
       field="active"
       header="Active"
       class="w-1/12"
+      :show-filter-match-modes="false"
+      :show-apply-button="false"
     >
+      <template #filter="{ filterModel, filterCallback }">
+        <Checkbox
+          v-model="filterModel.value"
+          binary
+          @change="filterCallback()"
+        />
+      </template>
       <template #body="slotProps">
         <span
           v-if="slotProps.data.active"
           class="pi pi-check"
-        ></span>
+        />
         <span
           v-else
           class="pi pi-times"
-        ></span>
+        />
       </template>
     </Column>
 
@@ -355,16 +376,17 @@ onMounted(() => {
         </router-link>
       </template>
     </Column>
-    <template #paginatorstart></template>
+
+    <template #paginatorstart>
+      <span class="font-semibold">Count: {{ list?.totalElements }}</span>
+    </template>
+
     <template #paginatorend>
-      <div class="flex items-center gap-2">
-        <span>count: {{ list?.totalElements }}</span>
-        <Select
-          v-model="listViewStore.state.equipment.pageSize"
-          :options="[10, 20, 50, 100]"
-          @change="loadPage(0, 0, $event.value)"
-        />
-      </div>
+      <Select
+        v-model="listViewConfig.pageSize"
+        :options="[10, 20, 50, 100]"
+        @change="loadPage(0, 0, $event.value)"
+      />
     </template>
   </DataTable>
 </template>

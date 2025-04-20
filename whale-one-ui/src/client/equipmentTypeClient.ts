@@ -1,7 +1,7 @@
-import { apiClient, apiClientContext } from '@/client/baseClient.ts'
+import { apiClient, apiClientContext, toFilterQuery } from '@/client/baseClient.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
 
-import type { BaseRefModel, PageModel } from '@/model/BaseModel.ts'
+import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type { EquipmentTypeModel, EquipmentTypeNewModel } from '@/model/EquipmentTypeModel.ts'
 
 export const invokeEquipmentTypeCreate = (
@@ -53,9 +53,12 @@ export const invokeEquipmentTypeGet = (id: number): Promise<EquipmentTypeModel> 
 export const invokeEquipmentTypeListGet = (
   page: number,
   size: number,
+  filter: FilterConditions,
 ): Promise<PageModel<EquipmentTypeModel>> => {
   return apiClient
-    .get<PageModel<EquipmentTypeModel>>(`/api/equipment/types?page=${page}&size=${size}`)
+    .get<PageModel<EquipmentTypeModel>>(
+      `/api/equipment/types/search?page=${page}&size=${size}&filters=${toFilterQuery(filter)}`,
+    )
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error.message))
