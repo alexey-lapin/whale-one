@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useAuthStore } from '@/stores/auth.ts'
 import type { ToastServiceMethods } from 'primevue'
 import type { FilterConditions } from '@/model/BaseModel.ts'
@@ -86,3 +86,50 @@ export const toFilterQuery = (filterConditions: FilterConditions) => {
   }
   return filters.join(';')
 }
+
+export const errorMessage = (error: any) => {
+  if (error instanceof AxiosError) {
+    if (error.response) {
+      return `${error.response.status}: ${error.response.data.title}`
+    } else if (error.request) {
+      return `No response received: ${error.message}`
+    } else {
+      return error.message
+    }
+  } else if (error instanceof Error) {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
+export class ApiError extends Error {
+  public cause?: Error
+  public problemDetails?: ProblemDetails
+  constructor(
+    cause?: Error
+  ) {
+    super(cause?.message)
+    this.name = 'ApiError'
+    this.cause = cause
+    if (cause instanceof AxiosError) {
+      this.problemDetails = cause.response?.data as ProblemDetails
+    }
+  }
+}
+
+export interface ProblemDetails {
+  type: string
+  title: string
+  status: number
+  detail: string
+  instance: string
+  classification?: string | null
+}
+
+export interface ErrorClassificationOptions {
+  readonly OPTIMISTIC_LOCKING_FAILURE: string;
+}
+
+export const ErrorClassification: ErrorClassificationOptions = {
+  OPTIMISTIC_LOCKING_FAILURE: 'optimistic-locking-failure',
+} as const;

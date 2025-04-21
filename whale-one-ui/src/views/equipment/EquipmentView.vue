@@ -19,9 +19,11 @@ import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
 
 import {
   invokeEquipmentGet,
-  invokeEquipmentItemGet, invokeEquipmentToggleActive,
-  invokeEquipmentUpdate
+  invokeEquipmentItemGet,
+  invokeEquipmentToggleActive,
+  invokeEquipmentUpdate,
 } from '@/client/equipmentClient.ts'
+import { ApiError, ErrorClassification } from '@/client/baseClient.ts'
 import { invokeEquipmentTypeGet } from '@/client/equipmentTypeClient.ts'
 import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
 
@@ -32,12 +34,15 @@ import type {
   EquipmentTypeModel,
 } from '@/model/EquipmentTypeModel.ts'
 import type { BaseRefModel } from '@/model/BaseModel.ts'
+import MessageStaleVersion from '@/components/MessageStaleVersion.vue'
 
 const props = defineProps<{
   id: number
 }>()
 
 const model: Ref<EquipmentModel | null> = ref(null)
+const versionStale = ref(false)
+const active = ref(false)
 
 const equipmentType: Ref<EquipmentTypeModel | null> = ref(null)
 const equipmentTypeAttributes: Ref<EquipmentTypeAttributeModel[]> = ref([])
@@ -50,6 +55,7 @@ const editing = ref(false)
 const getEquipment = () => {
   return invokeEquipmentGet(props.id)
     .then((data) => (model.value = data))
+    .then(() => (active.value = model.value?.active ?? false))
     .catch(() => {})
 }
 
@@ -92,16 +98,6 @@ const getEquipmentTypeAttributes = () => {
     .catch(() => {})
 }
 
-function collectAttributes(): EquipmentAttributeModel[] {
-  return equipmentTypeAttributes.value.map((attribute) => ({
-    id: 0,
-    equipmentTypeAttributeId: attribute.id,
-    value:
-      model.value?.attributes.find((a) => a.equipmentTypeAttributeId === attribute.id)?.value ??
-      null,
-  }))
-}
-
 const updateEquipment = () => {
   if (!model.value) {
     return
@@ -114,8 +110,41 @@ const updateEquipment = () => {
       model.value.attributes = collectAttributes()
       editing.value = false
     })
-    .catch(() => {})
+    .catch((error) => {
+      if (error instanceof ApiError) {
+        if (
+          error.problemDetails?.classification === ErrorClassification.OPTIMISTIC_LOCKING_FAILURE
+        ) {
+          versionStale.value = true
+        }
+      }
+    })
     .finally(() => (loading.value = false))
+}
+
+const toggleActive = () => {
+  if (!model.value) {
+    return
+  }
+  loading.value = true
+  invokeEquipmentToggleActive(model.value.id)
+    .then((data) => (model.value = data))
+    .catch(() => {
+      if (model.value) {
+        active.value = model.value.active
+      }
+    })
+    .finally(() => (loading.value = false))
+}
+
+function collectAttributes(): EquipmentAttributeModel[] {
+  return equipmentTypeAttributes.value.map((attribute) => ({
+    id: 0,
+    equipmentTypeAttributeId: attribute.id,
+    value:
+      model.value?.attributes.find((a) => a.equipmentTypeAttributeId === attribute.id)?.value ??
+      null,
+  }))
 }
 
 const manufacturers = computed(() => {
@@ -166,6 +195,11 @@ onMounted(() => {
 </script>
 
 <template>
+  <MessageStaleVersion
+    class="mt-3"
+    :model-value="versionStale"
+  />
+
   <div
     v-if="model"
     class="my-4 flex flex-col gap-4"
@@ -187,11 +221,11 @@ onMounted(() => {
       <template #icons>
         <div class="flex gap-2">
           <ToggleButton
-            v-model="model.active"
+            v-model="active"
             off-label="Inactive"
             on-label="Active"
             size="small"
-            @click="invokeEquipmentToggleActive(model.id)"
+            @click="toggleActive()"
           />
           <Button
             variant="text"
