@@ -1,8 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import { useAuthStore } from '@/stores/auth.ts'
+import { FilterMatchMode } from '@primevue/core/api'
+
 import type { ToastServiceMethods } from 'primevue'
 import type { FilterConditions } from '@/model/BaseModel.ts'
-import { FilterMatchMode } from '@primevue/core/api'
 
 export const baseURL = import.meta.env.VITE_APP_API_BASE_URL
 
@@ -85,21 +86,6 @@ export const toFilterQuery = (filterConditions: FilterConditions) => {
     }
   }
   return filters.join(';')
-}
-
-export const errorMessage = (error: any) => {
-  if (error instanceof AxiosError) {
-    if (error.response) {
-      return `${error.response.status}: ${error.response.data.title}`
-    } else if (error.request) {
-      return `No response received: ${error.message}`
-    } else {
-      return error.message
-    }
-  } else if (error instanceof Error) {
-    return error.message
-  }
-  return 'Unknown error'
 }
 
 export class ApiError extends Error {

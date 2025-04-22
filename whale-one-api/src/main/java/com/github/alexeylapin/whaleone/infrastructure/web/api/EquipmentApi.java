@@ -74,41 +74,7 @@ public class EquipmentApi {
                                   @AuthenticationPrincipal IdUser user) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing equipment expected");
-        var equipment = equipmentRepository.findById(id).orElseThrow();
-        var activation = !equipment.active();
-
-        if (equipment.assemblyId() != null) {
-            throw new IllegalStateException("Cannot activate/deactivate equipment that is part of an assembly");
-        }
-
-        if (equipment.assemblyParts() != null) {
-            for (var assemblyPart : equipment.assemblyParts()) {
-                var partEquipment = equipmentRepository.findById(assemblyPart.equipmentId()).orElseThrow();
-                Equipment updatedPartEquipment;
-                if (activation) {
-                    if (partEquipment.assemblyId() != null) {
-                        throw new IllegalStateException("Cannot activate equipment with assembly parts that are already assigned to another assembly");
-                    }
-                    if (!partEquipment.active()) {
-                        throw new IllegalStateException("Cannot activate equipment with assembly parts that are not active");
-                    }
-                    updatedPartEquipment = partEquipment.toBuilder().assemblyId(id).build();
-                } else {
-                    if (partEquipment.assemblyId() != id) {
-                        throw new IllegalStateException("Cannot deactivate equipment with assembly parts that are not assigned to this assembly");
-                    }
-                    updatedPartEquipment = partEquipment.toBuilder().assemblyId(null).build();
-                }
-                equipmentRepository.save(updatedPartEquipment);
-            }
-        }
-
-        var updatedEquipment = equipment.toBuilder()
-                .lastUpdatedAt(ZonedDateTime.now())
-                .lastUpdatedBy(new UserRef(user.getId(), user.getName()))
-                .active(activation)
-                .build();
-        return equipmentRepository.save(updatedEquipment);
+        return equipmentService.toggleActive(id, new UserRef(user.getId(), user.getName()));
     }
 
     @GetMapping("/equipment/{id}")

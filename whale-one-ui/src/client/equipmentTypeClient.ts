@@ -17,7 +17,7 @@ export const invokeEquipmentTypeCreate = (
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -35,7 +35,7 @@ export const invokeEquipmentTypeUpdate = (
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -45,7 +45,7 @@ export const invokeEquipmentTypeGet = (id: number): Promise<EquipmentTypeModel> 
     .get<EquipmentTypeModel>(`/api/equipment/types/${id}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -61,7 +61,7 @@ export const invokeEquipmentTypeListGet = (
     )
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -71,7 +71,7 @@ export const invokeEquipmentTypeItemListGet = (q?: string | null): Promise<BaseR
     .get<BaseRefModel[]>(`/api/equipment/types/items?q=${q ?? ''}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }

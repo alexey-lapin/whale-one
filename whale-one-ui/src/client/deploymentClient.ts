@@ -19,7 +19,7 @@ export const invokeDeploymentCreate = (deployment: DeploymentNewModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -35,7 +35,7 @@ export const invokeDeploymentUpdate = (deployment: DeploymentModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -45,7 +45,7 @@ export const invokeDeploymentGet = (id: number) => {
     .get<DeploymentModel>(`/api/deployments/${id}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -64,7 +64,7 @@ export const invokeDeploymentListGet = (
     )
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -74,7 +74,7 @@ export const invokeDeploymentStatusUpdate = (deploymentId: number, status: strin
     .put<DeploymentModel>(`/api/deployments/${deploymentId}/status?status=${status}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -87,7 +87,7 @@ export const invokeDeploymentEquipmentAdd = (deploymentId: number, equipmentId: 
     })
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -97,7 +97,7 @@ export const invokeDeploymentEquipmentListGet = (deploymentId: number) => {
     .get<DeploymentEquipmentItemModel[]>(`/api/deployments/${deploymentId}/equipment`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -107,7 +107,7 @@ export const invokeDeploymentEquipmentDelete = (deploymentId: number, equipmentI
     .delete<EquipmentModel>(`/api/deployments/${deploymentId}/equipment/${equipmentId}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }

@@ -1,4 +1,4 @@
-import { apiClient, apiClientContext, ApiError, errorMessage, toFilterQuery } from '@/client/baseClient.ts'
+import { apiClient, apiClientContext, ApiError, toFilterQuery } from '@/client/baseClient.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
 
 import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
@@ -19,7 +19,7 @@ export const invokeEquipmentCreate = (equipment: EquipmentNewModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -35,7 +35,7 @@ export const invokeEquipmentUpdate = (equipment: EquipmentModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw new ApiError(error)
     })
 }
@@ -53,7 +53,7 @@ export const invokeEquipmentToggleActive = (id: number) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -63,7 +63,7 @@ export const invokeEquipmentGet = (id: number) => {
     .get<EquipmentModel>(`/api/equipment/${id}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -75,7 +75,7 @@ export const invokeEquipmentListGet = (page: number, size: number, filter: Filte
     )
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -85,7 +85,7 @@ export const invokeEquipmentItemGet = (id: number) => {
     .get<BaseRefModel>(`/api/equipment/items/${id}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -95,7 +95,7 @@ export const invokeEquipmentItemListGet = (typeId: number, q?: string | null) =>
     .get<BaseRefModel[]>(`/api/equipment/items?typeId=${typeId}&q=${q ?? ''}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(errorMessage(error)))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }

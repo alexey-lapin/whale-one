@@ -9,11 +9,11 @@ export const invokeProjectCreate = (project: ProjectModel) => {
     .post<ProjectModel>('/api/projects', project)
     .then((response) => {
       const data = response.data
-      apiClientContext.toast?.add(successToast(`Project #${data.id} ${data.name} created`))
+      apiClientContext.toast?.add(successToast(`Project #${data.id} ${data.name} has been created`))
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -23,11 +23,11 @@ export const invokeProjectUpdate = (project: ProjectModel) => {
     .put<ProjectModel>(`/api/projects/${project.id}`, project)
     .then((response) => {
       const data = response.data
-      apiClientContext.toast?.add(successToast(`Project #${data.id} ${data.name} updated`))
+      apiClientContext.toast?.add(successToast(`Project #${data.id} ${data.name} has been updated`))
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -37,7 +37,7 @@ export const invokeProjectGet = (id: number) => {
     .get<ProjectModel>(`/api/projects/${id}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -47,7 +47,7 @@ export const invokeProjectListGet = (page: number, size: number) => {
     .get<PageModel<ProjectModel>>(`/api/projects?page=${page}&size=${size}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -57,7 +57,7 @@ export const invokeProjectItemListGet = (q: string | null) => {
     .get<BaseRefModel[]>(`/api/projects/items?q=${q}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -79,7 +79,7 @@ export const invokeSiteCreate = (site: ProjectSiteModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -93,7 +93,7 @@ export const invokeSiteUpdate = (site: ProjectSiteModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -103,7 +103,7 @@ export const invokeSiteListGet = (projectId: number) => {
     .get<ProjectSiteModel[]>(`/api/projects/${projectId}/sites`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -113,7 +113,7 @@ export const invokeSiteItemListGet = (projectId: number, q: string | null) => {
     .get<BaseRefModel[]>(`/api/projects/${projectId}/sites/items?q=${q ?? ''}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -127,7 +127,7 @@ export const invokeSiteDelete = (site: ProjectSiteModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -151,7 +151,7 @@ export const invokeCampaignCreate = (campaign: ProjectCampaignModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -170,7 +170,7 @@ export const invokeCampaignUpdate = (campaign: ProjectCampaignModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -180,7 +180,7 @@ export const invokeCampaignListGet = (projectId: number) => {
     .get<ProjectCampaignModel[]>(`/api/projects/${projectId}/campaigns`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -196,7 +196,7 @@ export const invokeCampaignDelete = (campaign: ProjectCampaignModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }

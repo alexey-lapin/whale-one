@@ -15,7 +15,7 @@ export const invokeUserCreate = (project: UserModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -31,7 +31,7 @@ export const invokeUserUpdate = (project: UserModel) => {
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -47,7 +47,7 @@ export const invokeUserPasswordUpdate = (id: number, version: number, password: 
       return data
     })
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -57,7 +57,7 @@ export const invokeUserGet = (id: number) => {
     .get<UserModel>(`/api/users/${id}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }
@@ -67,7 +67,7 @@ export const invokeUserListGet = (page: number, size: number) => {
     .get<PageModel<UserModel>>(`/api/users?page=${page}&size=${size}`)
     .then((response) => response.data)
     .catch((error) => {
-      apiClientContext.toast?.add(errorToast(error.message))
+      apiClientContext.toast?.add(errorToast(error))
       throw error
     })
 }

@@ -1,12 +1,12 @@
 package com.github.alexeylapin.whaleone.application.service.ex;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.With;
 
-@Getter
-@Setter
+import java.util.Optional;
+
 public class ServiceException extends RuntimeException {
 
+    @With
     private String classification;
 
     public ServiceException(String message) {
@@ -15,6 +15,10 @@ public class ServiceException extends RuntimeException {
 
     public ServiceException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public Optional<String> getClassification() {
+        return Optional.ofNullable(classification);
     }
 
 }
