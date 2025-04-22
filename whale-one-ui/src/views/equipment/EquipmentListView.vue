@@ -176,20 +176,22 @@ onMounted(() => {
     @filter="loadPage(0, 0, $event.rows)"
   >
     <template #header>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2">
         <div class="flex-grow flex items-center gap-1">
           <span class="text-xl font-bold">Equipment</span>
-          <template
-            v-for="type in equipmentTypeListViewConfig.favorites"
-            :key="type.id"
-          >
-            <EquipmentTypeTag
-              :name="type.name"
-              :active="isTypeFilterActive(type.id)"
-              class="cursor-pointer"
-              @click="onTypeFilterClick(type.id)"
-            />
-          </template>
+          <div class="flex flex-wrap gap-1">
+            <template
+              v-for="type in equipmentTypeListViewConfig.favorites"
+              :key="type.id"
+            >
+              <EquipmentTypeTag
+                :name="type.name"
+                :active="isTypeFilterActive(type.id)"
+                class="cursor-pointer"
+                @click="onTypeFilterClick(type.id)"
+              />
+            </template>
+          </div>
         </div>
         <Button
           title="Reset Filters"

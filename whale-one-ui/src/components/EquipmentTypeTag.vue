@@ -10,7 +10,11 @@ const { active = true } = defineProps<{
 </template>
 
 <style scoped>
+span {
+  background-color: var(--p-surface-100);
+}
+
 .active {
-  background-color: var(--p-highlight-background);
+  background-color: var(--p-highlight-background) !important;
 }
 </style>
