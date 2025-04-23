@@ -104,6 +104,11 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
         return delegate.findAllByNameContainingIgnoreCase(nameQuery, pageable).getContent();
     }
 
+    @Override
+    public void deleteById(long id) {
+        delegate.deleteById(id);
+    }
+
     @Mapper(config = MappingConfig.class)
     interface EquipmentTypeMapper {
 

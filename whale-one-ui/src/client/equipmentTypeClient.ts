@@ -75,3 +75,15 @@ export const invokeEquipmentTypeItemListGet = (q?: string | null): Promise<BaseR
       throw error
     })
 }
+
+export const invokeEquipmentTypeDelete = (id: number): Promise<void> => {
+  return apiClient
+    .delete<void>(`/api/equipment/types/${id}`)
+    .then(() => {
+      apiClientContext.toast?.add(successToast(`Equipment Type #${id} has been deleted`))
+    })
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error))
+      throw error
+    })
+}

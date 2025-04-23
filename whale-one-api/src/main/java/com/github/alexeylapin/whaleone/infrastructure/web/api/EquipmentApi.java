@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +101,11 @@ public class EquipmentApi {
     @GetMapping("/equipment/items/{id}")
     public EquipmentItem getItem(@PathVariable long id) {
         return equipmentRepository.findItemById(id).orElseThrow();
+    }
+
+    @DeleteMapping("/equipment/{id}")
+    public void delete(@PathVariable long id) {
+        equipmentRepository.deleteById(id);
     }
 
 }

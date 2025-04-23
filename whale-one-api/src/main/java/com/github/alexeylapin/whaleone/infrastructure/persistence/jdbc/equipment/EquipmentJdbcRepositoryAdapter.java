@@ -115,6 +115,11 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void deleteById(long id) {
+        repository.deleteById(id);
+    }
+
     @Mapper(config = MappingConfig.class)
     interface EquipmentMapper {
 

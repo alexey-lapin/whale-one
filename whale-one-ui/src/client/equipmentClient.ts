@@ -99,3 +99,15 @@ export const invokeEquipmentItemListGet = (typeId: number, q?: string | null) =>
       throw error
     })
 }
+
+export const invokeEquipmentDelete = (id: number) => {
+  return apiClient
+    .delete(`/api/equipment/${id}`)
+    .then(() => {
+      apiClientContext.toast?.add(successToast(`Equipment #${id} has been deleted`))
+    })
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error))
+      throw error
+    })
+}

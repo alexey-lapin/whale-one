@@ -93,6 +93,11 @@ public class EquipmentTypeApi {
         return equipmentTypeRepository.findAllItems(q.orElse(""));
     }
 
+    @DeleteMapping("/equipment/types/{id}")
+    public void delete(@PathVariable long id) {
+        equipmentTypeRepository.deleteById(id);
+    }
+
     // Equipment Attributes
 
     @PostMapping("/equipment/types/{id}/attributes/equipment")

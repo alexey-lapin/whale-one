@@ -13,7 +13,11 @@ import { FilterMatchMode } from '@primevue/core/api'
 
 import EquipmentTypeTag from '@/components/EquipmentTypeTag.vue'
 
-import { invokeEquipmentListGet } from '@/client/equipmentClient.ts'
+import { useAuthStore } from '@/stores/auth.ts'
+import { useConfirm } from 'primevue/useconfirm'
+import { deleteConfirm } from '@/utils/confirms.ts'
+
+import { invokeEquipmentDelete, invokeEquipmentListGet } from '@/client/equipmentClient.ts'
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { useListViewStore } from '@/stores/listView.ts'
 
@@ -23,6 +27,9 @@ import type {
   EquipmentTypeManufacturerModel,
   EquipmentTypeModel,
 } from '@/model/EquipmentTypeModel.ts'
+
+const auth = useAuthStore()
+const confirm = useConfirm()
 
 const listViewStore = useListViewStore()
 const equipmentTypeListViewConfig = toRef(() => listViewStore.state.equipmentTypes)
@@ -131,6 +138,18 @@ const onTypeFilterClick = (id: number) => {
     }
   }
   reload()
+}
+
+const confirmDelete = (id: number, name: string) => {
+  confirm.require(
+    deleteConfirm(`Delete Equipment #${id} ${name}?`, () =>
+      invokeEquipmentDelete(id)
+        .then(() => {
+          loadPage(firstRef.value, 0, equipmentListViewConfig.value.pageSize)
+        })
+        .catch(() => {}),
+    ),
+  )
 }
 
 onMounted(() => {
@@ -398,22 +417,33 @@ onMounted(() => {
       class="w-1/12"
     >
       <template #body="slotProps">
-        <router-link
-          v-slot="{ href, navigate }"
-          :to="`/equipment/${slotProps.data.id}`"
-        >
-          <a
-            :href="href"
-            @click="navigate"
+        <div class="flex gap-1">
+          <router-link
+            v-slot="{ href, navigate }"
+            :to="`/equipment/${slotProps.data.id}`"
           >
-            <Button
-              label="Edit"
-              size="small"
-              variant="outlined"
-              severity="secondary"
-            />
-          </a>
-        </router-link>
+            <a
+              :href="href"
+              @click="navigate"
+            >
+              <Button
+                label="Edit"
+                size="small"
+                variant="outlined"
+                severity="secondary"
+              />
+            </a>
+          </router-link>
+          <Button
+            v-if="auth.hasAuthority('ADMIN')"
+            icon="pi pi-trash"
+            size="small"
+            variant="text"
+            class="hover:!text-red-600"
+            severity="secondary"
+            @click="confirmDelete(slotProps.data.id, slotProps.data.name)"
+          />
+        </div>
       </template>
     </Column>
 

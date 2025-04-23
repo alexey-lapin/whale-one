@@ -25,4 +25,6 @@ public interface EquipmentRepository {
 
     List<Equipment> findAllByDeploymentId(long id);
 
+    void deleteById(long id);
+
 }

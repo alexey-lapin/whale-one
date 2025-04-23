@@ -22,4 +22,6 @@ public interface EquipmentTypeRepository {
 
     List<EquipmentTypeItem> findAllItems(String nameQuery);
 
+    void deleteById(long id);
+
 }

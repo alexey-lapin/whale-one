@@ -10,11 +10,18 @@ import Popover from 'primevue/popover'
 import Select from 'primevue/select'
 import { FilterMatchMode } from '@primevue/core/api'
 
-import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
+import { useAuthStore } from '@/stores/auth.ts'
+import { useConfirm } from 'primevue/useconfirm'
+import { deleteConfirm } from '@/utils/confirms.ts'
+
+import { invokeEquipmentTypeDelete, invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { useListViewStore } from '@/stores/listView.ts'
 
 import type { FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type { EquipmentTypeModel } from '@/model/EquipmentTypeModel.ts'
+
+const auth = useAuthStore()
+const confirm = useConfirm()
 
 const listViewStore = useListViewStore()
 const listViewConfig = toRef(() => listViewStore.state.equipmentTypes)
@@ -66,9 +73,23 @@ const toggleFavorite = (id: number, name: string) => {
   const index = listViewConfig.value.favorites.map((i) => i.id).indexOf(id)
   if (index === -1) {
     listViewConfig.value.favorites.push({ id, name })
+    listViewConfig.value.favorites.sort((a, b) => a.name.localeCompare(b.name))
   } else {
     listViewConfig.value.favorites.splice(index, 1)
   }
+}
+
+const confirmDelete = (id: number, name: string) => {
+  confirm.require(
+    deleteConfirm(`Delete Equipment Type #${id} ${name}?`, () =>
+      invokeEquipmentTypeDelete(id)
+        .then(() => {
+          listViewConfig.value.favorites = listViewConfig.value.favorites.filter((i) => i.id !== id)
+          loadPage(firstRef.value, 0, listViewConfig.value.pageSize)
+        })
+        .catch(() => {}),
+    ),
+  )
 }
 
 onMounted(() => {
@@ -204,6 +225,15 @@ onMounted(() => {
             </a>
           </router-link>
           <Button
+            v-if="auth.hasAuthority('ADMIN')"
+            icon="pi pi-trash"
+            size="small"
+            variant="text"
+            class="hover:!text-red-600"
+            severity="secondary"
+            @click="confirmDelete(slotProps.data.id, slotProps.data.name)"
+          />
+          <Button
             :icon="`pi ${isFavorite(slotProps.data.id) ? 'pi-star-fill' : 'pi-star'}`"
             size="small"
             variant="text"
@@ -227,9 +257,3 @@ onMounted(() => {
     </template>
   </DataTable>
 </template>
-
-<style scoped>
-tr:hover {
-  background-color: red !important;
-}
-</style>
