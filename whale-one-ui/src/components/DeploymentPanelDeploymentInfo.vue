@@ -59,7 +59,7 @@ const lastFileAt = computed({
           :max="90"
           :disabled="!editing"
         />
-        <label for="name">Latitude</label>
+        <label for="name">Latitude (Decimal Degrees DD.dddddd)</label>
       </FloatLabel>
       <FloatLabel variant="on">
         <InputNumber
@@ -73,7 +73,7 @@ const lastFileAt = computed({
           :max="180"
           :disabled="!editing"
         />
-        <label for="name">Longitude</label>
+        <label for="name">Longitude  (Decimal Degrees DDD.dddddd)</label>
       </FloatLabel>
       <FloatLabel variant="on">
         <InputNumber
@@ -124,9 +124,10 @@ const lastFileAt = computed({
           date-format="yy-mm-dd"
           show-time
           hour-format="24"
+          show-seconds
           :disabled="!editing"
         />
-        <label for="name">Time of the first file (in water)</label>
+        <label for="name">Time of the first file</label>
       </FloatLabel>
       <FloatLabel variant="on">
         <DatePicker
@@ -134,9 +135,10 @@ const lastFileAt = computed({
           date-format="yy-mm-dd"
           show-time
           hour-format="24"
+          show-seconds
           :disabled="!editing"
         />
-        <label for="name">Time of the last file (in water)</label>
+        <label for="name">Time of the last file</label>
       </FloatLabel>
     </div>
   </Fluid>
