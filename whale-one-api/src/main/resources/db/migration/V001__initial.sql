@@ -208,6 +208,7 @@ create table whale_one.equipment
         constraint equipment_assembly_id_fk
             references whale_one.equipment,
     active             boolean                  not null,
+    status             text                     not null,
     metadata           jsonb
 );
 

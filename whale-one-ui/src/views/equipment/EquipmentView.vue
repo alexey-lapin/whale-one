@@ -27,7 +27,11 @@ import { ApiError, ErrorClassification } from '@/client/baseClient.ts'
 import { invokeEquipmentTypeGet } from '@/client/equipmentTypeClient.ts'
 import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
 
-import type { EquipmentAttributeModel, EquipmentModel } from '@/model/EquipmentModel.ts'
+import {
+  type EquipmentAttributeModel,
+  type EquipmentModel,
+  EquipmentStatus,
+} from '@/model/EquipmentModel.ts'
 import type EquipmentTypeAttributeModel from '@/model/EquipmentTypeAttributeModel.ts'
 import type {
   EquipmentTypeManufacturerModel,
@@ -247,6 +251,16 @@ onMounted(() => {
                 :disabled="!editing"
               />
               <label for="name">Name</label>
+            </FloatLabel>
+
+            <FloatLabel variant="on">
+              <Select
+                id="status"
+                v-model="model.status"
+                :options="Object.values(EquipmentStatus)"
+                :disabled="!editing"
+              />
+              <label>Status</label>
             </FloatLabel>
 
             <template v-if="equipmentType?.isAssembly === true">

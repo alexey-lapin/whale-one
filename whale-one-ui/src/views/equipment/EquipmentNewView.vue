@@ -10,7 +10,7 @@ import Select from 'primevue/select'
 import router from '@/router'
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { invokeEquipmentCreate } from '@/client/equipmentClient.ts'
-import type { EquipmentNewModel } from '@/model/EquipmentModel.ts'
+import { type EquipmentNewModel, EquipmentStatus } from '@/model/EquipmentModel.ts'
 import type {
   EquipmentTypeManufacturerModel,
   EquipmentTypeModel,
@@ -20,6 +20,7 @@ import EquipmentItemDropdown from '@/components/EquipmentItemDropdown.vue'
 const model: Ref<EquipmentNewModel> = ref({
   name: null,
   type: null,
+  status: null,
 })
 
 const equipmentTypes: Ref<EquipmentTypeModel[]> = ref([])
@@ -119,6 +120,15 @@ onMounted(() => {
             v-model="model.name"
           />
           <label>Name</label>
+        </FloatLabel>
+
+        <FloatLabel variant="on">
+          <Select
+            id="status"
+            v-model="model.status"
+            :options="Object.values(EquipmentStatus)"
+          />
+          <label>Status</label>
         </FloatLabel>
 
         <FloatLabel

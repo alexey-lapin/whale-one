@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
 import com.github.alexeylapin.whaleone.domain.model.EquipmentAssemblyPart;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentStatus;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class EquipmentEntity {
     private long lastUpdatedById;
 
     private boolean active;
+    private EquipmentStatus status;
     private String name;
     private long typeId;
     private String manufacturer;

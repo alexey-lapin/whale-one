@@ -2,6 +2,7 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipmen
 
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentStatus;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import lombok.Getter;
@@ -101,6 +102,7 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .lastUpdatedAt(rs.getTimestamp("last_updated_at").toInstant().atZone(ZoneId.systemDefault()))
                     .lastUpdatedBy(new UserRef(rs.getLong("last_updated_by_id"), rs.getString("last_updated_by_name")))
                     .active(rs.getBoolean("active"))
+                    .status(EquipmentStatus.valueOf(rs.getString("status")))
                     .name(rs.getString("name"))
                     .type(new EquipmentTypeRef(rs.getLong("type_id"), rs.getString("type_name")))
                     .manufacturer(rs.getString("manufacturer"))

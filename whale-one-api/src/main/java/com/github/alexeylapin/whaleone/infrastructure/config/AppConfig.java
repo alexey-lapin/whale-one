@@ -34,7 +34,8 @@ public class AppConfig {
                 new FilterFieldDescriptor("typeId", Integer.class, "e", "type_id"),
                 new FilterFieldDescriptor("manufacturer", String.class, "e", "manufacturer"),
                 new FilterFieldDescriptor("model", String.class, "e", "model"),
-                new FilterFieldDescriptor("active", Boolean.class, "e", "active")
+                new FilterFieldDescriptor("active", Boolean.class, "e", "active"),
+                new FilterFieldDescriptor("status", String.class, "e", "status")
         );
         var querySpecFactory = new RsqlQuerySpecFactory(conversionService, descriptors);
         return new DefaultEquipmentService(equipmentRepository, querySpecFactory);

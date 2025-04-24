@@ -14,6 +14,7 @@ public record EquipmentListElement(
         UserRef lastUpdatedBy,
 
         boolean active,
+        EquipmentStatus status,
         String name,
         EquipmentTypeRef type,
         String manufacturer,

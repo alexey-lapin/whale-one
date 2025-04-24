@@ -21,7 +21,7 @@ import { invokeEquipmentDelete, invokeEquipmentListGet } from '@/client/equipmen
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { useListViewStore } from '@/stores/listView.ts'
 
-import type { EquipmentElementModel } from '@/model/EquipmentModel.ts'
+import { type EquipmentElementModel, EquipmentStatus } from '@/model/EquipmentModel.ts'
 import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
 import type {
   EquipmentTypeManufacturerModel,
@@ -78,6 +78,7 @@ const initFilters = () => {
       value: equipmentListViewConfig.value.showActiveOnly === true ? true : null,
       matchMode: FilterMatchMode.EQUALS,
     },
+    status: { value: [], matchMode: FilterMatchMode.IN },
   }
 }
 
@@ -359,7 +360,7 @@ onMounted(() => {
 
     <Column
       field="deploymentId"
-      header="Deployed"
+      header="Deployment"
       class="w-1/12"
     >
       <template #body="slotProps">
@@ -382,6 +383,30 @@ onMounted(() => {
             />
           </a>
         </router-link>
+      </template>
+    </Column>
+
+    <Column
+      field="status"
+      header="Status"
+      class="w-1/12"
+      :show-filter-match-modes="false"
+      :show-apply-button="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <template
+          v-for="item in Object.values(EquipmentStatus)"
+          :key="item"
+        >
+          <div class="flex items-center gap-2">
+            <Checkbox
+              v-model="filterModel.value"
+              :value="item"
+              @change="filterCallback()"
+            />
+            <span>{{ item }}</span>
+          </div>
+        </template>
       </template>
     </Column>
 
