@@ -6,15 +6,19 @@ const { active = true } = defineProps<{
 </script>
 
 <template>
-  <span class="font-mono rounded-md px-2" :class="{active: active}">{{ name }}</span>
+  <span
+    class="font-mono rounded-md px-2"
+    :class="{ active: active, inactive: !active }"
+    >{{ name }}</span
+  >
 </template>
 
 <style scoped>
-span {
-  background-color: var(--p-surface-100);
+.inactive {
+  background-color: var(--p-content-hover-background);
 }
 
 .active {
-  background-color: var(--p-highlight-background) !important;
+  background-color: var(--p-highlight-background);
 }
 </style>

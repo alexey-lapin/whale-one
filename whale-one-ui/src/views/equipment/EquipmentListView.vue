@@ -206,7 +206,7 @@ onMounted(() => {
               <EquipmentTypeTag
                 :name="type.name"
                 :active="isTypeFilterActive(type.id)"
-                class="cursor-pointer"
+                class="cursor-pointer text-sm"
                 @click="onTypeFilterClick(type.id)"
               />
             </template>
