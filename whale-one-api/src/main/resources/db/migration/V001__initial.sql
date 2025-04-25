@@ -52,6 +52,9 @@ create table whale_one.project
     goal               text
 );
 
+create unique index project_name_key
+    on whale_one.project (name);
+
 -- TBL project_campaign
 create table whale_one.project_campaign
 (
@@ -64,6 +67,9 @@ create table whale_one.project_campaign
     name       text    not null,
     vessel     text
 );
+
+create unique index project_campaign_name_key
+    on whale_one.project_campaign (project_id, name);
 
 -- TBL project_site
 create table whale_one.project_site
@@ -79,6 +85,9 @@ create table whale_one.project_site
     latitude   double precision,
     depth      double precision
 );
+
+create unique index project_site_name_key
+    on whale_one.project_site (project_id, name);
 
 -- TBL equipment_type
 create table whale_one.equipment_type
@@ -101,6 +110,9 @@ create table whale_one.equipment_type
     metadata           jsonb
 );
 
+create unique index equipment_type_name_key
+    on whale_one.equipment_type (name);
+
 -- TBL equipment_type_equipment_attribute
 create table whale_one.equipment_type_equipment_attribute
 (
@@ -118,6 +130,9 @@ create table whale_one.equipment_type_equipment_attribute
     metadata          jsonb
 );
 
+create unique index equipment_type_equipment_attribute_name_key
+    on whale_one.equipment_type_equipment_attribute (equipment_type_id, name);
+
 -- TBL equipment_type_deployment_attribute
 create table whale_one.equipment_type_deployment_attribute
 (
@@ -134,6 +149,9 @@ create table whale_one.equipment_type_deployment_attribute
     type              text,
     metadata          jsonb
 );
+
+create unique index equipment_type_deployment_attribute_name_key
+    on whale_one.equipment_type_deployment_attribute (equipment_type_id, name);
 
 -- TBL deployment
 create table whale_one.deployment
@@ -180,6 +198,9 @@ create table whale_one.deployment
             references whale_one.project_campaign
 );
 
+create unique index deployment_name_key
+    on whale_one.deployment (name);
+
 -- TBL equipment
 create table whale_one.equipment
 (
@@ -211,6 +232,9 @@ create table whale_one.equipment
     status             text                     not null,
     metadata           jsonb
 );
+
+create unique index equipment_name_key
+    on whale_one.equipment (name);
 
 -- TBL equipment_assembly_part
 create table whale_one.equipment_assembly_part
@@ -275,3 +299,6 @@ create table whale_one.analysis_type
     description        text,
     metadata           jsonb
 );
+
+create unique index analysis_type_name_key
+    on whale_one.analysis_type (name);
