@@ -17,7 +17,11 @@ import { useAuthStore } from '@/stores/auth.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { deleteConfirm } from '@/utils/confirms.ts'
 
-import { invokeEquipmentDelete, invokeEquipmentListGet } from '@/client/equipmentClient.ts'
+import {
+  invokeEquipmentDelete,
+  invokeEquipmentListGet,
+  invokeEquipmentToggleActive,
+} from '@/client/equipmentClient.ts'
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { useListViewStore } from '@/stores/listView.ts'
 
@@ -139,6 +143,14 @@ const onTypeFilterClick = (id: number) => {
     }
   }
   reload()
+}
+
+const toggleActive = (equipment: EquipmentElementModel) => {
+  invokeEquipmentToggleActive(equipment.id)
+    .then(() => {
+      equipment.active = !equipment.active
+    })
+    .catch(() => {})
 }
 
 const confirmDelete = (id: number, name: string) => {
@@ -348,7 +360,7 @@ onMounted(() => {
             <Button
               icon="pi pi-external-link"
               icon-pos="right"
-              :label="`${slotProps.data.assemblyId}`"
+              :title="`${slotProps.data.assemblyId}`"
               size="small"
               variant="outlined"
               severity="secondary"
@@ -365,9 +377,9 @@ onMounted(() => {
     >
       <template #body="slotProps">
         <router-link
-          v-if="slotProps.data.deploymentId"
+          v-if="slotProps.data.deployment"
           v-slot="{ href, navigate }"
-          :to="`/deployments/${slotProps.data.deploymentId}`"
+          :to="`/deployments/${slotProps.data.deployment.id}`"
         >
           <a
             :href="href"
@@ -376,7 +388,7 @@ onMounted(() => {
             <Button
               icon="pi pi-external-link"
               icon-pos="right"
-              :label="`${slotProps.data.deploymentId}`"
+              :label="`${slotProps.data.deployment.name}`"
               size="small"
               variant="outlined"
               severity="secondary"
@@ -426,13 +438,12 @@ onMounted(() => {
         />
       </template>
       <template #body="slotProps">
-        <span
-          v-if="slotProps.data.active"
-          class="pi pi-check"
-        />
-        <span
-          v-else
-          class="pi pi-times"
+        <Button
+          :icon="slotProps.data.active ? 'pi pi-check' : 'pi pi-times'"
+          size="small"
+          variant="outlined"
+          severity="secondary"
+          @click="toggleActive(slotProps.data)"
         />
       </template>
     </Column>
@@ -452,7 +463,7 @@ onMounted(() => {
               @click="navigate"
             >
               <Button
-                label="Edit"
+                icon="pi pi-pencil"
                 size="small"
                 variant="outlined"
                 severity="secondary"
@@ -463,7 +474,7 @@ onMounted(() => {
             v-if="auth.hasAuthority('ADMIN')"
             icon="pi pi-trash"
             size="small"
-            variant="text"
+            variant="outlined"
             class="hover:!text-red-600"
             severity="secondary"
             @click="confirmDelete(slotProps.data.id, slotProps.data.name)"

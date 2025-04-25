@@ -1,11 +1,13 @@
 import type { BaseRefModel, EntityHeaderModel } from '@/model/BaseModel.ts'
-import type { ErrorClassificationOptions } from '@/client/baseClient.ts'
 
 export interface EquipmentElementModel extends EntityHeaderModel {
   name: string
   type: BaseRefModel
+  active: boolean
+  status: string
   manufacturer: string
   model: string
+  deployment?: BaseRefModel | null
 }
 
 export interface EquipmentNewModel {
@@ -44,11 +46,11 @@ export interface EquipmentAttributeModel {
 }
 
 export interface EquipmentStatusOptions {
-  readonly AVAILABLE: string;
-  readonly BROKEN: string;
-  readonly DEPLOYED: string;
-  readonly LOST: string;
-  readonly MAINTENANCE: string;
+  readonly AVAILABLE: string
+  readonly BROKEN: string
+  readonly DEPLOYED: string
+  readonly LOST: string
+  readonly MAINTENANCE: string
 }
 
 export const EquipmentStatus: EquipmentStatusOptions = {
@@ -57,4 +59,4 @@ export const EquipmentStatus: EquipmentStatusOptions = {
   DEPLOYED: 'DEPLOYED',
   LOST: 'LOST',
   MAINTENANCE: 'MAINTENANCE',
-} as const;
+} as const

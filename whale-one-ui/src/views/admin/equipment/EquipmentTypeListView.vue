@@ -217,7 +217,7 @@ onMounted(() => {
               @click="navigate"
             >
               <Button
-                label="Edit"
+                icon="pi pi-pencil"
                 size="small"
                 variant="outlined"
                 severity="secondary"
@@ -228,7 +228,7 @@ onMounted(() => {
             v-if="auth.hasAuthority('ADMIN')"
             icon="pi pi-trash"
             size="small"
-            variant="text"
+            variant="outlined"
             class="hover:!text-red-600"
             severity="secondary"
             @click="confirmDelete(slotProps.data.id, slotProps.data.name)"
@@ -236,7 +236,7 @@ onMounted(() => {
           <Button
             :icon="`pi ${isFavorite(slotProps.data.id) ? 'pi-star-fill' : 'pi-star'}`"
             size="small"
-            variant="text"
+            variant="outlined"
             severity="secondary"
             @click="toggleFavorite(slotProps.data.id, slotProps.data.name)"
           />

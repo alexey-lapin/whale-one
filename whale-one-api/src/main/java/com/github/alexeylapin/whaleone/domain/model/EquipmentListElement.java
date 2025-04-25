@@ -20,6 +20,7 @@ public record EquipmentListElement(
         String manufacturer,
         String model,
         Long assemblyId,
-        Long deploymentId
+        Long deploymentId,
+        DeploymentRef deployment
 ) {
 }

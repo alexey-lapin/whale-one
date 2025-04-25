@@ -61,11 +61,13 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
                 SELECT e.*,
                        et.name     type_name,
                        u1.username created_by_name,
-                       u2.username last_updated_by_name
+                       u2.username last_updated_by_name,
+                       d.name      deployment_name
                 FROM equipment e
                          JOIN equipment_type et on e.type_id = et.id
                          JOIN tbl_user u1 on e.created_by_id = u1.id
                          JOIN tbl_user u2 on e.last_updated_by_id = u2.id
+                         LEFT JOIN deployment d on e.deployment_id = d.id
                 %s
                 ORDER BY et.name, e.manufacturer, e.model, e.name
                 LIMIT ? OFFSET ?"""

@@ -25,7 +25,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String FAILED_TO_EXECUTE_DB_ACTION = FAILED_TO_EXECUTE + " DBAction";
 
     private static final Pattern DB_ACTION_EXECUTION_EXCEPTION_PATTERN =
-            Pattern.compile(FAILED_TO_EXECUTE + " (.*)\\{.*");
+            Pattern.compile(FAILED_TO_EXECUTE + " (.*)[{(].*");
 
     public static final String PROPERTY_CLASSIFICATION = "classification";
 

@@ -1,9 +1,11 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
+import com.github.alexeylapin.whaleone.domain.model.DeploymentRef;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentStatus;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
+import com.github.alexeylapin.whaleone.domain.model.Ref;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import lombok.Getter;
 import lombok.Setter;
@@ -86,9 +88,13 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
     class EquipmentListElementRowMapper implements RowMapper<EquipmentListElement> {
         @Override
         public EquipmentListElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+            DeploymentRef deploymentRef;
             Long deploymentId = rs.getLong("deployment_id");
             if (rs.wasNull()) {
-                deploymentId = null;
+                deploymentRef = null;
+            } else {
+                String deploymentName = rs.getString("deployment_name");
+                deploymentRef = new DeploymentRef(deploymentId, deploymentName);
             }
             Long assemblyId = rs.getLong("assembly_id");
             if (rs.wasNull()) {
@@ -109,6 +115,7 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .model(rs.getString("model"))
                     .assemblyId(assemblyId)
                     .deploymentId(deploymentId)
+                    .deployment(deploymentRef)
                     .build();
         }
     }
