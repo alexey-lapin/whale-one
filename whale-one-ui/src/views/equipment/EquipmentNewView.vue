@@ -6,6 +6,7 @@ import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import Tag from 'primevue/tag'
 
 import router from '@/router'
 import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
@@ -103,11 +104,13 @@ onMounted(() => {
             <template #option="{ option }">
               <div class="flex items-center gap-2">
                 <span>{{ option.name }}</span>
-                <span
+                <Tag
                   v-if="option.isAssembly"
-                  class="assembly"
-                  >assembly</span
+                  severity="primary"
+                  icon="pi pi-cog"
                 >
+                  assembly
+                </Tag>
               </div>
             </template>
           </Select>
@@ -182,10 +185,3 @@ onMounted(() => {
     />
   </div>
 </template>
-
-<style scoped>
-.assembly {
-  @apply text-xs text-gray-500 px-2 rounded font-mono;
-  background-color: var(--p-primary-50);
-}
-</style>
