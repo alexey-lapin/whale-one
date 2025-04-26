@@ -46,6 +46,7 @@ const equipmentTypeItems: Ref<BaseRefModel[]> = ref([])
 const equipmentTypes: Ref<EquipmentTypeModel[]> = ref([])
 
 const loading = ref(false)
+const toggleActiveLoading = ref(new Map<number, boolean>())
 
 const loadPage = (first: number, page: number, size: number) => {
   loading.value = true
@@ -146,11 +147,13 @@ const onTypeFilterClick = (id: number) => {
 }
 
 const toggleActive = (equipment: EquipmentElementModel) => {
+  toggleActiveLoading.value.set(equipment.id, true)
   invokeEquipmentToggleActive(equipment.id)
     .then(() => {
       equipment.active = !equipment.active
     })
     .catch(() => {})
+    .finally(() => toggleActiveLoading.value.delete(equipment.id))
 }
 
 const confirmDelete = (id: number, name: string) => {
@@ -176,18 +179,20 @@ onMounted(() => {
     <div class="flex flex-col gap-4 w-40">
       <div class="flex items-center gap-2">
         <Checkbox
+          input-id="id-visible"
           v-model="isIdVisible"
           binary
         />
-        <label>Show Id</label>
+        <label for="id-visible">Show Id</label>
       </div>
       <div class="flex items-center gap-2">
         <Checkbox
+          input-id="show-active-only"
           v-model="equipmentListViewConfig.showActiveOnly"
           binary
           @change="resetFilters()"
         />
-        <label>Show Active only</label>
+        <label for="show-active-only">Show Active only</label>
       </div>
     </div>
   </Popover>
@@ -439,10 +444,12 @@ onMounted(() => {
       </template>
       <template #body="slotProps">
         <Button
+          title="Toggle Active"
           :icon="slotProps.data.active ? 'pi pi-check' : 'pi pi-times'"
           size="small"
           variant="outlined"
           severity="secondary"
+          :loading="toggleActiveLoading.get(slotProps.data.id) ?? false"
           @click="toggleActive(slotProps.data)"
         />
       </template>
@@ -463,6 +470,7 @@ onMounted(() => {
               @click="navigate"
             >
               <Button
+                title="Edit"
                 icon="pi pi-pencil"
                 size="small"
                 variant="outlined"
@@ -472,6 +480,7 @@ onMounted(() => {
           </router-link>
           <Button
             v-if="auth.hasAuthority('ADMIN')"
+            title="Delete"
             icon="pi pi-trash"
             size="small"
             variant="outlined"
@@ -490,7 +499,7 @@ onMounted(() => {
     <template #paginatorend>
       <Select
         v-model="equipmentListViewConfig.pageSize"
-        :options="[10, 20, 50, 100]"
+        :options="[10, 20, 50, 100, 250]"
         @change="loadPage(0, 0, $event.value)"
       />
     </template>

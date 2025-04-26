@@ -14,7 +14,10 @@ import { useAuthStore } from '@/stores/auth.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { deleteConfirm } from '@/utils/confirms.ts'
 
-import { invokeEquipmentTypeDelete, invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
+import {
+  invokeEquipmentTypeDelete,
+  invokeEquipmentTypeListGet,
+} from '@/client/equipmentTypeClient.ts'
 import { useListViewStore } from '@/stores/listView.ts'
 
 import type { FilterConditions, PageModel } from '@/model/BaseModel.ts'
@@ -66,16 +69,16 @@ const toggleSettingsPopover = (event: Event) => {
 const isIdVisible = ref(false)
 
 const isFavorite = (id: number) => {
-  return listViewConfig.value.favorites.map((i) => i.id).includes(id)
+  return listViewStore.favorites.map((i) => i.id).includes(id)
 }
 
 const toggleFavorite = (id: number, name: string) => {
-  const index = listViewConfig.value.favorites.map((i) => i.id).indexOf(id)
+  const index = listViewStore.favorites.map((i) => i.id).indexOf(id)
   if (index === -1) {
-    listViewConfig.value.favorites.push({ id, name })
-    listViewConfig.value.favorites.sort((a, b) => a.name.localeCompare(b.name))
+    listViewStore.favorites.push({ id, name })
+    listViewStore.favorites.sort((a, b) => a.name.localeCompare(b.name))
   } else {
-    listViewConfig.value.favorites.splice(index, 1)
+    listViewStore.favorites.splice(index, 1)
   }
 }
 
@@ -84,7 +87,7 @@ const confirmDelete = (id: number, name: string) => {
     deleteConfirm(`Delete Equipment Type #${id} ${name}?`, () =>
       invokeEquipmentTypeDelete(id)
         .then(() => {
-          listViewConfig.value.favorites = listViewConfig.value.favorites.filter((i) => i.id !== id)
+          listViewStore.favorites = listViewStore.favorites.filter((i) => i.id !== id)
           loadPage(firstRef.value, 0, listViewConfig.value.pageSize)
         })
         .catch(() => {}),
@@ -99,13 +102,23 @@ onMounted(() => {
 
 <template>
   <Popover ref="settingsPopover">
-    <div class="flex flex-col gap-4 w-40">
+    <div class="flex flex-col gap-2 min-w-40">
       <div class="flex items-center gap-2">
         <Checkbox
+          inputId="id-visible"
           v-model="isIdVisible"
           binary
         />
-        <label>Show Id</label>
+        <label for="id-visible">Show Id</label>
+      </div>
+      <div>
+        <Button
+          label="Clear Favorites"
+          severity="secondary"
+          variant="outlined"
+          size="small"
+          @click="listViewStore.favorites = []"
+        />
       </div>
     </div>
   </Popover>
@@ -217,6 +230,7 @@ onMounted(() => {
               @click="navigate"
             >
               <Button
+                title="Edit"
                 icon="pi pi-pencil"
                 size="small"
                 variant="outlined"
@@ -226,6 +240,7 @@ onMounted(() => {
           </router-link>
           <Button
             v-if="auth.hasAuthority('ADMIN')"
+            title="Delete"
             icon="pi pi-trash"
             size="small"
             variant="outlined"
@@ -234,6 +249,7 @@ onMounted(() => {
             @click="confirmDelete(slotProps.data.id, slotProps.data.name)"
           />
           <Button
+            title="Favorite"
             :icon="`pi ${isFavorite(slotProps.data.id) ? 'pi-star-fill' : 'pi-star'}`"
             size="small"
             variant="outlined"
