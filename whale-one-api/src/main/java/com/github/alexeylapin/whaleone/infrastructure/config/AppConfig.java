@@ -1,7 +1,9 @@
 package com.github.alexeylapin.whaleone.infrastructure.config;
 
+import com.github.alexeylapin.whaleone.application.service.impl.DefaultDeploymentService;
 import com.github.alexeylapin.whaleone.application.service.impl.DefaultEquipmentService;
 import com.github.alexeylapin.whaleone.application.service.impl.DefaultEquipmentTypeService;
+import com.github.alexeylapin.whaleone.domain.repo.DeploymentEquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.FilterFieldDescriptor;
@@ -39,6 +41,12 @@ public class AppConfig {
         );
         var querySpecFactory = new RsqlQuerySpecFactory(conversionService, descriptors);
         return new DefaultEquipmentService(equipmentRepository, querySpecFactory);
+    }
+
+    @Bean
+    public DefaultDeploymentService deploymentService(EquipmentRepository equipmentRepository,
+                                                      DeploymentEquipmentRepository deploymentEquipmentRepository) {
+        return new DefaultDeploymentService(equipmentRepository, deploymentEquipmentRepository);
     }
 
 }

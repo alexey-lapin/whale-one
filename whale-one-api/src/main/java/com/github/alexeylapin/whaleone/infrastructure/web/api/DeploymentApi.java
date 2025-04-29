@@ -1,17 +1,20 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
+import com.github.alexeylapin.whaleone.application.service.DeploymentService;
 import com.github.alexeylapin.whaleone.domain.model.Deployment;
-import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipment;
-import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipmentItem;
+import com.github.alexeylapin.whaleone.domain.model.DeploymentEquipmentElement;
 import com.github.alexeylapin.whaleone.domain.model.DeploymentStatus;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentEquipmentRepository;
 import com.github.alexeylapin.whaleone.domain.repo.DeploymentRepository;
-import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,16 +28,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping("/api")
 public class DeploymentApi {
 
     private final DeploymentRepository deploymentRepository;
     private final DeploymentEquipmentRepository deploymentEquipmentRepository;
-    private final EquipmentRepository equipmentRepository;
+    private final DeploymentService deploymentService;
 
     @PostMapping("/deployments")
     public Deployment create(@RequestBody Deployment deployment,
@@ -101,37 +104,28 @@ public class DeploymentApi {
 
     // Deployment Equipment
 
+    public record CreateDeploymentEquipment(
+            @NotNull @Min(1) Long deploymentId,
+            @NotNull @Min(1) Long equipmentId) {
+    }
+
     @Transactional
     @PostMapping("/deployments/{deploymentId}/equipment")
     public void deploymentEquipmentAdd(@PathVariable long deploymentId,
-                                       @RequestBody DeploymentEquipment deploymentEquipment) {
-        deploymentEquipmentRepository.save(deploymentEquipment);
-        var equipment = equipmentRepository.findById(deploymentEquipment.equipmentId()).orElseThrow();
-        if (equipment.deploymentId() != null) {
-            throw new RuntimeException("Equipment is already deployed");
-        }
-        equipmentRepository.save(equipment.toBuilder()
-                .deploymentId(deploymentId)
-                .build());
-    }
-
-    @GetMapping("/deployments/{deploymentId}/equipment")
-    public List<DeploymentEquipmentItem> deploymentEquipmentList(@PathVariable long deploymentId) {
-        return deploymentEquipmentRepository.findAllByDeploymentId(deploymentId);
+                                       @Valid @RequestBody CreateDeploymentEquipment deploymentEquipment) {
+        deploymentService.addEquipment(deploymentEquipment.deploymentId(), deploymentEquipment.equipmentId());
     }
 
     @Transactional
     @DeleteMapping("/deployments/{deploymentId}/equipment/{equipmentId}")
     public void deploymentEquipmentDelete(@PathVariable long deploymentId,
                                           @PathVariable long equipmentId) {
-        deploymentEquipmentRepository.delete(new DeploymentEquipment(deploymentId, equipmentId, Set.of()));
-        var equipment = equipmentRepository.findById(equipmentId).orElseThrow();
-        if (equipment.deploymentId() != deploymentId) {
-            throw new RuntimeException("Deployment Equipment mismatch");
-        }
-        equipmentRepository.save(equipment.toBuilder()
-                .deploymentId(null)
-                .build());
+        deploymentService.deleteEquipment(deploymentId, equipmentId);
+    }
+
+    @GetMapping("/deployments/{deploymentId}/equipment/elements")
+    public List<DeploymentEquipmentElement> deploymentEquipmentElements(@PathVariable long deploymentId) {
+        return deploymentEquipmentRepository.findAllElementsByDeploymentId(deploymentId);
     }
 
 }

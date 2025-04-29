@@ -27,4 +27,6 @@ public interface EquipmentRepository {
 
     void deleteById(long id);
 
+    void updateDeploymentId(long id, Long deploymentId);
+
 }

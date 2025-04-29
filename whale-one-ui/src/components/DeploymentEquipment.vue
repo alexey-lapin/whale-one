@@ -91,4 +91,7 @@ onMounted(() => {
       </div>
     </template>
   </Panel>
+  <div>
+<!--    <span>{{deploymentEquipment.}}</span>-->
+  </div>
 </template>

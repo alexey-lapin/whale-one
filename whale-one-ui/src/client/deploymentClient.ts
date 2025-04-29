@@ -1,9 +1,10 @@
 import { apiClient, apiClientContext } from '@/client/baseClient.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
 import type {
+  DeploymentEquipmentElementModel,
   DeploymentEquipmentItemModel,
   DeploymentModel,
-  DeploymentNewModel,
+  DeploymentNewModel
 } from '@/model/DeploymentModel.ts'
 import type { EquipmentModel } from '@/model/EquipmentModel.ts'
 import type { PageModel } from '@/model/BaseModel.ts'
@@ -95,6 +96,16 @@ export const invokeDeploymentEquipmentAdd = (deploymentId: number, equipmentId: 
 export const invokeDeploymentEquipmentListGet = (deploymentId: number) => {
   return apiClient
     .get<DeploymentEquipmentItemModel[]>(`/api/deployments/${deploymentId}/equipment`)
+    .then((response) => response.data)
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error))
+      throw error
+    })
+}
+
+export const invokeDeploymentEquipmentElementsGet = (deploymentId: number) => {
+  return apiClient
+    .get<DeploymentEquipmentElementModel[]>(`/api/deployments/${deploymentId}/equipment/elements`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error))

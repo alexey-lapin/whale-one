@@ -9,6 +9,7 @@ import com.github.alexeylapin.whaleone.domain.model.Ref;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -84,6 +85,10 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                                      long typeId,
                                      @Nullable String name,
                                      boolean includeAllocated);
+
+    @Modifying
+    @Query("UPDATE equipment SET deployment_id = :deploymentId WHERE id = :id")
+    void updateDeploymentId(long id, Long deploymentId);
 
     class EquipmentListElementRowMapper implements RowMapper<EquipmentListElement> {
         @Override

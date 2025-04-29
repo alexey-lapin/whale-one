@@ -122,6 +122,11 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
         repository.deleteById(id);
     }
 
+    @Override
+    public void updateDeploymentId(long id, Long deploymentId) {
+        repository.updateDeploymentId(id, deploymentId);
+    }
+
     @Mapper(config = MappingConfig.class)
     interface EquipmentMapper {
 

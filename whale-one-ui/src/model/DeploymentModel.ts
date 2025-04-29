@@ -40,3 +40,11 @@ export interface DeploymentEquipmentItemModel {
   equipmentTypeRef: BaseRefModel
   equipmentRef: BaseRefModel
 }
+
+export interface DeploymentEquipmentElementModel {
+  id: number
+  name: string
+  assemblyId?: number | null
+  type: BaseRefModel
+  assemblyParts: DeploymentEquipmentElementModel[]
+}
