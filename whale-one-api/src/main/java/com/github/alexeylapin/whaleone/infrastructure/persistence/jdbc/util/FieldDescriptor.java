@@ -1,8 +1,10 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util;
 
+import lombok.Builder;
 import lombok.NonNull;
 
-public record FilterFieldDescriptor(
+@Builder
+public record FieldDescriptor(
         @NonNull String name,
         @NonNull Class<?> type,
         String alias,

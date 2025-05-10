@@ -20,7 +20,7 @@ public record Equipment(
         EquipmentTypeRef type,
         String manufacturer,
         String model,
-        Long deploymentId,
+        DeploymentRef deployment,
         Long assemblyId,
         String metadata,
         Set<EquipmentAssemblyPart> assemblyParts,

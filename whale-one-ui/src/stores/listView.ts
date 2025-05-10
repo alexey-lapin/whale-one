@@ -12,6 +12,9 @@ export const useListViewStore = defineStore('listView', () => {
     equipment: {
       ...defaultEquipmentConfig,
     },
+    equipmentSearch: {
+      ...defaultEquipmentSearchConfig,
+    },
   } as ListViewConfig)
 
   const favorites = computed({
@@ -44,9 +47,14 @@ export interface EquipmentConfig {
   showActiveOnly: boolean
 }
 
+export interface EquipmentSearchConfig {
+  pageSize: number
+}
+
 export interface ListViewConfig {
   equipmentTypes: EquipmentTypesConfig
   equipment: EquipmentConfig
+  equipmentSearch: EquipmentSearchConfig
 }
 
 const defaultEquipmentTypesConfig: EquipmentTypesConfig = {
@@ -57,4 +65,8 @@ const defaultEquipmentTypesConfig: EquipmentTypesConfig = {
 const defaultEquipmentConfig: EquipmentConfig = {
   pageSize: 10,
   showActiveOnly: false,
+}
+
+const defaultEquipmentSearchConfig: EquipmentSearchConfig = {
+  pageSize: 10,
 }

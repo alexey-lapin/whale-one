@@ -25,8 +25,8 @@ class RsqlQuerySpecFactoryTest {
         when(conversionService.convert(any(), eq(Integer.class)))
                 .then(invocation -> Integer.parseInt(invocation.getArgument(0).toString()));
         factory = new RsqlQuerySpecFactory(conversionService, Set.of(
-                new FilterFieldDescriptor("id", Integer.class, "e", "id"),
-                new FilterFieldDescriptor("name", String.class, "e", "name")
+                new FieldDescriptor("id", Integer.class, "e", "id"),
+                new FieldDescriptor("name", String.class, "e", "name")
         ));
     }
 

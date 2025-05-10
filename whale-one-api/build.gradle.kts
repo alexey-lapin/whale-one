@@ -16,6 +16,8 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok")
 
+    implementation(project(":whale-one-ui"))
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -24,19 +26,15 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
 
+    implementation("cz.jirutka.rsql:rsql-parser:2.1.0")
+    implementation("de.siegmar:fastcsv:3.6.0")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
-
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    implementation("org.postgresql:postgresql")
     implementation("software.amazon.awssdk:s3:2.30.36")
 
-    implementation("org.mapstruct:mapstruct:1.6.3")
-
-    implementation(project(":whale-one-ui"))
-
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-    implementation("org.postgresql:postgresql")
-    implementation("cz.jirutka.rsql:rsql-parser:2.1.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")

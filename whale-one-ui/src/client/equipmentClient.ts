@@ -1,4 +1,10 @@
-import { apiClient, apiClientContext, ApiError, toFilterQuery } from '@/client/baseClient.ts'
+import {
+  apiClient,
+  apiClientContext,
+  ApiError,
+  toAttrFilterQuery,
+  toFilterQuery,
+} from '@/client/baseClient.ts'
 import { errorToast, successToast } from '@/utils/toasts.ts'
 
 import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
@@ -7,6 +13,7 @@ import type {
   EquipmentModel,
   EquipmentNewModel,
 } from '@/model/EquipmentModel.ts'
+import type { AttributeFilterModel } from '@/model/AttributeTypeModel.ts'
 
 export const invokeEquipmentCreate = (equipment: EquipmentNewModel) => {
   return apiClient
@@ -71,7 +78,7 @@ export const invokeEquipmentGet = (id: number) => {
 export const invokeEquipmentListGet = (page: number, size: number, filter: FilterConditions) => {
   return apiClient
     .get<PageModel<EquipmentElementModel>>(
-      `/api/equipment/search?page=${page}&size=${size}&filters=${toFilterQuery(filter)}`,
+      `/api/equipment?page=${page}&size=${size}&filters=${toFilterQuery(filter)}`,
     )
     .then((response) => response.data)
     .catch((error) => {
@@ -110,4 +117,30 @@ export const invokeEquipmentDelete = (id: number) => {
       apiClientContext.toast?.add(errorToast(error))
       throw error
     })
+}
+
+export const invokeEquipmentSearch = (
+  page: number,
+  size: number,
+  filters: AttributeFilterModel[],
+) => {
+  return apiClient
+    .get<PageModel<EquipmentModel>>(
+      `/api/equipment/search?page=${page}&size=${size}&filters=${toAttrFilterQuery(filters)}`,
+    )
+    .then((response) => response.data)
+    .catch((error) => {
+      apiClientContext.toast?.add(errorToast(error))
+      throw error
+    })
+}
+
+export const invokeExportDownload = (filters: AttributeFilterModel[]) => {
+  const downloadUrl = `/api/equipment/export?filters=${toAttrFilterQuery(filters)}&access_token=${apiClientContext.getAccessToken()}`
+  const link = document.createElement('a')
+  link.href = downloadUrl
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  return Promise.resolve()
 }

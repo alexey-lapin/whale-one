@@ -119,7 +119,6 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
                     .manufacturer(rs.getString("manufacturer"))
                     .model(rs.getString("model"))
                     .assemblyId(assemblyId)
-                    .deploymentId(deploymentId)
                     .deployment(deploymentRef)
                     .build();
         }

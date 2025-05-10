@@ -7,7 +7,10 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -21,7 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +35,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class EquipmentApi {
+
+    private static final DateTimeFormatter FORMATTER_EXPORT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
     private final EquipmentRepository equipmentRepository;
     private final EquipmentService equipmentService;
@@ -83,12 +91,30 @@ public class EquipmentApi {
         return equipmentRepository.findById(id).orElseThrow();
     }
 
-    @GetMapping("/equipment/search")
+    @GetMapping("/equipment")
     public PageDto<EquipmentListElement> list(@RequestParam(defaultValue = "0") int page,
                                               @RequestParam(defaultValue = "10") int size,
                                               @RequestParam Optional<String> filters) {
         var aPage = equipmentService.list(page, size, filters.orElse(null));
         return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
+    }
+
+    @GetMapping("/equipment/search")
+    public PageDto<Equipment> search(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size,
+                                     @RequestParam Optional<String> filters) {
+        var aPage = equipmentService.search(page, size, filters.orElse(null));
+        return new PageDto<>(aPage.getContent(), aPage.getNumber(), aPage.getSize(), aPage.getTotalElements());
+    }
+
+    @GetMapping("/equipment/export")
+    public void export(@RequestParam Optional<String> filters, HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                .filename("equipment-export-%s.csv".formatted(FORMATTER_EXPORT.format(LocalDateTime.now())))
+                .build()
+                .toString());
+        equipmentService.export(filters.orElse(null), response.getOutputStream());
     }
 
     @GetMapping("/equipment/items")

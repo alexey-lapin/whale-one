@@ -4,6 +4,7 @@ import { FilterMatchMode } from '@primevue/core/api'
 
 import type { ToastServiceMethods } from 'primevue'
 import type { FilterConditions } from '@/model/BaseModel.ts'
+import type { AttributeFilterModel } from '@/model/AttributeTypeModel.ts'
 
 export const baseURL = import.meta.env.VITE_APP_API_BASE_URL
 
@@ -88,12 +89,33 @@ export const toFilterQuery = (filterConditions: FilterConditions) => {
   return filters.join(';')
 }
 
+export const toAttrFilterQuery = (filterDescriptors: AttributeFilterModel[]) => {
+  const filters: string[] = []
+  for (let filterDescriptor of filterDescriptors) {
+    if (filterDescriptor.operator === '=in=') {
+      if (Array.isArray(filterDescriptor.value)) {
+        filters.push(
+          `${filterDescriptor.field}${filterDescriptor.operator}(${filterDescriptor.value.map((i) => `'${i}'`).join(',')})`,
+        )
+      } else {
+        filters.push(
+          `${filterDescriptor.field}${filterDescriptor.operator}('${filterDescriptor.value}')`,
+        )
+      }
+    } else {
+      filters.push(
+        `${filterDescriptor.field}${filterDescriptor.operator}'${filterDescriptor.value}'`,
+      )
+    }
+  }
+  return filters.join(';')
+}
+
 export class ApiError extends Error {
   public cause?: Error
   public problemDetails?: ProblemDetails
-  constructor(
-    cause?: Error
-  ) {
+
+  constructor(cause?: Error) {
     super(cause?.message)
     this.name = 'ApiError'
     this.cause = cause
@@ -113,9 +135,9 @@ export interface ProblemDetails {
 }
 
 export interface ErrorClassificationOptions {
-  readonly OPTIMISTIC_LOCKING_FAILURE: string;
+  readonly OPTIMISTIC_LOCKING_FAILURE: string
 }
 
 export const ErrorClassification: ErrorClassificationOptions = {
   OPTIMISTIC_LOCKING_FAILURE: 'optimistic-locking-failure',
-} as const;
+} as const

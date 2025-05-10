@@ -5,7 +5,9 @@ import com.github.alexeylapin.whaleone.domain.QuerySpec;
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +19,11 @@ public interface EquipmentRepository {
 
     Page<EquipmentListElement> list(int page, int size, QuerySpec querySpec);
 
+    Page<Equipment> search(int page, int size, Collection<EquipmentTypeAttribute> equipmentTypeAttributes, QuerySpec querySpec);
+
     long count(QuerySpec querySpec);
+
+    long count(Collection<EquipmentTypeAttribute> equipmentTypeAttributes, QuerySpec querySpec);
 
     Optional<EquipmentItem> findItemById(long id);
 

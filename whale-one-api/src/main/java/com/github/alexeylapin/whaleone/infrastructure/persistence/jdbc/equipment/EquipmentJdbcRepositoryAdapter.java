@@ -2,9 +2,15 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipmen
 
 import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.QuerySpec;
+import com.github.alexeylapin.whaleone.domain.model.DeploymentRef;
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentAttribute;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentStatus;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
+import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentRepository;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
@@ -18,8 +24,12 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -85,8 +95,84 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     }
 
     @Override
+    public Page<Equipment> search(int page, int size, Collection<EquipmentTypeAttribute> equipmentTypeAttributes, QuerySpec querySpec) {
+        var sql = """
+                SELECT e.*,
+                       et.name     type_name,
+                       u1.username created_by_name,
+                       u2.username last_updated_by_name,
+                       d.name      deployment_name""";
+        for (var equipmentTypeAttribute : equipmentTypeAttributes) {
+            sql += ", ea" + equipmentTypeAttribute.id() + ".value ea_" + equipmentTypeAttribute.name();
+        }
+        sql += """
+                         FROM equipment e
+                         JOIN equipment_type et on e.type_id = et.id
+                         JOIN tbl_user u1 on e.created_by_id = u1.id
+                         JOIN tbl_user u2 on e.last_updated_by_id = u2.id
+                         LEFT JOIN deployment d on e.deployment_id = d.id
+                         %s
+                %s
+                ORDER BY et.name, e.manufacturer, e.model, e.name
+                LIMIT ? OFFSET ?"""
+                .formatted(createAttributeJoins(equipmentTypeAttributes), querySpec.spec())
+                .replace(System.lineSeparator(), " ");
+        var pageable = PageRequest.of(page, size);
+        var items = jdbcClient.sql(sql)
+                .params(querySpec.params())
+                .param(pageable.getPageSize())
+                .param(pageable.getOffset())
+                .query((rs, rowNum) -> {
+                    DeploymentRef deploymentRef;
+                    Long deploymentId = rs.getLong("deployment_id");
+                    if (rs.wasNull()) {
+                        deploymentRef = null;
+                    } else {
+                        String deploymentName = rs.getString("deployment_name");
+                        deploymentRef = new DeploymentRef(deploymentId, deploymentName);
+                    }
+                    Long assemblyId = rs.getLong("assembly_id");
+                    if (rs.wasNull()) {
+                        assemblyId = null;
+                    }
+                    var attributes = new LinkedHashSet<EquipmentAttribute>();
+                    for (EquipmentTypeAttribute equipmentTypeAttribute : equipmentTypeAttributes) {
+                        var value = rs.getString("ea_" + equipmentTypeAttribute.name());
+                        var attribute = new EquipmentAttribute(-1, equipmentTypeAttribute.id(), value);
+                        attributes.add(attribute);
+                    }
+                    return Equipment.builder()
+                            .id(rs.getLong("id"))
+                            .createdAt(rs.getTimestamp("created_at").toInstant().atZone(ZoneId.systemDefault()))
+                            .createdBy(new UserRef(rs.getLong("created_by_id"), rs.getString("created_by_name")))
+                            .lastUpdatedAt(rs.getTimestamp("last_updated_at").toInstant().atZone(ZoneId.systemDefault()))
+                            .lastUpdatedBy(new UserRef(rs.getLong("last_updated_by_id"), rs.getString("last_updated_by_name")))
+                            .active(rs.getBoolean("active"))
+                            .status(EquipmentStatus.valueOf(rs.getString("status")))
+                            .type(new EquipmentTypeRef(rs.getLong("type_id"), rs.getString("type_name")))
+                            .name(rs.getString("name"))
+                            .manufacturer(rs.getString("manufacturer"))
+                            .model(rs.getString("model"))
+                            .assemblyId(assemblyId)
+                            .deployment(deploymentRef)
+                            .attributes(attributes)
+                            .build();
+                })
+                .list();
+        var dataPage = PageableExecutionUtils.getPage(items, pageable, () -> count(equipmentTypeAttributes, querySpec));
+        return new DefaultPage<>(dataPage);
+    }
+
+    @Override
     public long count(QuerySpec querySpec) {
-        var sql = "SELECT count(*) FROM equipment e %s".formatted(querySpec.spec());
+        return count(List.of(), querySpec);
+    }
+
+    @Override
+    public long count(Collection<EquipmentTypeAttribute> equipmentTypeAttributes, QuerySpec querySpec) {
+        var sql = "SELECT count(*) FROM equipment e %s %s"
+                .formatted(createAttributeJoins(equipmentTypeAttributes), querySpec.spec())
+                .replace(System.lineSeparator(), " ");
         return jdbcClient.sql(sql)
                 .params(querySpec.params())
                 .query(Long.class)
@@ -125,6 +211,14 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     @Override
     public void updateDeploymentId(long id, Long deploymentId) {
         repository.updateDeploymentId(id, deploymentId);
+    }
+
+    private static String createAttributeJoins(Collection<EquipmentTypeAttribute> equipmentTypeAttributes) {
+        return equipmentTypeAttributes.stream()
+                .map(a -> ("LEFT JOIN equipment_attribute ea%s on ea%s.equipment_id = e.id " +
+                           "and ea%s.equipment_type_attribute_id = %s")
+                        .formatted(a.id(), a.id(), a.id(), a.id()))
+                .collect(Collectors.joining(" "));
     }
 
     @Mapper(config = MappingConfig.class)

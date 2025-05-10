@@ -60,3 +60,7 @@ export const EquipmentStatus: EquipmentStatusOptions = {
   LOST: 'LOST',
   MAINTENANCE: 'MAINTENANCE',
 } as const
+
+export const findAttributeById = (model: EquipmentModel, id: number) => {
+  return model.attributes.find((a) => a.equipmentTypeAttributeId === id)?.value
+}

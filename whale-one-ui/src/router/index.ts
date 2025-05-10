@@ -80,6 +80,11 @@ const router = createRouter({
           component: () => import('@/views/equipment/EquipmentNewView.vue'),
         },
         {
+          path: 'search',
+          name: 'equipment-search',
+          component: () => import('@/views/equipment/EquipmentSearchView.vue'),
+        },
+        {
           path: ':id',
           name: 'equipment-detail',
           component: () => import('@/views/equipment/EquipmentView.vue'),
