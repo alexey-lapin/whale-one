@@ -103,7 +103,7 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
                        u2.username last_updated_by_name,
                        d.name      deployment_name""";
         for (var equipmentTypeAttribute : equipmentTypeAttributes) {
-            sql += ", ea" + equipmentTypeAttribute.id() + ".value ea_" + equipmentTypeAttribute.name();
+            sql += ", ea" + equipmentTypeAttribute.id() + ".value ea_" + equipmentTypeAttribute.id();
         }
         sql += """
                          FROM equipment e
@@ -137,7 +137,7 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
                     }
                     var attributes = new LinkedHashSet<EquipmentAttribute>();
                     for (EquipmentTypeAttribute equipmentTypeAttribute : equipmentTypeAttributes) {
-                        var value = rs.getString("ea_" + equipmentTypeAttribute.name());
+                        var value = rs.getString("ea_" + equipmentTypeAttribute.id());
                         var attribute = new EquipmentAttribute(-1, equipmentTypeAttribute.id(), value);
                         attributes.add(attribute);
                     }
