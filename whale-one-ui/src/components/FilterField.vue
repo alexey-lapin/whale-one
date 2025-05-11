@@ -6,13 +6,13 @@ import MultiSelect from 'primevue/multiselect'
 import Select from 'primevue/select'
 
 import {
-  type AttributeFilterModel,
+  type FilterModel,
   type AttributeTypeModel,
   FilterOperation,
 } from '@/model/AttributeTypeModel.ts'
 
-defineProps<{ attributeType: AttributeTypeModel }>()
-const model = defineModel<AttributeFilterModel>({ required: true })
+// defineProps<{ attributeType: AttributeTypeModel }>()
+const model = defineModel<FilterModel>({ required: true })
 const emit = defineEmits(['delete'])
 </script>
 
@@ -20,7 +20,7 @@ const emit = defineEmits(['delete'])
   <div class="flex items-center gap-2">
     <InputText
       class="w-72"
-      :value="attributeType.name"
+      :value="model.attributeType.name"
       disabled
     />
     <Select
@@ -32,10 +32,10 @@ const emit = defineEmits(['delete'])
     />
     <template v-if="model.operator === FilterOperation.IN">
       <MultiSelect
-        v-if="attributeType.type === 'select'"
+        v-if="model.attributeType.type === 'select'"
         class="flex-1"
         v-model="model.value"
-        :options="attributeType.metadata?.options || []"
+        :options="model.attributeType.metadata?.options || []"
         display="chip"
         show-clear
       />

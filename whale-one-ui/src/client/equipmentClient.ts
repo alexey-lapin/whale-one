@@ -13,7 +13,7 @@ import type {
   EquipmentModel,
   EquipmentNewModel,
 } from '@/model/EquipmentModel.ts'
-import type { AttributeFilterModel } from '@/model/AttributeTypeModel.ts'
+import type { FilterModel } from '@/model/AttributeTypeModel.ts'
 
 export const invokeEquipmentCreate = (equipment: EquipmentNewModel) => {
   return apiClient
@@ -122,7 +122,7 @@ export const invokeEquipmentDelete = (id: number) => {
 export const invokeEquipmentSearch = (
   page: number,
   size: number,
-  filters: AttributeFilterModel[],
+  filters: FilterModel[],
 ) => {
   return apiClient
     .get<PageModel<EquipmentModel>>(
@@ -135,7 +135,7 @@ export const invokeEquipmentSearch = (
     })
 }
 
-export const invokeExportDownload = (filters: AttributeFilterModel[]) => {
+export const invokeExportDownload = (filters: FilterModel[]) => {
   const downloadUrl = `/api/equipment/export?filters=${toAttrFilterQuery(filters)}&access_token=${apiClientContext.getAccessToken()}`
   const link = document.createElement('a')
   link.href = downloadUrl

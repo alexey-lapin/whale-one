@@ -4,7 +4,8 @@ export interface AttributeTypeModel {
   metadata?: (Record<string, unknown> & { options?: string[] | null }) | null
 }
 
-export interface AttributeFilterModel {
+export interface FilterModel {
+  attributeType: AttributeTypeModel
   field: string
   operator: string
   value: string | string[] | null

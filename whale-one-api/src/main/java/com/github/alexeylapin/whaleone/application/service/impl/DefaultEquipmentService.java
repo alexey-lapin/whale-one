@@ -40,12 +40,12 @@ public class DefaultEquipmentService implements EquipmentService {
 
     private static final String ALIAS = "e";
     private static final Set<FieldDescriptor> COMMON_FIELD_DESCRIPTORS = Set.of(
-            FieldDescriptor.builder().name("TypeId").type(Long.class).alias(ALIAS).columnName("type_id").build(),
-            FieldDescriptor.builder().name("Name").type(String.class).alias(ALIAS).columnName("name").build(),
-            FieldDescriptor.builder().name("Manufacturer").type(String.class).alias(ALIAS).columnName("manufacturer").build(),
-            FieldDescriptor.builder().name("Model").type(String.class).alias(ALIAS).columnName("model").build(),
-            FieldDescriptor.builder().name("Status").type(String.class).alias(ALIAS).columnName("status").build(),
-            FieldDescriptor.builder().name("Active").type(Boolean.class).alias(ALIAS).columnName("active").build()
+            FieldDescriptor.builder().name("typeId").type(Long.class).alias(ALIAS).columnName("type_id").build(),
+            FieldDescriptor.builder().name("name").type(String.class).alias(ALIAS).columnName("name").build(),
+            FieldDescriptor.builder().name("manufacturer").type(String.class).alias(ALIAS).columnName("manufacturer").build(),
+            FieldDescriptor.builder().name("model").type(String.class).alias(ALIAS).columnName("model").build(),
+            FieldDescriptor.builder().name("status").type(String.class).alias(ALIAS).columnName("status").build(),
+            FieldDescriptor.builder().name("active").type(Boolean.class).alias(ALIAS).columnName("active").build()
     );
 
     private final EquipmentRepository equipmentRepository;
@@ -89,7 +89,7 @@ public class DefaultEquipmentService implements EquipmentService {
         var fieldDescriptors = new HashSet<>(COMMON_FIELD_DESCRIPTORS);
         for (EquipmentTypeAttribute equipmentTypeAttribute : equipmentTypeAttributes) {
             var fieldDescriptor = FieldDescriptor.builder()
-                    .name(equipmentTypeAttribute.name())
+                    .name("ea" + equipmentTypeAttribute.id())
                     .type(String.class)
                     .columnName("value")
                     .alias("ea" + equipmentTypeAttribute.id())
@@ -243,7 +243,7 @@ public class DefaultEquipmentService implements EquipmentService {
 
         @Override
         public Void visit(ComparisonNode node, TypeIdVisitorAttributeResult param) {
-            if ("TypeId".equals(node.getSelector()) && "==".equals(node.getOperator().getSymbol()) && node.getArguments().size() == 1) {
+            if ("typeId".equals(node.getSelector()) && "==".equals(node.getOperator().getSymbol()) && node.getArguments().size() == 1) {
                 param.increment();
                 String arg = node.getArguments().getFirst();
                 param.setTypeId(Long.parseLong(arg));

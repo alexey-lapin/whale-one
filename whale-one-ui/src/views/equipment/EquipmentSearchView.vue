@@ -12,11 +12,7 @@ import { invokeEquipmentTypeListGet } from '@/client/equipmentTypeClient.ts'
 import { invokeAttributeListGet } from '@/client/equipmentTypeAttributeClient.ts'
 import { invokeEquipmentSearch, invokeExportDownload } from '@/client/equipmentClient.ts'
 
-import {
-  type AttributeFilterModel,
-  type AttributeTypeModel,
-  FilterOperation,
-} from '@/model/AttributeTypeModel.ts'
+import { type FilterModel, FilterOperation } from '@/model/AttributeTypeModel.ts'
 
 import { useListViewStore } from '@/stores/listView.ts'
 
@@ -37,22 +33,55 @@ const equipmentSearchViewConfig = toRef(() => listViewStore.state.equipmentSearc
 
 const list: Ref<PageModel<EquipmentModel> | null> = ref(null)
 
-const filters: Ref<FilterFieldOption[]> = ref([])
+const filters: Ref<FilterModel[]> = ref([])
 
-const attributeTypes: Ref<AttributeTypeModel[]> = computed(() => {
-  const options: AttributeTypeModel[] = [
-    { name: 'Name', type: 'text' },
-    { name: 'Manufacturer', type: 'select', metadata: { options: [...manufacturers.value] } },
-    { name: 'Model', type: 'select', metadata: { options: [...models.value] } },
-    { name: 'Status', type: 'select', metadata: { options: [...Object.values(EquipmentStatus)] } },
-    { name: 'Active', type: 'text' },
+const filterOptions: Ref<FilterModel[]> = computed(() => {
+  const options: FilterModel[] = [
+    { attributeType: { name: 'Name', type: 'text' }, field: 'name', operator: '', value: null },
+    {
+      attributeType: {
+        name: 'Manufacturer',
+        type: 'select',
+        metadata: { options: [...manufacturers.value] },
+      },
+      field: 'manufacturer',
+      operator: '',
+      value: null,
+    },
+    {
+      attributeType: { name: 'Model', type: 'select', metadata: { options: [...models.value] } },
+      field: 'model',
+      operator: '',
+      value: null,
+    },
+    {
+      attributeType: {
+        name: 'Status',
+        type: 'select',
+        metadata: { options: [...Object.values(EquipmentStatus)] },
+      },
+      field: 'status',
+      operator: '',
+      value: null,
+    },
+    {
+      attributeType: { name: 'Active', type: 'text' },
+      field: 'active',
+      operator: '',
+      value: null,
+    },
   ]
-  equipmentTypeAttributes.value.forEach((attribute) => {
-    options.push({ name: attribute.name, type: attribute.type, metadata: attribute.metadata })
+  equipmentTypeAttributes.value.forEach((equipmentTypeAttribute) => {
+    options.push({
+      attributeType: equipmentTypeAttribute,
+      field: `ea${equipmentTypeAttribute.id}`,
+      operator: '',
+      value: null,
+    })
   })
   return options
 })
-const attributeType: Ref<AttributeTypeModel | null> = ref(null)
+const filterOption: Ref<FilterModel | null> = ref(null)
 
 const manufacturerObjects = computed(() => {
   return (equipmentType.value?.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || []
@@ -65,11 +94,6 @@ const manufacturers = computed(() => {
 const models = computed(() => {
   return manufacturerObjects.value.flatMap((m) => m.models).sort()
 })
-
-interface FilterFieldOption {
-  attribute: AttributeTypeModel
-  model: AttributeFilterModel
-}
 
 const firstRef = ref(0)
 const loading = ref(false)
@@ -99,17 +123,15 @@ const onEquipmentTypeChange = (newValue: EquipmentTypeModel | null) => {
 }
 
 const addFilter = () => {
-  if (attributeType.value) {
+  if (filterOption.value) {
     filters.value.push({
-      attribute: attributeType.value,
-      model: {
-        field: '',
-        value: '',
-        operator:
-          attributeType.value.type === 'select' ? FilterOperation.IN : FilterOperation.EQUALS,
-      },
+      ...filterOption.value,
+      operator:
+        filterOption.value.attributeType.type === 'select'
+          ? FilterOperation.IN
+          : FilterOperation.EQUALS,
     })
-    attributeType.value = null
+    filterOption.value = null
   }
 }
 
@@ -134,14 +156,15 @@ const downloadExport = () => {
   )
 }
 
-function prepareFilters(typeId: number) {
+function prepareFilters(typeId: number): FilterModel[] {
   return [
-    { field: 'TypeId', value: '' + typeId, operator: FilterOperation.EQUALS },
-    ...filters.value.map((filter) => ({
-      field: filter.attribute.name,
-      value: filter.model.value,
-      operator: filter.model.operator,
-    })),
+    {
+      attributeType: { name: 'Type Id', type: 'text' },
+      field: 'typeId',
+      value: '' + typeId,
+      operator: FilterOperation.EQUALS,
+    },
+    ...filters.value,
   ]
 }
 
@@ -179,18 +202,17 @@ onMounted(() => {
         :key="index"
       >
         <FilterField
-          v-model="filters[index].model"
-          :attribute-type="filters[index].attribute"
+          v-model="filters[index]"
           @delete="filters.splice(index, 1)"
         />
       </template>
 
       <div class="flex items-center gap-2">
         <Select
-          :options="attributeTypes"
-          v-model="attributeType"
-          option-label="name"
-          placeholder="Select Field"
+          :options="filterOptions"
+          v-model="filterOption"
+          option-label="attributeType.name"
+          placeholder="Select Attribute"
           class="w-72"
         />
         <Button

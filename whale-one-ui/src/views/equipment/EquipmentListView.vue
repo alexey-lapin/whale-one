@@ -75,15 +75,15 @@ const filters: Ref<FilterConditions> = ref({})
 
 const initFilters = () => {
   filters.value = {
-    TypeId: { value: [], matchMode: FilterMatchMode.IN },
-    Name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    Manufacturer: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    Model: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    Active: {
+    typeId: { value: [], matchMode: FilterMatchMode.IN },
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    manufacturer: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    model: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    active: {
       value: equipmentListViewConfig.value.showActiveOnly === true ? true : null,
       matchMode: FilterMatchMode.EQUALS,
     },
-    Status: { value: [], matchMode: FilterMatchMode.IN },
+    status: { value: [], matchMode: FilterMatchMode.IN },
   }
 }
 
@@ -102,9 +102,9 @@ const manufacturers = computed(() => {
     .filter((et) => !et.isAssembly)
     .filter(
       (et) =>
-        filters.value.TypeId.value === null ||
-        (filters.value.TypeId.value as number[]).length == 0 ||
-        (filters.value.TypeId.value as number[]).includes(et.id),
+        filters.value.typeId.value === null ||
+        (filters.value.typeId.value as number[]).length == 0 ||
+        (filters.value.typeId.value as number[]).includes(et.id),
     )
     .flatMap((et) => (et.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || [])
 })
@@ -113,7 +113,7 @@ const models = computed(() => {
   return manufacturers.value
     .filter(
       (m) =>
-        filters.value.Manufacturer.value === null || m.name === filters.value.Manufacturer.value,
+        filters.value.manufacturer.value === null || m.name === filters.value.manufacturer.value,
     )
     .flatMap((m) => m.models)
 })
@@ -127,7 +127,7 @@ const toggleSettingsPopover = (event: Event) => {
 const isIdVisible = ref(false)
 
 const isTypeFilterActive = (id: number) => {
-  const types = filters.value.TypeId.value as number[] | null
+  const types = filters.value.typeId.value as number[] | null
   if (types) {
     return types.includes(id)
   }
@@ -135,12 +135,12 @@ const isTypeFilterActive = (id: number) => {
 }
 
 const onTypeFilterClick = (id: number) => {
-  const types = filters.value.TypeId.value as number[] | null
+  const types = filters.value.typeId.value as number[] | null
   if (types) {
     if (types.includes(id)) {
-      ;(filters.value.TypeId.value as number[]).splice(types.indexOf(id), 1)
+      ;(filters.value.typeId.value as number[]).splice(types.indexOf(id), 1)
     } else {
-      ;(filters.value.TypeId.value as number[]).push(id)
+      ;(filters.value.typeId.value as number[]).push(id)
     }
   }
   reload()
@@ -286,7 +286,7 @@ onMounted(() => {
       field="name"
       header="Name"
       class="w-2/12"
-      filterField="Name"
+      filter-field="name"
       :show-filter-match-modes="false"
       :show-apply-button="false"
     >
@@ -302,7 +302,7 @@ onMounted(() => {
       field="type.name"
       header="Type"
       class="w-2/12"
-      filterField="TypeId"
+      filter-field="typeId"
       :show-filter-match-modes="false"
       :show-apply-button="false"
     >
@@ -329,7 +329,7 @@ onMounted(() => {
     <Column
       field="manufacturer"
       header="Manufacturer"
-      filter-field="Manufacturer"
+      filter-field="manufacturer"
       class="w-2/12"
       :show-filter-match-modes="false"
       :show-apply-button="false"
@@ -349,7 +349,7 @@ onMounted(() => {
     <Column
       field="model"
       header="Model"
-      filter-field="Model"
+      filter-field="model"
       class="w-2/12"
       :show-filter-match-modes="false"
       :show-apply-button="false"
@@ -423,7 +423,7 @@ onMounted(() => {
     <Column
       field="status"
       header="Status"
-      filter-field="Status"
+      filter-field="status"
       class="w-1/12"
       :show-filter-match-modes="false"
       :show-apply-button="false"
@@ -449,7 +449,7 @@ onMounted(() => {
       v-if="!equipmentListViewConfig.showActiveOnly"
       field="active"
       header="Active"
-      filter-field="Active"
+      filter-field="active"
       class="w-1/12"
       :show-filter-match-modes="false"
       :show-apply-button="false"

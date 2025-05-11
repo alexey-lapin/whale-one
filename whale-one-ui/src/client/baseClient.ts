@@ -4,7 +4,7 @@ import { FilterMatchMode } from '@primevue/core/api'
 
 import type { ToastServiceMethods } from 'primevue'
 import type { FilterConditions } from '@/model/BaseModel.ts'
-import type { AttributeFilterModel } from '@/model/AttributeTypeModel.ts'
+import type { FilterModel } from '@/model/AttributeTypeModel.ts'
 
 export const baseURL = import.meta.env.VITE_APP_API_BASE_URL
 
@@ -89,7 +89,7 @@ export const toFilterQuery = (filterConditions: FilterConditions) => {
   return filters.join(';')
 }
 
-export const toAttrFilterQuery = (filterDescriptors: AttributeFilterModel[]) => {
+export const toAttrFilterQuery = (filterDescriptors: FilterModel[]) => {
   const filters: string[] = []
   for (let filterDescriptor of filterDescriptors) {
     if (filterDescriptor.operator === '=in=') {
