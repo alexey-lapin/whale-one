@@ -188,6 +188,7 @@ onMounted(() => {
       <Button
         label="Search"
         icon="pi pi-search"
+        :loading="loading"
         :disabled="equipmentType === null"
         @click="loadPage(0, 0, equipmentSearchViewConfig.pageSize)"
       />
