@@ -22,6 +22,7 @@ const model: Ref<EquipmentNewModel> = ref({
   name: null,
   type: null,
   status: null,
+  assemblyScope: 'PERSISTENT',
 })
 
 const equipmentTypes: Ref<EquipmentTypeModel[]> = ref([])

@@ -1,7 +1,9 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
 import com.github.alexeylapin.whaleone.application.service.EquipmentService;
+import com.github.alexeylapin.whaleone.application.service.ex.NotFoundException;
 import com.github.alexeylapin.whaleone.domain.model.Equipment;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentAssemblyPart;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
@@ -30,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -46,6 +49,14 @@ public class EquipmentApi {
                             @AuthenticationPrincipal IdUser user) {
         var now = ZonedDateTime.now();
         var userRef = new UserRef(user.getId(), user.getName());
+        String assemblyDescriptor = null;
+        if (equipment.assemblyParts() != null) {
+            assemblyDescriptor = equipment.assemblyParts().stream()
+                    .map(EquipmentAssemblyPart::equipmentId)
+                    .sorted()
+                    .map(Object::toString)
+                    .collect(Collectors.joining("-"));
+        }
         equipment = equipment.toBuilder()
                 .id(0)
                 .version(0)
@@ -53,6 +64,7 @@ public class EquipmentApi {
                 .createdBy(userRef)
                 .lastUpdatedAt(now)
                 .lastUpdatedBy(userRef)
+                .assemblyDescriptor(assemblyDescriptor)
                 .build();
         return equipmentRepository.save(equipment);
     }
@@ -83,12 +95,19 @@ public class EquipmentApi {
                                   @AuthenticationPrincipal IdUser user) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing equipment expected");
-        return equipmentService.toggleActive(id, new UserRef(user.getId(), user.getName()));
+        return equipmentService.toggleActive(id, null, new UserRef(user.getId(), user.getName()));
     }
 
     @GetMapping("/equipment/{id}")
     public Equipment get(@PathVariable long id) {
         return equipmentRepository.findById(id).orElseThrow();
+    }
+
+    @GetMapping("/equipment/descriptor/{descriptor}")
+    public EquipmentItem findByDescriptor(@PathVariable String descriptor) {
+        return equipmentRepository.findByAssemblyDescriptor(descriptor)
+                .orElseThrow(() -> new NotFoundException("Failed to find %s with assemblyDescriptor=%s"
+                        .formatted(Equipment.class.getName(), descriptor)));
     }
 
     @GetMapping("/equipment")

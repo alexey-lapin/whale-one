@@ -49,6 +49,7 @@ const initFilters = () => {
   filters.value = {
     name: { value: null, matchMode: FilterMatchMode.CONTAINS },
     isAssembly: { value: null, matchMode: FilterMatchMode.EQUALS },
+    isDeployable: { value: null, matchMode: FilterMatchMode.EQUALS },
   }
 }
 
@@ -210,6 +211,28 @@ onMounted(() => {
       <template #body="slotProps">
         <i
           v-if="slotProps.data.isAssembly"
+          class="pi pi-check"
+        />
+      </template>
+    </Column>
+
+    <Column
+      field="isDeployable"
+      header="Deployable"
+      class="w-1/12"
+      :show-filter-match-modes="false"
+      :show-apply-button="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <Checkbox
+          v-model="filterModel.value"
+          binary
+          @change="filterCallback()"
+        />
+      </template>
+      <template #body="slotProps">
+        <i
+          v-if="slotProps.data.isDeployable"
           class="pi pi-check"
         />
       </template>

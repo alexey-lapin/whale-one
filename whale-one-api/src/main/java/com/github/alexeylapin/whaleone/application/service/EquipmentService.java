@@ -15,6 +15,6 @@ public interface EquipmentService {
 
     void export(String filter, OutputStream outputStream);
 
-    Equipment toggleActive(long id, UserRef user);
+    Equipment toggleActive(long id, Boolean active, UserRef user);
 
 }

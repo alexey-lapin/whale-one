@@ -17,6 +17,8 @@ public interface EquipmentRepository {
 
     Optional<Equipment> findById(long id);
 
+    Optional<EquipmentItem> findByAssemblyDescriptor(String descriptor);
+
     Page<EquipmentListElement> list(int page, int size, QuerySpec querySpec);
 
     Page<Equipment> search(int page, int size, Collection<EquipmentTypeAttribute> equipmentTypeAttributes, QuerySpec querySpec);

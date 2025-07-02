@@ -13,6 +13,10 @@ const props = defineProps<{
 
 const model = defineModel<EquipmentAssemblyPartModel>({ required: true })
 
+const emit = defineEmits<{
+  change: [model: BaseRefModel]
+}>()
+
 const suggestions = ref<BaseRefModel[]>([])
 const selected = ref<BaseRefModel | null>(null)
 
@@ -20,11 +24,12 @@ const getEquipmentItems = async (q: string | null) => {
   suggestions.value = await invokeEquipmentItemListGet(props.type.id, q)
 }
 
-const onChange = (e: { value: BaseRefModel }) => {
+const onChange = (event: { value: BaseRefModel }) => {
   model.value = {
     typeId: props.type.id,
-    equipmentId: e.value.id,
+    equipmentId: event.value?.id ?? -1,
   }
+  emit('change', event.value);
 }
 </script>
 

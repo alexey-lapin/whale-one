@@ -27,6 +27,7 @@ public class EquipmentTypeEntity {
     private String name;
     private String description;
     private boolean isAssembly;
+    private boolean isDeployable;
     private JsonValue metadata;
 
 }

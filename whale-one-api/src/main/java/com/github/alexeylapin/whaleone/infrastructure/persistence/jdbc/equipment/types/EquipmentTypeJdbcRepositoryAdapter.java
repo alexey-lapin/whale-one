@@ -115,6 +115,7 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
         @Mapping(source = "createdById", target = "createdBy.id")
         @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
         @Mapping(source = "assembly", target = "isAssembly")
+        @Mapping(source = "deployable", target = "isDeployable")
         EquipmentType map(EquipmentTypeEntity source);
 
         @Mapping(source = "createdById", target = "createdBy.id")
@@ -122,11 +123,13 @@ public class EquipmentTypeJdbcRepositoryAdapter implements EquipmentTypeReposito
         @Mapping(source = "lastUpdatedById", target = "lastUpdatedBy.id")
         @Mapping(source = "lastUpdatedByName", target = "lastUpdatedBy.name")
         @Mapping(source = "assembly", target = "isAssembly")
+        @Mapping(source = "deployable", target = "isDeployable")
         EquipmentType map(EquipmentTypeJdbcRepository.EquipmentTypeProjection source);
 
         @Mapping(source = "createdBy.id", target = "createdById")
         @Mapping(source = "lastUpdatedBy.id", target = "lastUpdatedById")
         @Mapping(source = "isAssembly", target = "assembly")
+        @Mapping(source = "isDeployable", target = "deployable")
         EquipmentTypeEntity map(EquipmentType source);
 
     }

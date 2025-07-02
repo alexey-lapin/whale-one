@@ -35,6 +35,8 @@ public interface EquipmentJdbcRepository extends ListCrudRepository<EquipmentEnt
             WHERE e.id = :id""")
     Optional<EquipmentProjection> findOneById(long id);
 
+    Optional<EquipmentItem> findOneByAssemblyDescriptor(String descriptor);
+
     @Query(value = """
             SELECT e.*,
                    et.name type_name,

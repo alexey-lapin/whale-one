@@ -1,5 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.config;
 
+import com.github.alexeylapin.whaleone.application.service.EquipmentService;
 import com.github.alexeylapin.whaleone.application.service.impl.DefaultDeploymentService;
 import com.github.alexeylapin.whaleone.application.service.impl.DefaultEquipmentService;
 import com.github.alexeylapin.whaleone.application.service.impl.DefaultEquipmentTypeService;
@@ -54,8 +55,9 @@ public class AppConfig {
 
     @Bean
     public DefaultDeploymentService deploymentService(EquipmentRepository equipmentRepository,
+                                                      EquipmentService equipmentService,
                                                       DeploymentEquipmentRepository deploymentEquipmentRepository) {
-        return new DefaultDeploymentService(equipmentRepository, deploymentEquipmentRepository);
+        return new DefaultDeploymentService(equipmentRepository, equipmentService, deploymentEquipmentRepository);
     }
 
 }

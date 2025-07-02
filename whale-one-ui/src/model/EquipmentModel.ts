@@ -18,6 +18,7 @@ export interface EquipmentNewModel {
   model?: string | null
   metadata?: Record<string, any> | null
   assemblyParts?: EquipmentAssemblyPartModel[] | null
+  assemblyScope: string
 }
 
 export interface EquipmentModel extends EquipmentNewModel {

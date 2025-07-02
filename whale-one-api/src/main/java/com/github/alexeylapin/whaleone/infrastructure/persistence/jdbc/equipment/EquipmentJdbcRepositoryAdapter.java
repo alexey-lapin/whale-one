@@ -66,6 +66,11 @@ public class EquipmentJdbcRepositoryAdapter implements EquipmentRepository {
     }
 
     @Override
+    public Optional<EquipmentItem> findByAssemblyDescriptor(String descriptor) {
+        return repository.findOneByAssemblyDescriptor(descriptor);
+    }
+
+    @Override
     public Page<EquipmentListElement> list(int page, int size, QuerySpec querySpec) {
         var sql = """
                 SELECT e.*,

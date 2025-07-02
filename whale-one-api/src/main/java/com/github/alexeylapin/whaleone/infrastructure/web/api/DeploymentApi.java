@@ -112,15 +112,21 @@ public class DeploymentApi {
     @Transactional
     @PostMapping("/deployments/{deploymentId}/equipment")
     public void deploymentEquipmentAdd(@PathVariable long deploymentId,
-                                       @Valid @RequestBody CreateDeploymentEquipment deploymentEquipment) {
-        deploymentService.addEquipment(deploymentEquipment.deploymentId(), deploymentEquipment.equipmentId());
+                                       @Valid @RequestBody CreateDeploymentEquipment deploymentEquipment,
+                                       @AuthenticationPrincipal IdUser user) {
+        deploymentService.addEquipment(deploymentEquipment.deploymentId(),
+                deploymentEquipment.equipmentId(),
+                new UserRef(user.getId(), user.getName()));
     }
 
     @Transactional
     @DeleteMapping("/deployments/{deploymentId}/equipment/{equipmentId}")
     public void deploymentEquipmentDelete(@PathVariable long deploymentId,
-                                          @PathVariable long equipmentId) {
-        deploymentService.deleteEquipment(deploymentId, equipmentId);
+                                          @PathVariable long equipmentId,
+                                          @AuthenticationPrincipal IdUser user) {
+        deploymentService.deleteEquipment(deploymentId,
+                equipmentId,
+                new UserRef(user.getId(), user.getName()));
     }
 
     @GetMapping("/deployments/{deploymentId}/equipment/elements")

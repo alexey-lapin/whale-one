@@ -4,6 +4,7 @@ export interface EquipmentTypeNewModel {
   name: string
   description?: string | null
   isAssembly: boolean
+  isDeployable: boolean
   metadata?:
     | (Record<string, unknown> & {
         assemblyParts?: BaseRefModel[]
@@ -13,9 +14,9 @@ export interface EquipmentTypeNewModel {
 
 export interface EquipmentTypeModel extends EntityHeaderModel, EquipmentTypeNewModel {}
 
-export interface EquipmentTypeItemModel {
-  id: number
-  name: string
+export interface EquipmentTypeItemModel extends BaseRefModel {
+  isAssembly: boolean
+  isDeployable: boolean
 }
 
 export interface EquipmentTypeManufacturerModel {

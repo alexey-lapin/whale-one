@@ -75,6 +75,12 @@ export const invokeEquipmentGet = (id: number) => {
     })
 }
 
+export const invokeEquipmentFindByDescriptor = (descriptor: string) => {
+  return apiClient
+    .get<BaseRefModel>(`/api/equipment/descriptor/${descriptor}`)
+    .then((response) => response.data)
+}
+
 export const invokeEquipmentListGet = (page: number, size: number, filter: FilterConditions) => {
   return apiClient
     .get<PageModel<EquipmentElementModel>>(

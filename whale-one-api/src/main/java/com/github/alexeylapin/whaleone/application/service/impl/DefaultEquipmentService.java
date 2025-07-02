@@ -140,10 +140,10 @@ public class DefaultEquipmentService implements EquipmentService {
     }
 
     @Override
-    public Equipment toggleActive(long id, UserRef user) {
+    public Equipment toggleActive(long id, Boolean active, UserRef user) {
         var equipment = equipmentRepository.findById(id).orElseThrow(() -> new NotFoundException(Equipment.class, id));
 
-        var activation = !equipment.active();
+        var activation = active == null ? !equipment.active() : active;
 
         if (equipment.assemblyId() != null) {
             throw new ApplicationException("Cannot activate/deactivate equipment that is part of an assembly");
@@ -155,7 +155,7 @@ public class DefaultEquipmentService implements EquipmentService {
                         .orElseThrow(() -> new NotFoundException(Equipment.class, assemblyPart.equipmentId()));
                 var updatedPartEquipmentBuilder = partEquipment.toBuilder();
                 if (activation) {
-                    if (partEquipment.assemblyId() != null) {
+                    if (partEquipment.assemblyId() != null && partEquipment.assemblyId() != id) {
                         throw new ApplicationException("Cannot activate equipment with assembly parts "
                                                        + "that are already assigned to another assembly");
                     }
@@ -176,7 +176,8 @@ public class DefaultEquipmentService implements EquipmentService {
         }
 
         var updatedEquipment = equipment.toBuilder()
-                .lastUpdatedAt(ZonedDateTime.now()).lastUpdatedBy(user)
+                .lastUpdatedAt(ZonedDateTime.now())
+                .lastUpdatedBy(user)
                 .active(activation)
                 .build();
         return equipmentRepository.save(updatedEquipment);

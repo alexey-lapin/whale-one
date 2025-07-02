@@ -22,6 +22,8 @@ public record Equipment(
         String model,
         DeploymentRef deployment,
         Long assemblyId,
+        String assemblyDescriptor,
+        EquipmentAssemblyScope assemblyScope,
         String metadata,
         Set<EquipmentAssemblyPart> assemblyParts,
         Set<EquipmentAttribute> attributes

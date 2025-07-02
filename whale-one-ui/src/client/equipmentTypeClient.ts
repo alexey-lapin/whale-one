@@ -2,7 +2,7 @@ import { apiClient, apiClientContext, toFilterQuery } from '@/client/baseClient.
 import { errorToast, successToast } from '@/utils/toasts.ts'
 
 import type { BaseRefModel, FilterConditions, PageModel } from '@/model/BaseModel.ts'
-import type { EquipmentTypeModel, EquipmentTypeNewModel } from '@/model/EquipmentTypeModel.ts'
+import type { EquipmentTypeItemModel, EquipmentTypeModel, EquipmentTypeNewModel } from '@/model/EquipmentTypeModel.ts'
 
 export const invokeEquipmentTypeCreate = (
   equipment: EquipmentTypeNewModel,
@@ -66,9 +66,9 @@ export const invokeEquipmentTypeListGet = (
     })
 }
 
-export const invokeEquipmentTypeItemListGet = (q?: string | null): Promise<BaseRefModel[]> => {
+export const invokeEquipmentTypeItemListGet = (q?: string | null): Promise<EquipmentTypeItemModel[]> => {
   return apiClient
-    .get<BaseRefModel[]>(`/api/equipment/types/items?q=${q ?? ''}`)
+    .get<EquipmentTypeItemModel[]>(`/api/equipment/types/items?q=${q ?? ''}`)
     .then((response) => response.data)
     .catch((error) => {
       apiClientContext.toast?.add(errorToast(error))

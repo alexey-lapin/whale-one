@@ -1,6 +1,7 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipment;
 
 import com.github.alexeylapin.whaleone.domain.model.EquipmentAssemblyPart;
+import com.github.alexeylapin.whaleone.domain.model.EquipmentAssemblyScope;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentStatus;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.Getter;
@@ -38,6 +39,9 @@ public class EquipmentEntity {
     private String model;
     private Long deploymentId;
     private Long assemblyId;
+    private String assemblyDescriptor;
+    private EquipmentAssemblyScope assemblyScope;
+
     private JsonValue metadata;
 
     @MappedCollection(idColumn = "assembly_id")

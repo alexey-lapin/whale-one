@@ -4,6 +4,8 @@ import { onMounted, ref, type Ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
+import Menu from 'primevue/menu'
+import Dialog from 'primevue/dialog'
 import Panel from 'primevue/panel'
 import Timeline from 'primevue/timeline'
 import Tabs from 'primevue/tabs'
@@ -12,7 +14,6 @@ import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import TabPanels from 'primevue/tabpanels'
 import Tag from 'primevue/tag'
-import Menu from 'primevue/menu'
 
 import {
   invokeDeploymentEquipmentAdd,
@@ -35,6 +36,8 @@ import type { BaseRefModel } from '@/model/BaseModel.ts'
 import type { DeploymentEquipmentElementModel, DeploymentModel } from '@/model/DeploymentModel.ts'
 import type { ProjectCampaignModel } from '@/model/ProjectModel.ts'
 import DeploymentEquipmentElement from '@/components/DeploymentEquipmentElement.vue'
+import EquipmentAssembly from '@/components/EquipmentAssembly.vue'
+import type { EquipmentTypeItemModel } from '@/model/EquipmentTypeModel.ts'
 
 const props = defineProps<{
   id: number
@@ -56,11 +59,13 @@ const editingRecoveryInfo = ref(false)
 
 const campaigns: Ref<ProjectCampaignModel[]> = ref([])
 
-const equipmentType: Ref<BaseRefModel | null> = ref(null)
-const equipmentTypes: Ref<BaseRefModel[]> = ref([])
+const equipmentTypeItem: Ref<EquipmentTypeItemModel | null> = ref(null)
+const equipmentTypeItems: Ref<EquipmentTypeItemModel[]> = ref([])
 
 const equipmentList: Ref<BaseRefModel[]> = ref([])
 const equipment: Ref<BaseRefModel | null> = ref(null)
+
+const assembling = ref(false)
 
 const deploymentEquipmentList: Ref<DeploymentEquipmentElementModel[]> = ref([])
 
@@ -70,9 +75,10 @@ const getDeployment = () => {
     .catch(() => {})
 }
 
-const equipmentTypeItems = (q: string | null) => {
+const getEquipmentTypeItems = (q: string | null) => {
   invokeEquipmentTypeItemListGet(q)
-    .then((data) => (equipmentTypes.value = data))
+    .then((data) => data.filter(item => item.isDeployable))
+    .then((data) => (equipmentTypeItems.value = data))
     .catch(() => {})
 }
 
@@ -93,15 +99,20 @@ const getDeploymentEquipment = () => {
 
 const addEquipment = () => {
   if (equipment.value === null) {
-    return
+    return Promise.resolve()
   }
-  invokeDeploymentEquipmentAdd(props.id, equipment.value.id)
+  return invokeDeploymentEquipmentAdd(props.id, equipment.value.id)
     .then(() => getDeploymentEquipment())
     .then(() => {
-      equipmentType.value = null
+      equipmentTypeItem.value = null
       equipment.value = null
     })
     .catch(() => {})
+}
+
+const onAssembleCreated = (equipmentId: number) => {
+  equipment.value = { id: equipmentId, name: '' }
+  addEquipment().then(() => (assembling.value = false))
 }
 
 const updateDeployment = (callback: () => void) => {
@@ -295,12 +306,12 @@ onMounted(() => {
                     >
                       <FloatLabel variant="on">
                         <AutoComplete
-                          v-model="equipmentType"
+                          v-model="equipmentTypeItem"
                           dropdown
-                          :suggestions="equipmentTypes"
+                          :suggestions="equipmentTypeItems"
                           option-label="name"
                           force-selection
-                          @complete="equipmentTypeItems($event.query)"
+                          @complete="getEquipmentTypeItems($event.query)"
                           @change="equipment = null"
                         />
                         <label for="1name">Type</label>
@@ -312,7 +323,7 @@ onMounted(() => {
                           :suggestions="equipmentList"
                           option-label="name"
                           force-selection
-                          @complete="equipmentItems(equipmentType?.id ?? -1, $event.query)"
+                          @complete="equipmentItems(equipmentTypeItem?.id ?? -1, $event.query)"
                         />
                         <label for="1name">Equipment</label>
                       </FloatLabel>
@@ -320,6 +331,13 @@ onMounted(() => {
                         label="Add"
                         :disabled="equipment === null"
                         @click="addEquipment()"
+                      />
+                      <Button
+                        v-if="equipmentTypeItem?.isAssembly"
+                        label="Assemble"
+                        severity="secondary"
+                        :disabled="equipmentTypeItem === null || equipment !== null"
+                        @click="assembling = true"
                       />
                     </div>
                   </template>
@@ -427,4 +445,19 @@ onMounted(() => {
       </TabPanels>
     </Tabs>
   </div>
+
+  <Dialog
+    v-model:visible="assembling"
+    modal
+    header="Assembly"
+    class="w-96"
+    :dismissable-mask="true"
+    @hide="assembling = false"
+  >
+    <EquipmentAssembly
+      v-if="equipmentTypeItem"
+      :type="equipmentTypeItem"
+      @assembled="onAssembleCreated($event)"
+    />
+  </Dialog>
 </template>

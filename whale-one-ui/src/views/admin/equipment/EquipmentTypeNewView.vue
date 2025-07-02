@@ -24,6 +24,7 @@ const model: Ref<EquipmentTypeNewModel> = ref({
   name: '',
   description: null,
   isAssembly: false,
+  isDeployable: false,
 })
 
 const partEquipmentTypes: Ref<BaseRefModel[]> = ref([])
@@ -66,6 +67,15 @@ const create = () => {
           binary
         />
         <label for="assembly">Assembly</label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <Checkbox
+          v-model="model.isDeployable"
+          input-id="deployable"
+          binary
+        />
+        <label for="deployable">Deployable</label>
       </div>
 
       <FloatLabel variant="on">
