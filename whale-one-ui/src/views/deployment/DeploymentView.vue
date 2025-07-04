@@ -89,9 +89,6 @@ const equipmentItems = (typeId: number, q: string | null) => {
 }
 
 const getDeploymentEquipment = () => {
-  // invokeDeploymentEquipmentListGet(props.id)
-  //   .then((data) => (deploymentEquipmentList.value = data))
-  //   .catch(() => {})
   invokeDeploymentEquipmentElementsGet(props.id)
     .then((data) => (deploymentEquipmentList.value = data))
     .catch(() => {})

@@ -33,6 +33,8 @@ const exists: Ref<boolean | null> = ref(null)
 const id: Ref<BaseRefModel | null> = ref(null)
 const nameParts = ref<string[]>([])
 
+const loading = ref(false)
+
 const getEquipmentType = () => {
   return invokeEquipmentTypeGet(props.type.id)
     .then((data) => (equipmentType.value = data))
@@ -66,10 +68,6 @@ watch(
         .then((data) => (id.value = { id: data.id, name: data.name }))
         .then(() => true)
         .catch(() => false)
-      // if (!exists.value) {
-      //   model.value.name =
-      //     equipmentType.value?.metadata?.assemblyParts?.map((part) => part.name).join(' - ') ?? ''
-      // }
     } else {
       exists.value = null
     }
@@ -78,14 +76,17 @@ watch(
 )
 
 const create = () => {
+  loading.value = true
   model.value.name = nameParts.value.join(' - ')
   invokeEquipmentCreate(model.value)
     .then((data) => (id.value = { id: data.id, name: data.name }))
     .then(() => (exists.value = true))
+    .finally(() => (loading.value = false))
 }
 
 const add = () => {
   if (id.value) {
+    loading.value = true
     emit('assembled', id.value.id)
   }
 }
@@ -114,7 +115,6 @@ onMounted(() => {
     <template v-if="exists === true">
       <Message severity="success"
         >Assembly exists: {{ id?.name }}
-
         <router-link
           v-slot="{ href, navigate }"
           :to="`/equipment/${id?.id}`"
@@ -134,6 +134,7 @@ onMounted(() => {
       </Message>
       <Button
         label="Add"
+        :disabled="loading"
         @click="add()"
       />
     </template>
@@ -142,6 +143,7 @@ onMounted(() => {
       <Message severity="warn">Assembly does not exist</Message>
       <Button
         label="Create"
+        :disabled="loading"
         @click="create()"
       />
     </template>

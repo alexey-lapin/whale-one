@@ -21,7 +21,7 @@ import EquipmentItemDropdown from '@/components/EquipmentItemDropdown.vue'
 const model: Ref<EquipmentNewModel> = ref({
   name: null,
   type: null,
-  status: null,
+  status: 'AVAILABLE',
   assemblyScope: 'PERSISTENT',
 })
 
