@@ -134,7 +134,7 @@ onMounted(() => {
       </Message>
       <Button
         label="Add"
-        :disabled="loading"
+        :loading="loading"
         @click="add()"
       />
     </template>
@@ -143,7 +143,7 @@ onMounted(() => {
       <Message severity="warn">Assembly does not exist</Message>
       <Button
         label="Create"
-        :disabled="loading"
+        :loading="loading"
         @click="create()"
       />
     </template>
