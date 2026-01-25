@@ -1,5 +1,5 @@
 plugins {
-    id("pl.allegro.tech.build.axion-release") version "1.18.7"
+    alias(libs.plugins.release)
 }
 
 group = "com.github.alexeylapin.whale-one"
