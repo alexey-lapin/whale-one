@@ -1,5 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.model.Project;
 import com.github.alexeylapin.whaleone.domain.model.ProjectCampaign;
 import com.github.alexeylapin.whaleone.domain.model.ProjectCampaignItem;
@@ -7,7 +8,6 @@ import com.github.alexeylapin.whaleone.domain.model.ProjectItem;
 import com.github.alexeylapin.whaleone.domain.model.ProjectSite;
 import com.github.alexeylapin.whaleone.domain.model.ProjectSiteItem;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
-import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectCampaignRepository;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectRepository;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectSiteRepository;
@@ -93,7 +93,7 @@ public class ProjectApi {
     public List<ProjectItem> getAllItems(@RequestParam Optional<String> q) {
         return projectRepository.findAllItems(q.orElse(""));
     }
-    
+
     // sites
 
     @PostMapping("/projects/{id}/sites")
@@ -139,7 +139,7 @@ public class ProjectApi {
     }
 
     // campaigns
-    
+
     @PostMapping("/projects/{id}/campaigns")
     public ProjectCampaign createCampaign(@PathVariable long id,
                                           @RequestBody ProjectCampaign campaign) {
@@ -162,8 +162,8 @@ public class ProjectApi {
 
     @PutMapping("/projects/{id}/campaigns/{campaignId}")
     public ProjectCampaign updateCampaign(@PathVariable long id,
-                                  @PathVariable long campaignId,
-                                  @RequestBody ProjectCampaign campaign) {
+                                          @PathVariable long campaignId,
+                                          @RequestBody ProjectCampaign campaign) {
         Assert.isTrue(id > 0,
                 "id must be greater than 0 - existing project expected");
         Assert.isTrue(campaignId > 0,

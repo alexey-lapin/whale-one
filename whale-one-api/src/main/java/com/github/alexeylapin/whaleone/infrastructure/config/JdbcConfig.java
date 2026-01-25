@@ -3,10 +3,13 @@ package com.github.alexeylapin.whaleone.infrastructure.config;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.JsonValue;
 import lombok.SneakyThrows;
 import org.postgresql.util.PGobject;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
+import org.springframework.data.jdbc.core.dialect.JdbcDialect;
+import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 
 import java.sql.Timestamp;
@@ -17,6 +20,11 @@ import java.util.List;
 @Configuration
 public class JdbcConfig extends AbstractJdbcConfiguration {
 
+    @Bean
+    public JdbcDialect jdbcDialect() {
+        return JdbcPostgresDialect.INSTANCE;
+    }
+
     @Override
     protected List<?> userConverters() {
         return List.of(
@@ -26,7 +34,6 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
                 new ZonedDateTimeToTimestampConverter()
         );
     }
-
 
     @WritingConverter
     static class StringWritingConverter implements Converter<JsonValue, PGobject> {

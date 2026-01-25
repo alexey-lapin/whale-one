@@ -8,7 +8,6 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter

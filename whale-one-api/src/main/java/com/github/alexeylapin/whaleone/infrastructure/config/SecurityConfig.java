@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -87,6 +88,11 @@ public class SecurityConfig {
         OctetSequenceKey jwk = new OctetSequenceKey.Builder(secretKeySpec).build();
         return new ImmutableJWKSet<>(new JWKSet(jwk));
     }
+
+//    @Bean
+//    NimbusJwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+//        return NimbusJwtDecoder.withJwkSource(jwkSource).build();
+//    }
 
     @Bean
     public NimbusJwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {

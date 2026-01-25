@@ -30,8 +30,8 @@ public class FileStoreApi {
 
     @PostMapping("/files/{storeName}/{key}")
     public void upload(@PathVariable String storeName,
-                                 @PathVariable String key,
-                                 @RequestParam("file") MultipartFile file) throws IOException {
+                       @PathVariable String key,
+                       @RequestParam("file") MultipartFile file) throws IOException {
         fileStore.store(key,
                 file.getInputStream(),
                 file.getSize(),

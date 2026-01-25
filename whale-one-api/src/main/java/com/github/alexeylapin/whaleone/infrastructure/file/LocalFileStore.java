@@ -1,15 +1,14 @@
 package com.github.alexeylapin.whaleone.infrastructure.file;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
@@ -27,9 +26,8 @@ public class LocalFileStore implements FileStore {
     private final ObjectMapper objectMapper;
 
     public LocalFileStore(String basePath) {
-        this.basePath = Paths.get(basePath).toAbsolutePath();
+        this.basePath = Path.of(basePath).toAbsolutePath();
         this.objectMapper = new ObjectMapper();
-        this.objectMapper.findAndRegisterModules();
 
         // Create base directory if it doesn't exist
         try {
@@ -188,12 +186,12 @@ public class LocalFileStore implements FileStore {
 
     private Path resolveFilePath(String key) {
         // Normalize the key to avoid directory traversal attacks
-        Path normalized = Paths.get(key).normalize();
+        Path normalized = Path.of(key).normalize();
         return basePath.resolve(normalized);
     }
 
     private Path resolveMetadataPath(String key) {
-        Path normalized = Paths.get(key + ".metadata").normalize();
+        Path normalized = Path.of(key + ".metadata").normalize();
         return basePath.resolve(normalized);
     }
 
@@ -201,7 +199,7 @@ public class LocalFileStore implements FileStore {
         if (prefix == null || prefix.isEmpty()) {
             return basePath;
         }
-        Path normalized = Paths.get(prefix).normalize();
+        Path normalized = Path.of(prefix).normalize();
         return basePath.resolve(normalized);
     }
 

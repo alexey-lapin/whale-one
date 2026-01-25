@@ -3,7 +3,6 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 import com.github.alexeylapin.whaleone.domain.model.UserListElement;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 

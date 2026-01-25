@@ -1,7 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.alexeylapin.whaleone.application.service.EquipmentTypeService;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentType;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeAttribute;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.ZonedDateTime;
 import java.util.List;

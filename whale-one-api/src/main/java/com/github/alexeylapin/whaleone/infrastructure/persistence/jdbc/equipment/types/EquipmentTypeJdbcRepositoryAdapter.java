@@ -7,7 +7,6 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
 import com.github.alexeylapin.whaleone.domain.repo.EquipmentTypeRepository;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.PageRequest;

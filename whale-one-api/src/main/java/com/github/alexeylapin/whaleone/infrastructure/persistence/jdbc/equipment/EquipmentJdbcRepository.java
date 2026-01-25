@@ -5,15 +5,14 @@ import com.github.alexeylapin.whaleone.domain.model.EquipmentItem;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentListElement;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentStatus;
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeRef;
-import com.github.alexeylapin.whaleone.domain.model.Ref;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.lang.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

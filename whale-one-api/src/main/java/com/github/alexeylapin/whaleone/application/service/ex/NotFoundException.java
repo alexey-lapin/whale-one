@@ -9,7 +9,7 @@ public class NotFoundException extends ApplicationException {
     }
 
     public NotFoundException(@NonNull Class<?> entityClass, Object id) {
-        this(String.format("Failed to find %s with id=%s", entityClass.getName(), id));
+        this("Failed to find %s with id=%s".formatted(entityClass.getName(), id));
     }
 
 }

@@ -39,5 +39,5 @@ public interface AnalysisTypeJdbcRepository extends ListCrudRepository<AnalysisT
         private String lastUpdatedByName;
 
     }
-    
+
 }
