@@ -1,7 +1,8 @@
+import com.github.gradle.node.npm.task.NpmInstallTask
 import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
-    id("base")
+    id("java")
     id("com.github.node-gradle.node") version "7.1.0"
 }
 
@@ -10,30 +11,28 @@ node {
     npmCommand = project.findProperty("npmCommand") as String? ?: "npm"
 }
 
-tasks.register<NpmTask>("npmBuild") {
-    dependsOn("npmInstall")
-    args = listOf("run", "build")
-//    environment = mapOf("VITE_APP_PUBLIC_PATH" to "/new")
+val npmInstall by tasks.named<NpmInstallTask>("npmInstall") {
+    inputs.file(file("package.json"))
+    inputs.file(file("package-lock.json"))
+    outputs.dir(file("node_modules"))
 }
 
-tasks.register<Jar>("frontendJar") {
-    dependsOn("npmBuild")
-    archiveBaseName.set("frontend-assets")
-    destinationDirectory.set(file(layout.buildDirectory.file("libs")))
+val npmBuild by tasks.registering(NpmTask::class) {
+    dependsOn(npmInstall)
+    environment.put("VITE_APP_BASE_PATH", "/@replace-base-path-ui@")
+    environment.put("VITE_API_BASE_URL", "/@replace-base-path-api@")
+    args.set(listOf("run", "build"))
+    inputs.file(file("package.json"))
+    inputs.file(file("vite.config.ts"))
+    inputs.file(file("index.html"))
+    inputs.dir(file("src"))
+    inputs.dir(file("public"))
+    outputs.dir(file("dist"))
+}
 
-    from("dist") {
+tasks.processResources {
+    dependsOn(npmBuild)
+    from(file("dist")) {
         into("static")
     }
-}
-
-tasks.named("build") {
-    dependsOn("npmBuild")
-}
-
-artifacts {
-    add("default", tasks.named("frontendJar"))
-}
-
-tasks.clean {
-    delete("node_modules", "dist")
 }

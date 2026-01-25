@@ -6,10 +6,6 @@ plugins {
     id("pl.allegro.tech.build.axion-release") version "1.18.7"
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")

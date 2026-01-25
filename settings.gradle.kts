@@ -1,3 +1,9 @@
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 rootProject.name = "whale-one"
 
 include("whale-one-api")
