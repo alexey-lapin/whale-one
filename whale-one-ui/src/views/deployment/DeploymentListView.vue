@@ -117,7 +117,7 @@ onMounted(() => {
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xl font-bold flex-grow">Deployments</span>
+        <span class="text-xl font-bold grow">Deployments</span>
         <Button
           icon="pi pi-filter-slash"
           severity="secondary"

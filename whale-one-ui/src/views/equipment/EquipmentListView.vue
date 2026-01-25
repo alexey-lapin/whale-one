@@ -214,7 +214,7 @@ onMounted(() => {
   >
     <template #header>
       <div class="flex items-center gap-2">
-        <div class="flex-grow flex items-center gap-1">
+        <div class="grow flex items-center gap-1">
           <span class="text-xl font-bold">Equipment</span>
           <div class="flex flex-wrap gap-1">
             <template
@@ -503,7 +503,7 @@ onMounted(() => {
             icon="pi pi-trash"
             size="small"
             variant="outlined"
-            class="hover:!text-red-600"
+            class="hover:text-red-600!"
             severity="secondary"
             @click="confirmDelete(slotProps.data.id, slotProps.data.name)"
           />

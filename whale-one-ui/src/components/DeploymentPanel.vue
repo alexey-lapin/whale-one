@@ -15,7 +15,7 @@ const { start = true, end = true } = defineProps<{
         class="h-5 p-timeline-event-connector p-timeline-event-connector-start"
       ></div>
       <span
-        class="flex w-8 h-8 items-center justify-center rounded-full z-10 shadow-sm status-icon"
+        class="flex w-8 h-8 items-center justify-center rounded-full z-10 shadow-xs status-icon"
         :class="{ highlighted: highlighted, 'mt-5': !start }"
       >
         <i :class="icon" />
