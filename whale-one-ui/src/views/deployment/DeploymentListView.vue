@@ -30,10 +30,10 @@ const loadPage = (page: number, size: number) => {
   invokeDeploymentListGet(
     page,
     size,
-    filters.value['name'].value,
-    filters.value['projectId'].value?.id,
-    filters.value['projectSiteId'].value?.id,
-    filters.value['status'].value,
+    filters.value['name']?.value,
+    filters.value['projectId']?.value?.id,
+    filters.value['projectSiteId']?.value?.id,
+    filters.value['status']?.value,
   )
     .then((data) => (list.value = data))
     .catch(() => {})
@@ -206,7 +206,7 @@ onMounted(() => {
           option-label="name"
           force-selection
           @change="filterCallback()"
-          @complete="siteItems(filters['projectId'].value?.id ?? null, $event.query)"
+          @complete="siteItems(filters['projectId']?.value?.id ?? null, $event.query)"
         />
       </template>
     </Column>

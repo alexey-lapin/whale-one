@@ -1,7 +1,5 @@
 @import 'tailwindcss';
-/*@import "./primevue/tailwind.css";*/
-
-@plugin 'tailwindcss-primeui';
+@import 'tailwindcss-primeui';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -14,11 +12,12 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
 }
+

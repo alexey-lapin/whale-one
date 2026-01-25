@@ -203,6 +203,7 @@ onMounted(() => {
         :key="index"
       >
         <FilterField
+          v-if="filters[index]"
           v-model="filters[index]"
           @delete="filters.splice(index, 1)"
         />

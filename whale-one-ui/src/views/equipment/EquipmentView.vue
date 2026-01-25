@@ -268,7 +268,10 @@ onMounted(() => {
                 v-if="model.assemblyParts?.length == assemblyParts.length"
                 v-for="(part, index) in equipmentType?.metadata?.assemblyParts"
               >
-                <FloatLabel variant="on">
+                <FloatLabel
+                  v-if="assemblyParts[index]"
+                  variant="on"
+                >
                   <InputGroup>
                     <InputText
                       v-model="assemblyParts[index].name"
@@ -312,6 +315,7 @@ onMounted(() => {
             <template v-if="attributes.length > 0">
               <template v-for="(attribute, index) in equipmentTypeAttributes">
                 <EquipmentAttribute
+                  v-if="attributes[index]"
                   v-model="attributes[index].value"
                   :equipment-type-attribute="attribute"
                   :editing="editing"

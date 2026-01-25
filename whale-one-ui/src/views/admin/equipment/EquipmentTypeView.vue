@@ -292,12 +292,14 @@ const addManufacturer = () => {
       </template>
       <template #default>
         <div class="mt-1 flex flex-col gap-3">
-          <EquipmentTypeManufacturer
-            v-for="(manufacturer, index) in manufacturers"
-            v-model="manufacturers[index]"
-            :editable="editingManufacturers"
-            @manufacturer-deleted="manufacturers.splice(index, 1)"
-          />
+          <template v-for="(manufacturer, index) in manufacturers">
+            <EquipmentTypeManufacturer
+              v-if="manufacturers[index]"
+              v-model="manufacturers[index]"
+              :editable="editingManufacturers"
+              @manufacturer-deleted="manufacturers.splice(index, 1)"
+            />
+          </template>
         </div>
         <div class="flex gap-2">
           <Button

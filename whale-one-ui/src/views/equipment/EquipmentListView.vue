@@ -102,9 +102,9 @@ const manufacturers = computed(() => {
     .filter((et) => !et.isAssembly)
     .filter(
       (et) =>
-        filters.value.typeId.value === null ||
-        (filters.value.typeId.value as number[]).length == 0 ||
-        (filters.value.typeId.value as number[]).includes(et.id),
+        filters.value.typeId?.value === null ||
+        (filters.value.typeId?.value as number[])?.length == 0 ||
+        (filters.value.typeId?.value as number[])?.includes(et.id),
     )
     .flatMap((et) => (et.metadata?.manufacturers as EquipmentTypeManufacturerModel[]) || [])
 })
@@ -113,7 +113,7 @@ const models = computed(() => {
   return manufacturers.value
     .filter(
       (m) =>
-        filters.value.manufacturer.value === null || m.name === filters.value.manufacturer.value,
+        filters.value.manufacturer?.value === null || m.name === filters.value.manufacturer?.value,
     )
     .flatMap((m) => m.models)
 })
@@ -127,7 +127,7 @@ const toggleSettingsPopover = (event: Event) => {
 const isIdVisible = ref(false)
 
 const isTypeFilterActive = (id: number) => {
-  const types = filters.value.typeId.value as number[] | null
+  const types = filters.value.typeId?.value as number[] | null
   if (types) {
     return types.includes(id)
   }
@@ -135,12 +135,12 @@ const isTypeFilterActive = (id: number) => {
 }
 
 const onTypeFilterClick = (id: number) => {
-  const types = filters.value.typeId.value as number[] | null
+  const types = filters.value.typeId?.value as number[] | null
   if (types) {
     if (types.includes(id)) {
-      ;(filters.value.typeId.value as number[]).splice(types.indexOf(id), 1)
+      ;(filters.value.typeId?.value as number[])?.splice(types.indexOf(id), 1)
     } else {
-      ;(filters.value.typeId.value as number[]).push(id)
+      ;(filters.value.typeId?.value as number[])?.push(id)
     }
   }
   reload()

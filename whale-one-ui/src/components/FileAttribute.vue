@@ -244,6 +244,8 @@ const downloadFile = (file: FileMetadata) => {
 </template>
 
 <style scoped>
+@import "tailwindcss";
+
 :deep(.p-card-body) {
   @apply p-2;
 }
