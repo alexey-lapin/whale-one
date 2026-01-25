@@ -16,10 +16,9 @@ dependencies {
     implementation(libs.spring.springBootStarterActuator)
     implementation(libs.spring.springBootStarterDataJdbc)
     implementation(libs.spring.springBootStarterFlyway)
-    implementation(libs.spring.springBootStarterOauth2AuthorizationServer)
     implementation(libs.spring.springBootStarterOauth2ResourceServer)
     implementation(libs.spring.springBootStarterValidation)
-    implementation(libs.spring.springBootStarterWeb)
+    implementation(libs.spring.springBootStarterWebmvc)
 
     implementation(libs.awssdk.s3)
     implementation(libs.fastcsv)
@@ -33,7 +32,6 @@ dependencies {
     testImplementation(libs.spring.springBootStarterDataJdbcTest)
     testImplementation(libs.spring.springBootStarterFlywayTest)
     testImplementation(libs.spring.springBootStarterSecurityOauth2ResourceServerTest)
-    testImplementation(libs.spring.springBootStarterTest)
     testImplementation(libs.spring.springBootStarterValidationTest)
     testImplementation(libs.spring.springBootStarterWebmvcTest)
 }
