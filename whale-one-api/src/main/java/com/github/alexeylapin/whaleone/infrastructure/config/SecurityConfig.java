@@ -10,6 +10,9 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -23,7 +26,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -41,19 +43,24 @@ import java.util.Map;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error", "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/index.html", "/assets/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/administration/**",
-                                "/login",
-                                "/deployments/**",
-                                "/equipment/**",
-                                "/projects/**"
-                        ).permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authz -> {
+                    authz.requestMatchers("/error", "/api/auth/login").permitAll();
+                    authz.requestMatchers(HttpMethod.GET, "/", "/index.html", "/assets/**").permitAll();
+                    authz.requestMatchers(HttpMethod.GET,
+                            "/login",
+                            "/administration/**",
+                            "/deployments/**",
+                            "/equipment/**",
+                            "/projects/**"
+                    ).permitAll();
+                    authz.requestMatchers(EndpointRequest.to(
+                            HealthEndpoint.class,
+                            InfoEndpoint.class
+                    )).permitAll();
+                    authz.anyRequest().authenticated();
+                })
                 .oauth2ResourceServer(configurer -> {
                     configurer.jwt(c -> c.jwtAuthenticationConverter(new ExtendedJwtAuthenticationConverter()));
                 })
