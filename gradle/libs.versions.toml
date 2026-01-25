@@ -1,0 +1,19 @@
+[versions]
+aws = "2.41.14"
+springBoot = "4.0.2"
+mapstruct = "1.6.3"
+
+[libraries]
+awsBom = { group = "software.amazon.awssdk", name = "bom", version.ref = "aws" }
+springBootDependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
+
+fastcsv = { module = "de.siegmar:fastcsv", version = "3.6.0" }
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+mapstructProcessor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+rsqlParser = { module = "cz.jirutka.rsql:rsql-parser", version = "2.1.0" }
+
+[plugins]
+graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.6" }
+node = { id = "com.github.node-gradle.node", version = "7.1.0" }
+release = { id = "pl.allegro.tech.build.axion-release", version = "1.18.7" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }

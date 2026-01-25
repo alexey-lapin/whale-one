@@ -1,8 +1,8 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.model.ProjectCampaign;
 import com.github.alexeylapin.whaleone.domain.model.ProjectCampaignItem;
-import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.repo.ProjectCampaignRepository;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;

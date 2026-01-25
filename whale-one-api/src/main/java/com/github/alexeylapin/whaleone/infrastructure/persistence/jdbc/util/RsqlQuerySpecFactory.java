@@ -31,7 +31,7 @@ public class RsqlQuerySpecFactory implements QuerySpecFactory {
     }
 
     @Override
-    public QuerySpec  create(String string) {
+    public QuerySpec create(String string) {
         if (string == null || string.isEmpty()) {
             return new DefaultQuerySpec("", List.of());
         }

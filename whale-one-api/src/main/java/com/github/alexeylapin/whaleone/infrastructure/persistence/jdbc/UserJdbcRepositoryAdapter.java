@@ -1,8 +1,8 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.model.User;
 import com.github.alexeylapin.whaleone.domain.model.UserListElement;
-import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.repo.UserRepository;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.util.DefaultPage;

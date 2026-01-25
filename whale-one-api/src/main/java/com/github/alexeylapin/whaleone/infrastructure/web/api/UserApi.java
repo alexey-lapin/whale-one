@@ -1,9 +1,9 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.model.User;
 import com.github.alexeylapin.whaleone.domain.model.UserListElement;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
-import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.repo.UserRepository;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;

@@ -1,45 +1,41 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "3.4.1"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.graalvm.buildtools.native") version "0.10.4"
-    id("pl.allegro.tech.build.axion-release") version "1.18.7"
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.graalvm.native)
+    alias(libs.plugins.release)
+    alias(libs.plugins.spring.boot)
 }
 
 dependencies {
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    annotationProcessor(libs.projectlombok.lombok)
+    annotationProcessor(libs.mapstructProcessor)
 
-    compileOnly("org.projectlombok:lombok")
+    compileOnly(libs.projectlombok.lombok)
 
     implementation(project(":whale-one-ui"))
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
+    implementation(libs.spring.springBootStarterActuator)
+    implementation(libs.spring.springBootStarterDataJdbc)
+    implementation(libs.spring.springBootStarterFlyway)
+    implementation(libs.spring.springBootStarterOauth2AuthorizationServer)
+    implementation(libs.spring.springBootStarterOauth2ResourceServer)
+    implementation(libs.spring.springBootStarterValidation)
+    implementation(libs.spring.springBootStarterWeb)
 
-    implementation("cz.jirutka.rsql:rsql-parser:2.1.0")
-    implementation("de.siegmar:fastcsv:3.6.0")
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    implementation("org.postgresql:postgresql")
-    implementation("software.amazon.awssdk:s3:2.30.36")
+    implementation(libs.awssdk.s3)
+    implementation(libs.fastcsv)
+    implementation(libs.flywaydb.flywayDatabasePostgresql)
+    implementation(libs.mapstruct)
+    implementation(libs.postgresql.postgresql)
+    implementation(libs.rsqlParser)
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    developmentOnly(libs.spring.springBootDevtools)
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core")
-    testImplementation("org.mockito:mockito-core")
+    testImplementation(libs.spring.springBootStarterDataJdbcTest)
+    testImplementation(libs.spring.springBootStarterFlywayTest)
+    testImplementation(libs.spring.springBootStarterSecurityOauth2ResourceServerTest)
+    testImplementation(libs.spring.springBootStarterTest)
+    testImplementation(libs.spring.springBootStarterValidationTest)
+    testImplementation(libs.spring.springBootStarterWebmvcTest)
 }
 
 tasks.test {

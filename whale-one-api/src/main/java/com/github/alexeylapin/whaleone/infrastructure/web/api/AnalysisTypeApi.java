@@ -1,11 +1,10 @@
 package com.github.alexeylapin.whaleone.infrastructure.web.api;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.domain.model.AnalysisType;
 import com.github.alexeylapin.whaleone.domain.model.UserRef;
 import com.github.alexeylapin.whaleone.domain.repo.AnalysisTypeRepository;
-import com.github.alexeylapin.whaleone.domain.Page;
 import com.github.alexeylapin.whaleone.infrastructure.config.MappingConfig;
 import com.github.alexeylapin.whaleone.infrastructure.security.IdUser;
 import com.github.alexeylapin.whaleone.infrastructure.web.api.serde.RawJsonDeserializer;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.ZonedDateTime;
 

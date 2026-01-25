@@ -3,11 +3,11 @@ package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc.equipmen
 import com.github.alexeylapin.whaleone.domain.model.EquipmentTypeItem;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.lang.Nullable;
 
 import java.util.List;
 import java.util.Optional;

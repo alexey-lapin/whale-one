@@ -1,7 +1,6 @@
 package com.github.alexeylapin.whaleone.infrastructure.persistence.jdbc;
 
 import com.github.alexeylapin.whaleone.domain.model.DeploymentStatus;
-import com.github.alexeylapin.whaleone.domain.model.ProjectCampaignItem;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -9,7 +8,6 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
