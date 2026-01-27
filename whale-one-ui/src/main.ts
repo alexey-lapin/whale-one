@@ -6,8 +6,8 @@ import 'leaflet/dist/leaflet.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
-import Aura from '@primevue/themes/aura'
-import { definePreset } from '@primevue/themes'
+import Aura from '@primeuix/themes/aura'
+import { definePreset } from '@primeuix/themes'
 import ConfirmationService from 'primevue/confirmationservice'
 import PrimeVue from 'primevue/config'
 import Ripple from 'primevue/ripple'
@@ -37,71 +37,71 @@ const preset = definePreset(Aura, {
     inputtext: {
       colorScheme: {
         light: {
-          disabled: {
-            background: '{surface.100}',
+          root: {
+            disabledBackground: '{surface.100}',
           },
         },
         dark: {
-          disabled: {
-            background: '{surface.800}',
+          root: {
+            disabledBackground: '{surface.800}',
           },
-        }
+        },
       },
     },
     autocomplete: {
       colorScheme: {
         light: {
-          disabled: {
-            background: '{surface.100}',
+          root: {
+            disabledBackground: '{surface.100}',
           },
         },
         dark: {
-          disabled: {
-            background: '{surface.800}',
+          root: {
+            disabledBackground: '{surface.800}',
           },
-        }
+        },
       },
     },
     pcinputtext: {
       colorScheme: {
         light: {
-          disabled: {
-            background: '{surface.100}',
+          root: {
+            disabledBackground: '{surface.100}',
           },
         },
         dark: {
-          disabled: {
-            background: '{surface.800}',
+          root: {
+            disabledBackground: '{surface.800}',
           },
-        }
+        },
       },
     },
     select: {
       colorScheme: {
         light: {
-          disabled: {
-            background: '{surface.100}',
+          root: {
+            disabledBackground: '{surface.100}',
           },
         },
         dark: {
-          disabled: {
-            background: '{surface.800}',
+          root: {
+            disabledBackground: '{surface.800}',
           },
-        }
+        },
       },
     },
     textarea: {
       colorScheme: {
         light: {
-          disabled: {
-            background: '{surface.100}',
+          root: {
+            disabledBackground: '{surface.100}',
           },
         },
         dark: {
-          disabled: {
-            background: '{surface.800}',
+          root: {
+            disabledBackground: '{surface.800}',
           },
-        }
+        },
       },
     },
   },
@@ -117,6 +117,10 @@ app.use(PrimeVue, {
     preset: preset,
     options: {
       darkModeSelector: '.dark',
+      cssLayer: {
+        name: 'primevue',
+        order: 'theme, base, primevue',
+      },
     },
   },
 })

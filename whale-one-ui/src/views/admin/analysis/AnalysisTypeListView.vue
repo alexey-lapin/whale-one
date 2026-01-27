@@ -44,7 +44,7 @@ onMounted(() => {
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xl font-bold flex-grow">Analysis Types</span>
+        <span class="text-xl font-bold grow">Analysis Types</span>
         <Button
           icon="pi pi-refresh"
           severity="secondary"

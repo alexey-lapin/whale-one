@@ -141,7 +141,7 @@ onMounted(() => {
   >
     <template #header>
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xl font-bold flex-grow">Equipment Types</span>
+        <span class="text-xl font-bold grow">Equipment Types</span>
         <Button
           icon="pi pi-filter-slash"
           title="Clear Filters"
@@ -267,7 +267,7 @@ onMounted(() => {
             icon="pi pi-trash"
             size="small"
             variant="outlined"
-            class="hover:!text-red-600"
+            class="hover:text-red-600!"
             severity="secondary"
             @click="confirmDelete(slotProps.data.id, slotProps.data.name)"
           />

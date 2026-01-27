@@ -102,7 +102,10 @@ onMounted(() => {
       v-if="model.assemblyParts"
       v-for="(part, index) in equipmentType?.metadata?.assemblyParts"
     >
-      <FloatLabel variant="on">
+      <FloatLabel
+        v-if="model.assemblyParts[index]"
+        variant="on"
+      >
         <EquipmentItemDropdown
           v-model="model.assemblyParts[index]"
           :type="part"

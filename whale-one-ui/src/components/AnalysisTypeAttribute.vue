@@ -49,7 +49,7 @@ const confirmDelete = () => {
     <template #content>
       <Fluid>
         <div class="flex gap-2">
-          <div class="flex-grow flex flex-col gap-4">
+          <div class="grow flex flex-col gap-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-3 sm:gap-3">
               <FloatLabel variant="on">
                 <Select
@@ -104,7 +104,7 @@ const confirmDelete = () => {
             variant="text"
             size="small"
             severity="secondary"
-            :class="{ 'hover:!text-red-600': editable }"
+            :class="{ 'hover:text-red-600!': editable }"
             :disabled="!editable"
             @click="confirmDelete()"
           />

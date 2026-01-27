@@ -29,7 +29,7 @@ const confirmDelete = () => {
     <template #content>
       <Fluid>
         <div class="flex gap-2">
-          <div class="flex-grow grid grid-cols-1 sm:grid-cols-4 gap-y-3 sm:gap-3">
+          <div class="grow grid grid-cols-1 sm:grid-cols-4 gap-y-3 sm:gap-3">
             <FloatLabel
               variant="on"
               class="col-span-1"
@@ -62,7 +62,7 @@ const confirmDelete = () => {
             size="small"
             severity="secondary"
             icon="pi pi-trash"
-            :class="{ 'hover:!text-red-600': editable }"
+            :class="{ 'hover:text-red-600!': editable }"
             :disabled="!editable"
             @click="confirmDelete()"
           />

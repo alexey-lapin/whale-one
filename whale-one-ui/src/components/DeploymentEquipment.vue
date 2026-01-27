@@ -82,6 +82,7 @@ onMounted(() => {
         <template v-if="attributes.length > 0">
           <template v-for="(attribute, index) in equipmentTypeAttributes">
             <EquipmentAttribute
+              v-if="attributes[index]"
               v-model="attributes[index].value"
               :equipment-type-attribute="attribute"
               :editing="editing"

@@ -164,6 +164,7 @@ onMounted(() => {
           <div class="flex flex-col gap-3">
             <template v-for="(attribute, index) in model.metadata.attributes">
               <AnalysisTypeAttribute
+                v-if="model.metadata.attributes[index]"
                 v-model="model.metadata.attributes[index]"
                 :editable="editingAttributes"
                 @attribute-deleted="deleteAttribute(index)"

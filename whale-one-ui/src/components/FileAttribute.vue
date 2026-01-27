@@ -165,7 +165,7 @@ const downloadFile = (file: FileMetadata) => {
                   icon="pi pi-trash"
                   text
                   severity="secondary"
-                  class="hover:!text-red-600"
+                  class="hover:text-red-600!"
                   @click="removeFile(index, file.key)"
                 />
               </div>
@@ -244,6 +244,8 @@ const downloadFile = (file: FileMetadata) => {
 </template>
 
 <style scoped>
+@import "tailwindcss";
+
 :deep(.p-card-body) {
   @apply p-2;
 }

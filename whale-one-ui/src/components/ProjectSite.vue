@@ -79,7 +79,7 @@ const confirmDelete = () => {
             size="small"
             severity="secondary"
             icon="pi pi-trash"
-            class="hover:!text-red-600"
+            class="hover:text-red-600!"
             @click="confirmDelete()"
           />
         </div>
